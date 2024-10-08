@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block head_title %} Dashboard {% endblock head_title %}
+
+{% block contentdash %}
+    <div class="d-flex justify-content-between">
+        <h4><b>SIEF</b> - Configurações</h4>
+    </div>
+    <hr>
+    <div class="row justify-content-center">
+        <form class="form-control form-control-sm" action="{% url 'configuracoes' %}" method="post">
+            {% csrf_token %}
+            <select class="form-control form-control-sm" name="usuario" id="usuario">
+                {% if usuarios %}
+                    {% for usuario in usuarios %}
+                        <option value="{{ usuario }}">{{ usuario.username }}</option>
+                    {% endfor %}
+                {% endif %}
+            </select>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="funcaocheck" id="gestorcheck" value="gestor">
+                <label class="form-check-label" for="gestorcheck">Gestor</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="funcaocheck" id="fiscalchek" value="fiscal">
+                <label class="form-check-label" for="fiscalchek">Fiscal</label>
+            </div>
+            <button type="submit">Designar</button>
+        </form>
+    </div>
+    
+{% endblock contentdash %}

@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block head_title %} Contratos {% endblock head_title %}
+
+{% block contentdash %}
+    <div class="d-flex justify-content-between">
+        <h4><b>CONTRATOS - </b>Editar</h4>
+    </div>
+    <hr>
+    <form action="" method="post">
+        {% csrf_token %}
+        {{ contratos_form.as_p }}
+        <div>
+            <button type="submit" class="btn btn-success">Salvar</button>
+            <a href="{% url 'contratos' %}" class="btn btn-danger">Cancelar</a>
+        </div>
+    </form>
+{% endblock contentdash %}

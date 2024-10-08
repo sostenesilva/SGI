@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% load somaitens %}
+
+{% block head_title %} Ordem de Fornecimento {% endblock head_title %}
+
+{% block contentdash %}
+    <div class="d-flex justify-content-between">
+        <h1>CADASTRAR SALDO - PROCESSO Nº {{ contrato.NumeroProcesso }}/{{ contrato.AnoProcesso }} - CONTRATO Nº {{ contrato.NumeroContrato }}/{{ contrato.AnoContrato }}</h1>
+    </div>
+    <p>
+        <small>Valor adjudicado: R${{ contrato.Valor }} | Edital: <a href="{{ contrato.LinkEdital }}" target="_blank">clique para visualizar o edital</a> | Contrato: <a href="{{ contrato.LinkContrato }}" target="_blank">clique para visualizar o contrato</a><b></b></small><br>
+        <small>Objeto: {{ contrato.Objeto|truncatewords:40 }}</small>
+        <small>Contratada: <b>{{ contrato.RazaoSocial }}</b> | CNPJ: <b>{{ contrato.NumeroDocumento }}</b> | Vigência: <b>{{ contrato.Vigencia }}</b></small>
+    </p>
+    <hr>
+    <form action="{% url 'contrato_add_of' contrato.id %}" method="post">
+        <div class="row">             
+            {% csrf_token %}
+            {{ of_form.as_p }}
+            <div class="table-overflow form-control form-control-sm" style="max-height: 500px;">
+                <table class="table table-striped table-sm">
+                    <thead>
+                        <tr>
+                            <th scope="col">Descrição do item</th>
+                            <th scope="col"></th>
+                            <th scope="col">Unidad</th>
+                            <th scope="col">Preço Unit</th>
+                            <th scope="col">Contratada</th>
+                            <th scope="col">Disponível</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in itensof %}
+                            <tr>
+                                <td scope="col">{{ item.Descricao }}</td>
+                                {% if item|totalPorItem:'dif_total' %}
+                                    <td scope="col" style="width: 7%;"><input class="form-control form-control-sm" style="text-align: center;" type="number" name="quantidade" id="quantidade" value="0"></td>
+                                {% else %}
+                                    <td scope="col" style="width: 7%;"><input class="form-control form-control-sm" style="text-align: center;" type="number" name="quantidade" id="quantidade" value="0" readonly></td>
+
+                                {% endif %}
+                                <td scope="col">{{ item.Unidade }}</td>
+                                <td scope="col">R${{ item.PrecoUnitario }}</td>
+                                <td scope="col">{{ item.Quantidade }}</td>
+                                <td scope="col">{{ item|totalPorItem:'dif_total' }}</td>
+                                
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="p-1">
+                <button type="submit" class="btn btn-sm btn-success">Adicionar</button>
+                <a href="{% url 'contratos' %}" class="btn btn-sm btn-danger">Cancelar</a>
+            </div>
+        </div>
+    </form>
+        
+        
+    
+    
+{% endblock contentdash %}

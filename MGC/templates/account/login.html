@@ -1,0 +1,30 @@
+{% extends "baseAccountPage.html" %}
+
+{% load allauth account i18n %}
+
+{% block head_title %} Entrar {% endblock head_title %}
+
+{% block content %}
+    
+    {% url 'account_login' as login_url %}
+    {% element form form=form method="post" action=login_url tags="entrance,login" %}
+        {% slot body %}
+            {% csrf_token %}
+            {% element fields form=form unlabeled=True %}
+            {% endelement %}
+            {{ redirect_field }}
+        {% endslot %}
+        
+        {% slot actions %}
+            {% element button type="submit" tags="prominent,login" %}
+                {% trans "Sign In" %}
+            {% endelement %}
+        {% endslot %}
+
+    {% endelement %}
+
+    <p>
+        Ainda não tem uma conta? Por favor, solicite acesso <a href="{{ signup_url }}">clicando aqui</a>
+    </p>
+    
+{% endblock content %}

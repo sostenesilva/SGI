@@ -1,0 +1,17 @@
+{% extends "baseAccountPage.html" %}
+{% load allauth account i18n %}
+
+{% block head_title %} Deslogar {% endblock head_title %}
+
+{% block content %}
+    <div>
+        <h1>Sair?</h1>
+        <p>Você tem certeza que deseja se deslogar?</p>
+        {% url 'account_logout' as action_url %}
+        <form method="post" action="/accounts/logout/">
+            {% csrf_token %}
+            {{ redirect_field }}
+            <button type="submit" class="btn btn-primary btn-block mb-6">Sim, deslogar</button>
+        </form>
+    </div>
+{% endblock content %}

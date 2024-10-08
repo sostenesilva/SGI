@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block head_title %} Dashboard {% endblock head_title %}
+
+{% block contentdash %}
+    <div class="d-flex justify-content-between">
+        <h4><b>SIEF</b> - Dashboard</h4>
+    </div>
+    <hr>
+    <div class="row justify-content-center">
+    <!--  for dado in estatistica  -->
+        <div class="card m-1 text-dark bg-white" style="max-width: 16rem;">
+            <div class="card-header bg-white pb-0"><b> dado.secretaria </b></div>
+            <div class="card-body p-1 pb-3">
+                <p class="titulo-card">Avaliações</p>
+                <small class="estatistica">
+                    <p>Registradas: <b> dado.avaliacoes_registradas </b></p>
+                    <p>Pendentes: <b> dado.avaliacoes_pendentes </b></p>
+                    <p>Data limite: <b> dado.avaliacoes_pendentes_datalimite </b></p>
+                    <p>Em análise: <b> dado.avaliacoes_pendentes </b></p>
+                    <p>Movimentações: <b> dado.movimentacoes </b></p>
+                </small>
+            </div>
+        </div>   
+    <!--  endfor  -->
+    </div>
+    
+{% endblock contentdash %}

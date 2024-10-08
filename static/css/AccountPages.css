@@ -1,0 +1,45 @@
+.logo{
+    text-align: center;
+    width: 100%;
+    margin: 2rem 0 2rem 0;
+}
+.logo_xg{
+    width: 50%;
+}
+
+.card{
+    display: flex;
+    margin: auto;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+    border-radius: 1rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, .1);
+    margin-bottom: 2rem;
+    background-color: #fff;
+    padding-bottom: 1rem;
+    width: 80%;
+    text-align: center;
+}
+
+.p8{
+    padding: 2rem;
+}
+
+input,textarea{
+    border-radius: .5rem;
+    padding: 1rem 1.2rem;
+    width: 100%;
+}
+
+button{
+    background-color: #92c332;
+    border: none;
+    border-radius: .5rem;
+    padding: 0.5rem 1.2rem;
+    color:#fff
+}
+button:hover{
+    background-color: #477a4a;
+}
+

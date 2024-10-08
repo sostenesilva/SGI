@@ -1,0 +1,78 @@
+<html>
+    <head>
+        <style>
+            body{
+                text-align: justify;
+            }
+            .titulo{
+                text-align: center;
+                color: rgb(0,113,188); 
+            }
+            
+            .regulamentacao{
+                font-size: 12.8px;
+            }
+
+            .criterios{
+                font-weight: bold;
+            }
+            
+            .assinatura{
+                font-style: italic;
+                color: darkgrey;
+            }
+        </style>
+    </head>
+    
+    <body>
+        <h1 class="titulo"><b>Avaliação Continuada - Programa Nacional de Transparência Pública</b></h1>
+        <p>Por meio de ação coordenada pela ATRICON, o <b>Sistema Tribunais de Contas</b> realiza,
+            periodicamente, o <b>levantamento nacional da transparência pública</b> em seus próprios
+            portais de transparência e dos seus jurisdicionados. Isso ocorre por meio da verificação
+            do adequado cumprimento da <b>transparência ativa</b> – isto é, aquela por meio da qual se
+            disponibilizam dados de forma espontânea, sem demanda – das informações <b>exigidas</b>
+            nos diversos instrumentos normativos de amplitude nacional, em especial na <b>Lei de
+            Responsabilidade Fiscal (LRF) e na Lei de Acesso à Informação (LAI)</b>.
+        </p>
+        <p><b>Vimos informar a data limite para cumprimento das avaliações pendentes:</b></p>
+        <ul class="criterios">
+        {% for item in lista_avaliacoes %}
+            <li>
+                {{ item }}
+            </li>
+        {% endfor %}
+        </ul>
+        <p>Solicitamos que os documentos pertinentes sejam enviados por meio do <a href="https://itmpe.pythonanywhere.com">portal de avaliação continuada</a></p>
+        <hr>
+        <ol class="regulamentacao" type="I">
+            <b>Ratificamos que a avaliação continuada se dá em concordância com:</b>
+            <i>
+                <li>Constituição da República;</li>
+                <li>Leis Complementares no 101/2000, 131/2009 e 156/2016;</li>
+                <li>Leis Federais no 5.172/1966, 12.527/2011, 13.460/2017, 13.709/2018, 14.129/2021, 14.133/2021, entre outras;</li>
+                <li>Resolução Atricon no 01/2023;</li>
+                <li>Acordo Plurilateral de Cooperação Técnica no 03/2022 (Atricon, IRB, CNPTC, Abracom, TCE-MT, TCs e Conaci);</li>
+                <li>Cartilha Acesso à Informação na Prática;</li>
+                <li>Matriz de critérios de avaliação da transparência pública.</li>
+            </i>
+        </ol>
+
+    
+        <ul class="regulamentacao">
+            <b>É responsabilidade deste Controle interno e órgãos avaliados:</b>
+            <li>Observar as regras e o cronograma do Programa.</li>
+            <li>Recomendar ao gestor a implementação de melhorias no portal transparência do respectivo Poder ou órgão e monitorar a implementação.</li>
+            <li>Avaliar a transparência do respectivo Poder ou órgão, quando assim definido pelo respectivo Tribunal de Contas.</li>
+            <li>Sugerir ao respectivo Tribunal de Contas oportunidades de progresso para o Programa.</li>
+            <li>Divulgar o Programa e resultados.</li>
+        </ul>
+        <br>
+        <p class="assinatura">
+            Atenciosamente,<br>
+            Controle Interno do Município de Cortês
+        </p>
+    </body>
+
+
+  
+</html>

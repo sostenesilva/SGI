@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block head_title %} Processo {% endblock head_title %}
+
+{% block contentdash %}
+    <div class="d-flex justify-content-between">
+        <h4><b>PROCESSOS -</b> Informações do processo</h4>
+        {% if user|has_role:'controle' %}
+            <a type="button" class="btn btn-success" href="{% url 'licitacao_request' %}">Importar do Licon</a>
+        {% endif %}
+    </div>
+    <hr>
+    <form action="{% url 'processos_add' %}" method="post">
+        {% csrf_token %}
+        {{ processos_form.as_p }}
+        <div>
+            <button type="submit" class="btn btn-success">Adicionar</button>
+            <a href="{% url 'processos' %}" class="btn btn-danger">Cancelar</a>
+        </div>
+        </form>
+{% endblock contentdash %}

@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+
+{% block head_title %} Ordem de Fornecimento {% endblock head_title %}
+
+{% block contentdash %}
+    <div>
+        <h4><b>Processo Licitatório:</b> {{ processo.n_processo }}/{{ processo.ano_processo }} - <b>Contrato:</b> {{ contrato.n_contrato }}/{{ contrato.ano_contrato }} - <b>{{ processo.modalidade }}</b></h4>
+    </div>
+    <div class="descricao_contrato px-4">
+        <p><b>Contratada:</b> {{ contrato.contratada }} |
+        <b>Objeto:</b> {{ processo.objeto }}</p>
+    </div>
+    <hr>
+    <div class="row justify-content-center">
+        <div class="card m-1 text-dark bg-white" style="max-width: 16rem;">
+            <div class="card-header bg-white"><b>Vigência</b></div>
+            <div class="card-body p-1">
+                <p>De: {{contrato.inicio_vigencia}}<br>
+                    Até: {{ contrato.fim_vigencia }}</p>
+            </div>
+        </div>
+        <div class="card m-1 text-dark bg-white" style="max-width: 16rem;">
+            <div class="card-header bg-white"><b>Valor contratado</b></div>
+            <div class="card-body p-1">
+                <p>R$ 1.000.00</p>
+            </div>
+        </div>
+        <div class="card m-1 text-dark bg-white" style="max-width: 16rem;">
+            <div class="card-header bg-white"><b>Saldo consumido</b></div>
+            <div class="card-body p-1">
+                <p>R$ 500.00</p>
+            </div>
+        </div>
+        <div class="card m-1 text-dark bg-white" style="max-width: 16rem;">
+            <div class="card-header bg-white"><b>Saldo disponível</b></div>
+            <div class="card-body p-1">
+                <p>R$ 500.00</p>
+            </div>
+        </div>   
+    </div>
+    <div class="row">        
+        <form class="col" action="" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div>
+                <label for="id_arquivo">Anexar documento:</label>
+                <input type="file" class="form-control form-control-sm" name="arquivo" id="id_arquivo">
+            </div>
+            <div>
+                <label for="id_anotacao">Inserir anotação:</label>
+                <textarea class="form-control" rows="3" name="anotacao" id="id_anotacao"></textarea>
+            </div>
+
+            {% if user|has_role:'controle' %}
+                <div>
+                    <label for="id_status_controle">Status:</label>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="status_controle" id="status_Publicado" value="Publicado" required>
+                        <label class="form-check-label" for="status_Publicado">Publicado</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="status_controle" id="status_Pendente" value="Pendente" required>
+                        <label class="form-check-label" for="status_Pendente">Pendente</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="status_controle" id="status_Analise" value="Em análise" required>
+                        <label class="form-check-label" for="status_Analise">Análise</label>
+                    </div>
+                </div>
+            {% endif %}
+            <div style="padding-top: 0.5rem;">
+                <button type="submit" class="btn btn-success btn-sm">Anexar</button>
+                <a href="{% url 'contratos' %}" class="btn btn-danger btn-sm">Cancelar</a>
+            </div>
+        </form>
+    </div>
+    <br>
+    <div class="card d-flex justify-content-between table-responsive">
+        <table class="table table-striped table-hover table-sm ">
+            <thead>
+                <tr>
+                    <th scope="col">Data e Hora</th>
+                    <th scope="col">Anotação</th>
+                    <th scope="col">Arquivo</th>
+                    <th scope="col">Enviado por</th>
+                    {% if user|has_role:'controle' %}
+                        <th scope="col">Ações</th>
+                    {% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in avaliacao_log_hist %}
+                    <tr>
+                        <td>{{ log.dataehora }}</td>
+                        <td>{{ log.anotacao }}</td>
+                        <td>
+                            {% if log.arquivo %}
+                                <a href="/media/{{ log.arquivo }}" class="btn-sm"><i class="lni lni-folder"></i> Visualizar anexo</a>
+                            {% endif %}
+                        </td>
+                        <td>{{ log.usuario }}</td>
+                        {% if user|has_role:'controle' %}
+                            <td>
+                                <a href="{% url 'avaliacao_log_delet' log.avaliacao.id log.id %}" class="btn btn-success btn-sm"><i class="lni lni-trash-can"></i></a>
+                            </td>
+                        {% endif %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="wrapper justify-content-center">
+            <nav aria-label="Page navigation">
+                <ul class="pagination pagination-sm">
+                    {% if avaliacao_log_hist.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page=1" aria-label="Anterior">
+                                <span aria-hidden="true">&laquo;</span>
+                                <span class="sr-only">Primeira</span>
+                            </a>
+                        </li>   
+                    {% endif %}
+                
+                    {% for n in avaliacao_log_hist.paginator.page_range %}
+                        {% if avaliacao_log_hist.number == n %}
+                            <li class="page-item active">
+                                <span class="page-link">{{ n }}</span>
+                            </li>
+                        {% elif n > avaliacao_log_hist.number|add:'-3' and n < avaliacao_log_hist.number|add:'3' %}
+                           <li class="page-item"><a class="page-link" href="?page={{ n }}">{{ n }}</a></li>
+                        {% endif %}
+                    {% endfor %}
+                
+                    {% if avaliacao_log_hist.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ avaliacao_log_hist.paginator.num_pages }}" aria-label="Próxima">
+                                <span aria-hidden="true">&raquo;</span>
+                                <span class="sr-only">Última</span>
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+
+    </div>
+{% endblock contentdash %}
