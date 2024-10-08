@@ -47,11 +47,10 @@
                         <td>R$ {{ contrato.Valor }}</td>
                         <td>
                             <div class='btn-group btn-group-sm' role='group'>
-                                <a href="{{ contrato.LinkContrato }}" class="btn btn-primary"><i class="lni lni-add-files"></i></a>
+                                <a href="{{ contrato.LinkContrato }}" class="btn btn-success"><i class="lni lni-add-files"></i></a>
                                 <a href="{{ contrato.LinkEdital }}" class="btn btn-primary"><i class="lni lni-book"></i></a>
                             </div>
                         </td>
-                        { endif %} -->
                     </tr>
                 {% endfor %}
             </tbody>
