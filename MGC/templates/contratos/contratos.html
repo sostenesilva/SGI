@@ -28,7 +28,19 @@
                     <tr>
                         <td>{{ contrato.NumeroProcesso }}/{{ contrato.AnoProcesso }}</td>
                         <td>{{ contrato.NumeroContrato }}/{{ contrato.AnoContrato }}</td>
-                        <td>{{ contrato.UnidadeGestora }}</td>
+                        <td>
+                            {% if contrato.UnidadeGestora == 'Prefeitura Municipal de Cortês' %}
+                                PMC
+                            {% elif contrato.UnidadeGestora == 'Fundo Municipal de Assistência Social de Cortês	' %}
+                                FMAS
+                            {% elif contrato.UnidadeGestora == 'Fundo Municipal de Saúde de Cortês' %}
+                                FMS
+                            {% elif contrato.UnidadeGestora == 'Fundo Municipal de Educação' %}
+                                FMEDUC
+                            {% else %}
+                                {{ contrato.UnidadeGestora }}
+                            {% endif %}
+                        </td>
                         <td>{{ contrato.Vigencia }}</td>
                         <td style="width: 30%;">{{ contrato.RazaoSocial }}</td>
                         <td>R$ {{ contrato.Valor }}</td>
