@@ -7,4 +7,4 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('allauth.urls')),
     path('mgc/',include('MGC.urls')),
-] + static(settings.STATIC_URL, document_root = settings.STATICFILES_DIRS[0]) + static(settings.MEDIA_URL, document_root = settings.MEDIA_ROOT)
+]
