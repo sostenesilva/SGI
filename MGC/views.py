@@ -7,6 +7,7 @@ from datetime import date
 import requests, json
 
 #------------------- PÁGINAS DE DASHBOARD -------------------#
+@login_required
 def dashboard(request):
     
     context = {
@@ -40,6 +41,7 @@ def dashboard(request):
 #     return render (request,'dashboard/configuracoes.html',context)
 
 #------------------- PÁGINAS DE CONTRATOS -------------------#
+@login_required
 def contratos (request):
 
     contratos = models.Contratos.objects.all()
@@ -127,7 +129,7 @@ def contratos (request):
 #     }
 
 #     return render(request, 'contratos/contratos_enviarof.html',context)
-
+@login_required
 def contratos_add_of(request,contrato_pk):
     contrato = models.Contratos.objects.get(pk=contrato_pk)
     of_form = forms.SaldoSec_form(request.POST or None)
@@ -161,6 +163,7 @@ def contratos_add_of(request,contrato_pk):
     return render(request, 'ordens/ordens_add.html',context)
 
 #CONTRATOS LICON
+@login_required
 def contratos_request(request):
     contratos_licon = requests.get('https://sistemas.tcepe.tc.br/DadosAbertos/Contratos!json?UnidadeOrcamentaria=Prefeitura&Esfera=M&Municipio=Cortes&AnoContrato=2024').json()['resposta']['conteudo']
     processos_licon = requests.get('https://sistemas.tcepe.tc.br/DadosAbertos/LicitacaoUG!json?UG=CORTES').json()['resposta']['conteudo']
@@ -230,6 +233,7 @@ def contratos_request(request):
 
 
 #------------------- PÁGINAS DE ORDEM DE FORNECIMENTO -------------------#
+@login_required
 def ordens (request):
     
     SaldoContratoSec = models.SaldoContratoSec.objects.all()
@@ -332,7 +336,7 @@ def of_delet (request, saldoof_pk):
 
 
 #------------------- PÁGINAS DE AVALIAÇÃO -------------------#
- 
+@login_required
 def avaliacao (request):
 
     if has_role(request.user, Controle):
@@ -351,6 +355,7 @@ def avaliacao (request):
     return render(request, 'avaliacao/avaliacao.html', context)
 
 #AVALIAÇÃO ADD
+@login_required
 def avaliacao_add (request):
     avaliacao_form = forms.Avaliacao_form(request.POST or None)
 
@@ -365,6 +370,7 @@ def avaliacao_add (request):
     return render(request, 'avaliacao/avaliacao_add.html',context)
 
 #AVALIAÇÃO EDIT
+@login_required
 def avaliacao_edit(request, avaliacao_pk):
     avaliacao = models.Db_Avaliacao.objects.get(pk=avaliacao_pk)
 
@@ -383,6 +389,7 @@ def avaliacao_edit(request, avaliacao_pk):
     return render(request, 'avaliacao/avaliacao_edit.html',context)
 
 #AVALIAÇÃO DELET
+@login_required
 def avaliacao_delet(request, avaliacao_pk):
     avaliacao = models.Db_Avaliacao.objects.get(pk=avaliacao_pk)
     avaliacao.delete()
@@ -390,6 +397,7 @@ def avaliacao_delet(request, avaliacao_pk):
 
 
 #AVALIAÇÃO DELETE
+@login_required
 def avaliacao_log_delet(request, avaliacao_pk, avaliacao_log_pk):
     avaliacao_log = models.Db_Avaliacao_log.objects.get(pk=avaliacao_log_pk)
     avaliacao_log.delete()

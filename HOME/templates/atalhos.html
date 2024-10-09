@@ -1,0 +1,44 @@
+{% extends "baseHome.html" %}
+{% load static %}
+
+
+{% block head_title %} SGI - Cortês/PE {% endblock head_title %}
+
+{% block content %}
+<div class="row row-cols-1 row-cols-md-2 g-4 justify-content-md-center">
+    <div class="col">
+        <div class="sidebar-logo">
+            <img class="logo" style="width: 30%;" src="{% static 'img/LOGO-CORTES3-668x1024.png' %}" alt="logomarca">
+        </div>
+    </div>
+</div>
+
+<div class="row row-cols-1 row-cols-md-4 g-4 justify-content-md-center my-2">
+    <div class="col">
+        <a href="{% url 'mgc' %}" class="card">
+            <div class="card-body">
+                <h5 class="card-header">MGC</h5>
+                <small class="card-text">Módulo de Gestão e Fiscalização de Contratos</small>
+            </div>
+        </a>
+    </div>
+    <div class="col">
+        <a href="https://itmpe.pythonanywhere.com/" class="card">
+            <div class="card-body">
+                <h5 class="card-header">ITMPE</h5>
+                <small class="card-text">Acompanhamento continuado dos critérios avaliados pelo Tribunal de Contas</small>
+            </div>
+        </a>
+    </div>
+    <div class="col">
+        <a href="https://transparencia.cortes.pe.gov.br/app/pe/cortes/1" class="card">
+            <div class="card-body">
+                <h5 class="card-header">Portal da Transparência</h5>
+                <small class="card-text">Ferramenta desenvolvida para permitir à sociedade acompanhar o uso dos recursos públicos</small>
+            </div>
+        </a>
+    </div>
+</div>
+
+
+{% endblock content %}
