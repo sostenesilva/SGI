@@ -21,8 +21,14 @@ urlpatterns = [
     path('contratos/ordens/', views.ordens, name='ordens'),
     path('contratos/ordens/detalhes/<int:saldoof_pk>/', views.of_enviar, name='of_enviar'),
     path('contratos/ordens/detalhes/<int:saldoof_pk>/emitir', views.of_emitir, name='of_emitir'),
+    path('contratos/ordens/detalhes/<int:saldoof_pk>/emitirdoc', views.emitirDocOf, name='emitirDocOf'),
+
+    path('contratos/ordens/detalhes/<int:saldoof_pk>/<int:of_log_pk>', views.of_log_delet, name='of_log_delet'),
     path('contratos/ordens/editar/<int:saldoof_pk>', views.of_edit, name='of_edit'),
-    path('contratos/ordens/deletar/<int:saldoof_pk>', views.of_delet, name='of_delet'),
+    #path('contratos/ordens/deletar/<int:saldoof_pk>', views.of_delet, name='of_delet'),
+
+    path('contratos/fiscal/', views.painelfiscal, name='painelfiscal'),
+
 
     path('contratos/request', views.contratos_request, name='contratos_request'),
 

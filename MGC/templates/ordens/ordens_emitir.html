@@ -41,13 +41,11 @@
                                     <td style="width: 10%;" scope="col" style="width: 7%;"><input class="form-control form-control-sm" style="text-align: center;" type="number" name="quantidade" id="quantidade" value="0"></td>
                                 {% else %}
                                     <td scope="col" style="width: 7%;"><input class="form-control form-control-sm" style="text-align: center;" type="number" name="quantidade" id="quantidade" value="0" readonly></td>
-
                                 {% endif %}
                                 <td scope="col">{{ item.Unidade }}</td>
                                 <td scope="col">R${{ item.PrecoUnitario }}</td>
                                 <td scope="col">{{ item|totalPorItem:'entrada_sec' }}</td>
                                 <td scope="col">{{ item|totalPorItem:'dif_sec' }}</td>
-                                
                             </tr>
                         {% endfor %}
                     </tbody>

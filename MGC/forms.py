@@ -35,6 +35,15 @@ class SaldoSec_form (forms.ModelForm):
             'sec': forms.Select(attrs={'class':'form-control'}),
         }
 
+class Fiscal_form (forms.ModelForm):
+    class Meta:
+        model = models.SaldoContratoSec
+        fields = ('fiscal',)
+
+        widgets = {
+            'fiscal': forms.Select(attrs={'class':'form-control'}),
+        }
+
 
 # class Avaliacao_form (forms.ModelForm):
 #     class Meta:

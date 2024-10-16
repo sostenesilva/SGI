@@ -5,6 +5,8 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from datetime import date
 import requests, json
+from docx import Document, document, table
+from python_docx_replace import docx_replace
 
 #------------------- PÁGINAS DE DASHBOARD -------------------#
 @login_required
@@ -133,16 +135,19 @@ def contratos (request):
 def contratos_add_of(request,contrato_pk):
     contrato = models.Contratos.objects.get(pk=contrato_pk)
     of_form = forms.SaldoSec_form(request.POST or None)
+    fiscal_form = forms.Fiscal_form(request.POST or None)
     itensof = models.Itens.objects.filter(CodigoContratoOriginal=contrato.CodigoContrato)
     controleEntradas = models.EntradaSec.objects.filter(contrato=contrato)
     
     if request.POST:
+        print(request.POST)
         cestaitens = enumerate(request.POST.getlist('quantidade'))
-        SaldoContratoSec, ContratoSecCriado = models.SaldoContratoSec.objects.update_or_create(contrato = contrato, sec = models.Group.objects.get(pk=request.POST['sec']))
+        SaldoContratoSec, ContratoSecCriado = models.SaldoContratoSec.objects.update_or_create(contrato = contrato, sec = models.Group.objects.get(pk=request.POST['sec']), fiscal = models.User.objects.get(pk=request.POST['fiscal']))
         for itemcesta,qtd in cestaitens:
             if qtd != '0':
                 entradasec = models.EntradaSec()
                 entradasec.contrato = contrato
+                entradasec.saldocontratosec = SaldoContratoSec
                 entradasec.item = itensof[itemcesta]
                 entradasec.quantidade = int(qtd)
                 SaldoContratoSec.saldo += (entradasec.item.PrecoUnitario * entradasec.quantidade)
@@ -156,6 +161,7 @@ def contratos_add_of(request,contrato_pk):
     
     context = {
         'of_form': of_form,
+        'fiscal_form': fiscal_form,
         'contrato': contrato,
         'itensof': itensof,
     }
@@ -216,8 +222,8 @@ def contratos_request(request):
 
         itens_licon = requests.get('https://sistemas.tcepe.tc.br/DadosAbertos/ContratoItemObjeto!json?CodigoContratoOriginal={}'.format(cont.CodigoContrato)).json()['resposta']['conteudo']
         for item in itens_licon:
-            print(item)
-            print()
+            # print(item)
+            # print()
             itemcontrato, itemcontrato_criado = models.Itens.objects.update_or_create(
                 CodigoContratoOriginal = item['CodigoContratoOriginal'],
                 CodigoItem = item['CodigoItem']
@@ -252,6 +258,22 @@ def ordens (request):
     }
     
     return render(request, 'ordens/ordens.html', context)
+
+@login_required
+def painelfiscal (request):
+
+    SaldoContratoSec = models.SaldoContratoSec.objects.filter(fiscal= request.user)
+    ordens_paginator = Paginator(SaldoContratoSec,30)
+    page_num_ordens = request.GET.get('page')
+    page_ordens = ordens_paginator.get_page(page_num_ordens)
+ 
+    context = {
+        'ordens': page_ordens,
+        'contrato': contratos,
+    }
+    
+    return render(request, 'ordens/painelfiscal.html', context)
+
 
 def of_enviar (request,saldoof_pk):
     SaldoContratoSec = models.SaldoContratoSec.objects.get(pk=saldoof_pk)
@@ -290,31 +312,30 @@ def of_emitir (request,saldoof_pk):
     ordem_form = forms.Ordem_form(request.POST or None)
 
     if request.POST:
-        print(request.POST)
         cestaitens = enumerate(request.POST.getlist('quantidade'))
         ordem = models.Ordem.objects.create(SaldoContratoSec = SaldoContratoSec, usuario = request.user)
         valordaordem = 0
-        
-        for itemcesta,qtd in cestaitens:
-            print('estou aqui 1')
-            if qtd != '0':
-                print('estou aqui 2')
+        listaitens = []
 
+        for itemcesta,qtd in cestaitens:
+            if qtd != '0':
                 saidasec = models.SaidaSec()
                 saidasec.contrato = ContratoSec
                 saidasec.ordem = ordem
                 saidasec.item = itensof[itemcesta]
                 saidasec.quantidade = int(qtd)
+                saidasec.totalporitem = saidasec.quantidade * saidasec.item.PrecoUnitario
                 saidasec.usuario = request.user
 
                 valordaordem += (saidasec.item.PrecoUnitario * saidasec.quantidade)
 
                 saidasec.save()
-
-
+                listaitens.append(saidasec)
+        
         ordem.descricao = request.POST.get('descricao')
         ordem.valor = valordaordem
         ordem.save()
+        emitirDocOf(request, ordem ,listaitens)
         return redirect('ordens')
 
     context = {
@@ -326,74 +347,117 @@ def of_emitir (request,saldoof_pk):
 
     return render(request, 'ordens/ordens_emitir.html',context)
 
+def emitirDocOf (request, ordem, listadeitens):
+    document = Document("F:\PROGRAMAÇÃO\SGI - Sistema de Gerenciamento de Informações\media\MODELO ORDEM DE FORNECIMENTO.docx")
+    
+    tabela = document.tables[0]
+    nItem = 1
+    for itemlista in listadeitens:
+        row = tabela.add_row().cells
+        row[0].text = str(nItem)
+        row[1].text = itemlista.item.Descricao
+        row[2].text = str(itemlista.quantidade)
+        row[3].text = itemlista.item.Unidade
+        row[4].text = 'R$ '+ str(itemlista.item.PrecoUnitario).replace('.',',')[:5]
+        row[5].text = 'R$ '+ str(itemlista.totalporitem).replace('.',',')[:5]
+        nItem += 1
+ 
+    mydict = {
+        'idOrdem': ordem.id,
+        'descricaoDaOF': ordem.descricao,
+        'valorTotalOF': ordem.valor,
+        'contratada': ordem.SaldoContratoSec.contrato.RazaoSocial,
+        'cnpj': ordem.SaldoContratoSec.contrato.CPF_CNPJ,
+        'data': ordem.dataehora,
+        'contrato': f'{ordem.SaldoContratoSec.contrato.NumeroContrato}/{ordem.SaldoContratoSec.contrato.AnoContrato}',
+        'processo': f'{ordem.SaldoContratoSec.contrato.NumeroProcesso}/{ordem.SaldoContratoSec.contrato.AnoProcesso}',
+    }
+
+    docx_replace(document, **mydict )
+
+    document.save('teste.docx')
+
+    return
+
+
+
 def of_edit (request, saldoof_pk):
     pass
 
  
-def of_delet (request, saldoof_pk):
-    pass
-
-
-
-#------------------- PÁGINAS DE AVALIAÇÃO -------------------#
 @login_required
-def avaliacao (request):
+def of_log_delet(request, saldoof_pk, of_log_pk):
+    of_log = models.Ordem.objects.get(pk=of_log_pk)
+    of_log.delete()
+    return redirect (request.META.get('HTTP_REFERER'))
 
-    if has_role(request.user, Controle):
-        avaliacao = models.Db_Avaliacao.objects.all()
-    else:
-        avaliacao = models.Db_Avaliacao.objects.filter(responsavel__in = request.user.groups.all())
 
-    avaliacao_paginator = Paginator(avaliacao,10)
-    page_num_avaliacao = request.GET.get('page')
-    page_avaliacao = avaliacao_paginator.get_page(page_num_avaliacao)
 
-    context = {
-        'avaliacao': page_avaliacao
-    }
+
+
+
+
+
+
+# #------------------- PÁGINAS DE AVALIAÇÃO -------------------#
+# @login_required
+# def avaliacao (request):
+
+#     if has_role(request.user, Controle):
+#         avaliacao = models.Db_Avaliacao.objects.all()
+#     else:
+#         avaliacao = models.Db_Avaliacao.objects.filter(responsavel__in = request.user.groups.all())
+
+#     avaliacao_paginator = Paginator(avaliacao,10)
+#     page_num_avaliacao = request.GET.get('page')
+#     page_avaliacao = avaliacao_paginator.get_page(page_num_avaliacao)
+
+#     context = {
+#         'avaliacao': page_avaliacao
+#     }
     
-    return render(request, 'avaliacao/avaliacao.html', context)
+#     return render(request, 'avaliacao/avaliacao.html', context)
 
-#AVALIAÇÃO ADD
-@login_required
-def avaliacao_add (request):
-    avaliacao_form = forms.Avaliacao_form(request.POST or None)
+# #AVALIAÇÃO ADD
+# @login_required
+# def avaliacao_add (request):
+#     avaliacao_form = forms.Avaliacao_form(request.POST or None)
 
-    if request.POST:
-        if avaliacao_form.is_valid():
-            avaliacao_form.save()
-            return redirect ('avaliacao')
+#     if request.POST:
+#         if avaliacao_form.is_valid():
+#             avaliacao_form.save()
+#             return redirect ('avaliacao')
 
-    context = {
-        'avaliacao_form': avaliacao_form
-    }
-    return render(request, 'avaliacao/avaliacao_add.html',context)
+#     context = {
+#         'avaliacao_form': avaliacao_form
+#     }
+#     return render(request, 'avaliacao/avaliacao_add.html',context)
 
-#AVALIAÇÃO EDIT
-@login_required
-def avaliacao_edit(request, avaliacao_pk):
-    avaliacao = models.Db_Avaliacao.objects.get(pk=avaliacao_pk)
+# #AVALIAÇÃO EDIT
+# @login_required
+# def avaliacao_edit(request, avaliacao_pk):
+#     avaliacao = models.Db_Avaliacao.objects.get(pk=avaliacao_pk)
 
-    avaliacao_form = forms.Avaliacao_form(request.POST or None, instance = avaliacao)
+#     avaliacao_form = forms.Avaliacao_form(request.POST or None, instance = avaliacao)
 
-    if request.POST:
-        if avaliacao_form.is_valid():
-            avaliacao.arquivo = request.FILES.get('arquivo')
-            avaliacao_form.save()
-            return redirect ('avaliacao')
+#     if request.POST:
+#         if avaliacao_form.is_valid():
+#             avaliacao.arquivo = request.FILES.get('arquivo')
+#             avaliacao_form.save()
+#             return redirect ('avaliacao')
     
-    context = {
-        'avaliacao_form': avaliacao_form
-    }
+#     context = {
+#         'avaliacao_form': avaliacao_form
+#     }
 
-    return render(request, 'avaliacao/avaliacao_edit.html',context)
+#     return render(request, 'avaliacao/avaliacao_edit.html',context)
 
-#AVALIAÇÃO DELET
-@login_required
-def avaliacao_delet(request, avaliacao_pk):
-    avaliacao = models.Db_Avaliacao.objects.get(pk=avaliacao_pk)
-    avaliacao.delete()
-    return redirect('avaliacao')
+# #AVALIAÇÃO DELET
+# @login_required
+# def avaliacao_delet(request, avaliacao_pk):
+#     avaliacao = models.Db_Avaliacao.objects.get(pk=avaliacao_pk)
+#     avaliacao.delete()
+#     return redirect('avaliacao')
 
 
 #AVALIAÇÃO DELETE

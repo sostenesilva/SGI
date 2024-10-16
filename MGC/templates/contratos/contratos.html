@@ -19,9 +19,9 @@
                     <th scope="col">Contratada</th>
                     <th scope="col">Valor</th>
                     <th scope="col">Anexos</th>
-                    <!-- { if user|has_role:'controle' %}
+                    {% if perms.auth.Controle %}
                         <th scope="col">Ações</th>
-                    { endif %} -->
+                    {% endif %}
                 </tr>
             </thead>
             <tbody>
@@ -48,9 +48,16 @@
                         <td>
                             <div class='btn-group btn-group-sm' role='group'>
                                 <a href="{{ contrato.LinkContrato }}" class="btn btn-secondary" target="_blank"><i class="lni lni-add-files"></i></a>
-                                <a href="{{ contrato.LinkEdital }}" class="btn btn-secondary" target="_blank"><i class="lni lni-book"></i></a>
+                                <!-- <a href="{{ contrato.LinkEdital }}" class="btn btn-secondary" target="_blank"><i class="lni lni-book"></i></a> -->
                             </div>
                         </td>
+                        {% if perms.auth.Controle %}
+                            <td>
+                                <div class='btn-group btn-group-sm' role='group'>
+                                    <a href="{% url 'contrato_add_of' contrato.id %}" class="btn btn-secondary" target="_blank"><i class="lni lni-consulting"></i></a>
+                                </div>
+                            </td>
+                        {% endif %}
                     </tr>
                 {% endfor %}
             </tbody>

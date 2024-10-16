@@ -75,7 +75,7 @@
                     <th scope="col">Data e Hora</th>
                     <th scope="col">Descrição</th>
                     <th scope="col">Valor</th>
-                    <th scope="col">Arquivo</th>
+                    <!-- <th scope="col">Arquivo</th> -->
                     <th scope="col">Enviado por</th>
                     <th scope="col">Ações</th>
                 </tr>
@@ -86,15 +86,15 @@
                         <td>{{ log.dataehora }}</td>
                         <td>{{ log.descricao }}</td>
                         <td>R$ {{ log.valor }}</td>
-                        <td>
+                        <!-- <td>
                             {% if log.arquivo %}
                                 <a href="/media/ log.arquivo " class="btn-sm"><i class="lni lni-folder"></i> Visualizar anexo</a>
                             {% endif %}
-                        </td>
+                        </td> -->
                         <td>{{ log.usuario }}</td>
-                        {% if user|has_role:'controle' %}
+                        {% if perms.auth.Controle %}
                             <td>
-                                <a href="% url 'avaliacao_log_delet' log.avaliacao.id log.id %" class="btn btn-success btn-sm"><i class="lni lni-trash-can"></i></a>
+                                <a href="{% url 'of_log_delet' log.SaldoContratoSec.id log.id %}" class="btn btn-success btn-sm"><i class="lni lni-trash-can"></i></a>
                             </td>
                         {% endif %}
                     </tr>

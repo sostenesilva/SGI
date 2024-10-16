@@ -1,6 +1,6 @@
 from django.db import models
 from django.conf import settings
-from django.contrib.auth.models import Group
+from django.contrib.auth.models import Group, User
 import json
 
 class Contratos (models.Model):
@@ -49,24 +49,27 @@ class Itens (models.Model):
     def __str__(self) -> str:
         return '{}'.format(self.Descricao)
 
+
+class SaldoContratoSec(models.Model):
+    contrato = models.ForeignKey(Contratos, on_delete=models.PROTECT)
+    sec = models.ForeignKey(Group, on_delete= models.PROTECT, verbose_name='Secretaria')
+    saldo = models.FloatField(null=True, blank=True, default=0)
+    fiscal = models.ForeignKey(User, null=True, blank=True, on_delete=models.PROTECT)
+
+    def __str__(self) -> str:
+        return 'Contrato {} - {}'.format(self.contrato, self.sec)
+
 class EntradaSec (models.Model):
     contrato = models.ForeignKey(Contratos, on_delete=models.PROTECT)
     sec = models.ForeignKey(Group, on_delete= models.PROTECT, verbose_name='Secretaria')
     item = models.ForeignKey(Itens, on_delete=models.CASCADE)
+    saldocontratosec = models.ForeignKey(SaldoContratoSec, on_delete=models.CASCADE)
     quantidade = models.IntegerField(null=True)
     dataehora = models.DateTimeField(auto_now=True)
     usuario = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.PROTECT)
 
     def __str__(self) -> str:
         return '{}'.format(self.item)
-
-class SaldoContratoSec(models.Model):
-    contrato = models.ForeignKey(Contratos, on_delete=models.PROTECT)
-    sec = models.ForeignKey(Group, on_delete= models.PROTECT, verbose_name='Secretaria')
-    saldo = models.FloatField(null=True, blank=True, default=0)
-
-    def __str__(self) -> str:
-        return 'Contrato {} - {}'.format(self.contrato, self.sec)
 
 class Ordem (models.Model):
     valor = models.FloatField(null=True, blank=True)
@@ -86,6 +89,7 @@ class SaidaSec (models.Model):
     quantidade = models.IntegerField(null=True)
     dataehora = models.DateTimeField(auto_now=True)
     usuario = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.PROTECT)
+    totalporitem = models.FloatField(null=True, blank=True)
 
     def __str__(self) -> str:
         return '{} - {} - R$ {}'.format(self.ordem, self.contrato, self.item)
