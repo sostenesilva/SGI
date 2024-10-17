@@ -47,9 +47,12 @@
                     <td>{{ ordem.contrato.Vigencia }}</td>
                     <td style="width: 30%;">{{ ordem.contrato.RazaoSocial }}</td>
                     <td>{{ ordem.fiscal }}</td>
-                    <td>R$ {{ ordem.contrato.Valor }}</td>
+                    <td>R$ {{ ordem.saldo|floatformat:2 }}</td>
                     {% if perms.auth.Gestor %}
                         <td>
+                            <div class='btn-group btn-group-sm' role='group'>
+                                <a href="{{ ordem.contrato.LinkContrato }}" class="btn btn-secondary" target="_blank"><i class="lni lni-add-files"></i></a>
+                            </div>
                             <div class='btn-group btn-group-sm' role='group'>
                                 <a href="{% url 'of_enviar' ordem.id %}" class="btn btn-primary"><i class="lni lni-upload"></i></a>
                             </div>

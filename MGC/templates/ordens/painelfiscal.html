@@ -45,7 +45,7 @@
                     <td>{{ ordem.contrato.Vigencia }}</td>
                     <td style="width: 30%;">{{ ordem.contrato.RazaoSocial }}</td>
                     <td>{{ ordem.fiscal }}</td>
-                    <td>R$ {{ ordem.contrato.Valor }}</td>
+                    <td>R$ {{ ordem.saldo|floatformat:2 }}</td>
                     <td>
                         <div class='btn-group btn-group-sm' role='group'>
                             <a href="{{ ordem.contrato.LinkContrato }}" class="btn btn-secondary" target="_blank"><i class="lni lni-add-files"></i></a>

@@ -226,10 +226,10 @@ def contratos_request(request):
             # print()
             itemcontrato, itemcontrato_criado = models.Itens.objects.update_or_create(
                 CodigoContratoOriginal = item['CodigoContratoOriginal'],
-                CodigoItem = item['CodigoItem']
+                Descricao = item['Descricao']
             )
-            itemcontrato.Descricao = item['Descricao']
             itemcontrato.Unidade = item['Unidade']
+            itemcontrato.CodigoItem = item['CodigoItem']
             itemcontrato.PrecoUnitario = float(item['PrecoUnitario'])
             itemcontrato.Quantidade = float(item['Quantidade'])
             itemcontrato.PrecoTotal = float(item['PrecoTotal'])
@@ -274,13 +274,13 @@ def painelfiscal (request):
     
     return render(request, 'ordens/painelfiscal.html', context)
 
-
 def of_enviar (request,saldoof_pk):
     SaldoContratoSec = models.SaldoContratoSec.objects.get(pk=saldoof_pk)
     ContratoSec = SaldoContratoSec.contrato
     itensof = models.Itens.objects.filter(CodigoContratoOriginal=ContratoSec.CodigoContrato)
+    entradasSec = models.EntradaSec.objects.filter(saldocontratosec=SaldoContratoSec)
     Ordem_hist = models.Ordem.objects.filter(SaldoContratoSec=SaldoContratoSec).order_by('-dataehora')
-        
+    
     ordens_paginator = Paginator(Ordem_hist,6)
     page_num_ordens = request.GET.get('page')
     page_ordens_log = ordens_paginator.get_page(page_num_ordens)
@@ -298,6 +298,7 @@ def of_enviar (request,saldoof_pk):
         'consumido': consumido,
         'saldodisponivel': saldodisponivel,
         'itensof': itensof,
+        'itemEntrada': entradasSec,
     }
 
     return render(request, 'ordens/ordens_detalhes.html',context)
@@ -306,6 +307,8 @@ def of_emitir (request,saldoof_pk):
     SaldoContratoSec = models.SaldoContratoSec.objects.get(pk=saldoof_pk)
     ContratoSec = SaldoContratoSec.contrato
     itensof = models.Itens.objects.filter(CodigoContratoOriginal=ContratoSec.CodigoContrato)
+    entradasSec = models.EntradaSec.objects.filter(saldocontratosec=SaldoContratoSec)
+
 
     ContratoSec_hist = models.Ordem.objects.filter(SaldoContratoSec = SaldoContratoSec).order_by('-dataehora')
 
@@ -342,7 +345,7 @@ def of_emitir (request,saldoof_pk):
         'ordem_form': ordem_form,
         'contrato': ContratoSec,
         'SaldoContratoSec': SaldoContratoSec,
-        'itensof': itensof,
+        'entradasSec': entradasSec,
     }
 
     return render(request, 'ordens/ordens_emitir.html',context)
