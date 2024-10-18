@@ -136,6 +136,7 @@ def contratos_add_of(request,contrato_pk):
     contrato = models.Contratos.objects.get(pk=contrato_pk)
     of_form = forms.SaldoSec_form(request.POST or None)
     fiscal_form = forms.Fiscal_form(request.POST or None)
+    fornecedor_form = forms.Fornecedor_form(request.POST or None,instance=contrato.Fornecedor)
     itensof = models.Itens.objects.filter(CodigoContratoOriginal=contrato.CodigoContrato)
     controleEntradas = models.EntradaSec.objects.filter(contrato=contrato)
     
@@ -164,6 +165,7 @@ def contratos_add_of(request,contrato_pk):
         'fiscal_form': fiscal_form,
         'contrato': contrato,
         'itensof': itensof,
+        'fornecedor_form': fornecedor_form,
     }
 
     return render(request, 'ordens/ordens_add.html',context)
@@ -175,7 +177,15 @@ def contratos_request(request):
     processos_licon = requests.get('https://sistemas.tcepe.tc.br/DadosAbertos/LicitacaoUG!json?UG=CORTES').json()['resposta']['conteudo']
     
     for contrato in contratos_licon:
-        #print('Contrato {}/{} - UG: {} - Tipo: {}'.format(contrato['NumeroContrato'],contrato['AnoContrato'],contrato['UnidadeGestora'],contrato['TipoProcesso']))
+
+        fornecedor, forn_criado = models.Fornecedores.objects.update_or_create(
+                RazaoSocial = contrato['RazaoSocial'],
+                CPF_CNPJ = contrato['CPF_CNPJ'],
+        )
+
+        fornecedor.NumeroDocumentoAjustado = contrato['NumeroDocumento']
+        fornecedor.save()
+
         try:
             cont, cont_criado = models.Contratos.objects.update_or_create(
                 NumeroContrato = contrato['NumeroContrato'],
@@ -183,19 +193,18 @@ def contratos_request(request):
                 TipoProcesso = contrato['TipoProcesso'], 
                 NumeroProcesso = contrato['NumeroProcesso'], 
                 AnoProcesso = contrato['AnoProcesso'], 
-                UnidadeGestora = contrato['UnidadeGestora']
+                UnidadeGestora = contrato['UnidadeGestora'],
+                Fornecedor = fornecedor
                 )
+            
         except:
             cont, cont_criado = models.Contratos.objects.update_or_create(
                 NumeroContrato = contrato['NumeroContrato'],
                 AnoContrato = contrato['AnoContrato'], 
                 UnidadeGestora = contrato['UnidadeGestora'],
-                RazaoSocial = contrato['RazaoSocial']
+                Fornecedor = fornecedor               
                 )
         
-        cont.NumeroDocumentoAjustado = contrato['NumeroDocumentoAjustado'].replace(' ','')
-        cont.RazaoSocial = contrato['RazaoSocial']
-        cont.CPF_CNPJ = contrato['CPF_CNPJ']
         cont.LinkContrato = contrato['LinkArquivo']
         cont.Situacao = contrato['Situacao']
         cont.SiglaUG = contrato['SiglaUG']
@@ -206,7 +215,12 @@ def contratos_request(request):
         cont.CodigoContrato = contrato['CodigoContrato']
         cont.Vigencia = contrato['Vigencia']
         cont.Estagio = contrato['Estagio']
-        #cont.CodigoPL = contrato['CodigoPL']
+
+        try:
+            cont.CodigoPL = contrato['CodigoPL']
+        except:
+            cont.CodigoPL = ''
+        
         cont.NumeroDocumento = contrato['NumeroDocumento']
         cont.Municipio = contrato['Municipio']
         cont.TipoDocumento = contrato['TipoDocumento']
@@ -308,6 +322,7 @@ def of_emitir (request,saldoof_pk):
     ContratoSec = SaldoContratoSec.contrato
     itensof = models.Itens.objects.filter(CodigoContratoOriginal=ContratoSec.CodigoContrato)
     entradasSec = models.EntradaSec.objects.filter(saldocontratosec=SaldoContratoSec)
+    fornecedor_form = forms.Fornecedor_form(request.POST or None,instance=ContratoSec.Fornecedor)
 
 
     ContratoSec_hist = models.Ordem.objects.filter(SaldoContratoSec = SaldoContratoSec).order_by('-dataehora')
@@ -337,8 +352,9 @@ def of_emitir (request,saldoof_pk):
         
         ordem.descricao = request.POST.get('descricao')
         ordem.valor = valordaordem
+        fornecedor_form.save()
+        ordem.arquivo = emitirDocOf(request, ordem ,listaitens)
         ordem.save()
-        emitirDocOf(request, ordem ,listaitens)
         return redirect('ordens')
 
     context = {
@@ -346,12 +362,13 @@ def of_emitir (request,saldoof_pk):
         'contrato': ContratoSec,
         'SaldoContratoSec': SaldoContratoSec,
         'entradasSec': entradasSec,
+        'fornecedor_form': fornecedor_form,
     }
 
     return render(request, 'ordens/ordens_emitir.html',context)
 
 def emitirDocOf (request, ordem, listadeitens):
-    document = Document("F:\PROGRAMAÇÃO\SGI - Sistema de Gerenciamento de Informações\media\MODELO ORDEM DE FORNECIMENTO.docx")
+    document = Document("media\ordem de fornecimento\MODELO ORDEM DE FORNECIMENTO.docx")
     
     tabela = document.tables[0]
     nItem = 1
@@ -361,26 +378,32 @@ def emitirDocOf (request, ordem, listadeitens):
         row[1].text = itemlista.item.Descricao
         row[2].text = str(itemlista.quantidade)
         row[3].text = itemlista.item.Unidade
-        row[4].text = 'R$ '+ str(itemlista.item.PrecoUnitario).replace('.',',')[:5]
-        row[5].text = 'R$ '+ str(itemlista.totalporitem).replace('.',',')[:5]
+        row[4].text = 'R$ '+ f'{itemlista.item.PrecoUnitario:.2f}'.replace('.',',')
+        row[5].text = 'R$ '+ f'{itemlista.totalporitem:.2f}'.replace('.',',')
         nItem += 1
- 
+    mes = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro']
     mydict = {
         'idOrdem': ordem.id,
         'descricaoDaOF': ordem.descricao,
-        'valorTotalOF': ordem.valor,
-        'contratada': ordem.SaldoContratoSec.contrato.RazaoSocial,
-        'cnpj': ordem.SaldoContratoSec.contrato.CPF_CNPJ,
-        'data': ordem.dataehora,
+        'valorTotalOF': f'{ordem.valor:.2f}'.replace('.',','),
+        'contratada': ordem.SaldoContratoSec.contrato.Fornecedor.RazaoSocial,
+        'cnpj': ordem.SaldoContratoSec.contrato.Fornecedor.NumeroDocumentoAjustado,
+        'data': f'{ordem.dataehora.day} de {mes[ordem.dataehora.month-1]} de {ordem.dataehora.year}',
         'contrato': f'{ordem.SaldoContratoSec.contrato.NumeroContrato}/{ordem.SaldoContratoSec.contrato.AnoContrato}',
         'processo': f'{ordem.SaldoContratoSec.contrato.NumeroProcesso}/{ordem.SaldoContratoSec.contrato.AnoProcesso}',
+        'ug': f'{ordem.SaldoContratoSec.contrato.UnidadeOrcamentaria.upper()}',
+        'endereco': f'{ordem.SaldoContratoSec.contrato.Fornecedor.Endereco}',
+        'representante': f'{ordem.SaldoContratoSec.contrato.Fornecedor.Representante}',
+        'fone': f'{ordem.SaldoContratoSec.contrato.Fornecedor.Contato}',
+        'email': f'{ordem.SaldoContratoSec.contrato.Fornecedor.Email}',
+        'objeto': f'{ordem.SaldoContratoSec.contrato.Objeto}',
     }
 
     docx_replace(document, **mydict )
+    diretorio = f'media/ordem de fornecimento/2024/{ordem.id}.docx'
+    document.save(diretorio)
 
-    document.save('teste.docx')
-
-    return
+    return diretorio
 
 
 

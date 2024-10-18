@@ -3,11 +3,21 @@ from django.conf import settings
 from django.contrib.auth.models import Group, User
 import json
 
-class Contratos (models.Model):
-    TipoProcesso = models.CharField(max_length=100, null=True, blank=True)
+class Fornecedores (models.Model):
     NumeroDocumentoAjustado = models.CharField(max_length=100, null=True, blank=True)
     RazaoSocial = models.CharField(max_length=200, null=True, blank=True)
     CPF_CNPJ = models.CharField(max_length=100, null=True, blank=True)
+    Endereco = models.CharField(max_length=1000, null=True, blank=True)
+    Representante = models.CharField(max_length=200, null=True, blank=True)
+    Contato = models.CharField(max_length=100, null=True, blank=True)
+    Email = models.EmailField(null=True, blank=True)
+
+    def __str__(self) -> str:
+        return '{} - {}'.format(self.NumeroDocumentoAjustado,self.RazaoSocial)
+
+class Contratos (models.Model):
+    TipoProcesso = models.CharField(max_length=100, null=True, blank=True)
+    Fornecedor = models.ForeignKey(Fornecedores, on_delete=models.PROTECT)
     LinkEdital = models.URLField(null=True, blank=True)
     LinkContrato = models.URLField(null=True, blank=True)
     Situacao = models.CharField(max_length=50, null=True, blank=True)
@@ -73,7 +83,7 @@ class EntradaSec (models.Model):
 
 class Ordem (models.Model):
     valor = models.FloatField(null=True, blank=True)
-    arquivo = models.FileField(null=True, blank=True, upload_to= diretorioOF)
+    arquivo = models.FileField(null=True, blank=True)
     dataehora = models.DateTimeField(auto_now=True)
     usuario = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.PROTECT)
     SaldoContratoSec = models.ForeignKey(SaldoContratoSec, on_delete=models.PROTECT)

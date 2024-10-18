@@ -45,6 +45,19 @@ class Fiscal_form (forms.ModelForm):
         }
 
 
+class Fornecedor_form (forms.ModelForm):
+    class Meta:
+        model = models.Fornecedores
+        fields = ('RazaoSocial','NumeroDocumentoAjustado','Endereco','Representante','Contato','Email')
+
+        widgets = {
+            'RazaoSocial': forms.TextInput(attrs={'class':'form-control','readonly':'readonly'}),
+            'NumeroDocumentoAjustado': forms.TextInput(attrs={'class':'form-control','readonly':'readonly'}),
+            'Endereco': forms.TextInput(attrs={'class':'form-control'}),
+            'Representante': forms.TextInput(attrs={'class':'form-control'}),
+            'Contato': forms.TextInput(attrs={'class':'form-control'}),
+            'Email': forms.EmailInput(attrs={'class':'form-control'}),
+        }
 # class Avaliacao_form (forms.ModelForm):
 #     class Meta:
 #         model = Db_Avaliacao

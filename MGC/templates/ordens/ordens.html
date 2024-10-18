@@ -45,7 +45,7 @@
                         {% endif %}
                     </td>
                     <td>{{ ordem.contrato.Vigencia }}</td>
-                    <td style="width: 30%;">{{ ordem.contrato.RazaoSocial }}</td>
+                    <td style="width: 30%;">{{ ordem.contrato.Fornecedor.RazaoSocial }}</td>
                     <td>{{ ordem.fiscal }}</td>
                     <td>R$ {{ ordem.saldo|floatformat:2 }}</td>
                     {% if perms.auth.Gestor %}

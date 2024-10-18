@@ -11,8 +11,20 @@
     <div>
         <form class="row" action="" method="post" enctype="multipart/form-data">
             {% csrf_token %}
+            <div class="row">
+                <div class="col-6">
+                    <p>Nome:{{ fornecedor_form.RazaoSocial }}</p>
+                    <p>CNPJ/CPF:{{ fornecedor_form.NumeroDocumentoAjustado }}</p>
+                    <p>Representante:{{ fornecedor_form.Representante }}</p>
+                </div>
+                <div class="col-6">
+                    <p>Endereço:{{ fornecedor_form.Endereco }}</p>
+                    <p>Contato:{{ fornecedor_form.Contato }}</p>
+                    <p>Email:{{ fornecedor_form.Email }}</p>
+                </div>
+            </div>
             <div class="col-4">
-                <label for="id_descricao">Descrição:</label>
+                <label for="id_descricao">Descrição da Solicitação:</label>
                 <textarea rows="5" class="form-control form-control-sm" name="descricao" id="id_descricao"></textarea>
                 <div style="padding-top: 0.5rem;">
                     <button type="submit" class="btn btn-success btn-sm">Emitir OF</button>

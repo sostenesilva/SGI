@@ -9,4 +9,5 @@ admin.site.register(models.Ordem)
 admin.site.register(models.Itens)
 admin.site.register(models.SaldoContratoSec)
 admin.site.register(Permission)
+admin.site.register(models.Fornecedores)
 

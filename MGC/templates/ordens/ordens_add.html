@@ -10,12 +10,13 @@
     <p>
         <small>Valor adjudicado: R${{ contrato.Valor }} | Edital: <a href="{{ contrato.LinkEdital }}" target="_blank">clique para visualizar o edital</a> | Contrato: <a href="{{ contrato.LinkContrato }}" target="_blank">clique para visualizar o contrato</a><b></b></small><br>
         <small>Objeto: {{ contrato.Objeto|truncatewords:40 }}</small>
-        <small>Contratada: <b>{{ contrato.RazaoSocial }}</b> | CNPJ: <b>{{ contrato.NumeroDocumento }}</b> | Vigência: <b>{{ contrato.Vigencia }}</b></small>
+        <small>Contratada: <b>{{ contrato.Fornecedor.RazaoSocial }}</b> | CNPJ: <b>{{ contrato.NumeroDocumento }}</b> | Vigência: <b>{{ contrato.Vigencia }}</b></small>
     </p>
     <hr>
     <form action="{% url 'contrato_add_of' contrato.id %}" method="post">
         <div class="row">             
             {% csrf_token %}
+            {{ fornecedor_form.as_p }}
             {{ of_form.as_p }}
             {{ fiscal_form.as_p }}
             

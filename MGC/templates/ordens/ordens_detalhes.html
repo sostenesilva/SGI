@@ -7,7 +7,7 @@
     <div>
         <h4><b>Processo Licitatório:</b> {{ contrato.NumeroProcesso }}/{{ contrato.AnoProcesso }} - <b>Contrato:</b> {{ contrato.NumeroContrato }}/{{ contrato.AnoContrato }} - <b>{{ contrato.TipoProcesso }}</b></h4>
         <div style="font-size: x-small;" class="px-1">
-            <p><b>Contratada:</b> {{ contrato.RazaoSocial }}<br>
+            <p><b>Contratada:</b> {{ contrato.Fornecedor.RazaoSocial }}<br>
             <b>Objeto:</b> {{ contrato.Objeto }}</p>
         </div>
     </div>
@@ -78,7 +78,10 @@
                     <th scope="col">Valor</th>
                     <!-- <th scope="col">Arquivo</th> -->
                     <th scope="col">Enviado por</th>
-                    <th scope="col">Ações</th>
+                    <th scope="col">Visualizar</th>
+                    {% if perms.auth.Controle %}
+                        <th scope="col">Ações</th>
+                    {% endif %}
                 </tr>
             </thead>
             <tbody>
@@ -93,6 +96,9 @@
                             {% endif %}
                         </td> -->
                         <td>{{ log.usuario }}</td>
+                        <td>
+                            <a href="/{{ log.arquivo }}" class="btn btn-success btn-sm"><i class="lni lni-eye"></i></a>
+                        </td>
                         {% if perms.auth.Controle %}
                             <td>
                                 <a href="{% url 'of_log_delet' log.SaldoContratoSec.id log.id %}" class="btn btn-success btn-sm"><i class="lni lni-trash-can"></i></a>

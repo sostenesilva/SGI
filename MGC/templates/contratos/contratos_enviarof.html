@@ -7,7 +7,7 @@
         <h4><b>Processo Licitatório:</b> {{ processo.n_processo }}/{{ processo.ano_processo }} - <b>Contrato:</b> {{ contrato.n_contrato }}/{{ contrato.ano_contrato }} - <b>{{ processo.modalidade }}</b></h4>
     </div>
     <div class="descricao_contrato px-4">
-        <p><b>Contratada:</b> {{ contrato.contratada }} |
+        <p><b>Contratada:</b> {{ contrato.Fornecedor.contratada }} |
         <b>Objeto:</b> {{ processo.objeto }}</p>
     </div>
     <hr>
