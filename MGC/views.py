@@ -156,7 +156,7 @@ def contratos_add_of(request,contrato_pk):
                 entradasec.usuario = request.user
                 entradasec.save()
 
-        
+
         SaldoContratoSec.save()
         return redirect('contratos')
     
@@ -236,8 +236,6 @@ def contratos_request(request):
 
         itens_licon = requests.get('https://sistemas.tcepe.tc.br/DadosAbertos/ContratoItemObjeto!json?CodigoContratoOriginal={}'.format(cont.CodigoContrato)).json()['resposta']['conteudo']
         for item in itens_licon:
-            # print(item)
-            # print()
             itemcontrato, itemcontrato_criado = models.Itens.objects.update_or_create(
                 CodigoContratoOriginal = item['CodigoContratoOriginal'],
                 Descricao = item['Descricao']
@@ -368,7 +366,7 @@ def of_emitir (request,saldoof_pk):
     return render(request, 'ordens/ordens_emitir.html',context)
 
 def emitirDocOf (request, ordem, listadeitens):
-    document = Document("media\ordem de fornecimento\MODELO ORDEM DE FORNECIMENTO.docx")
+    document = Document("media/ordem de fornecimento/MODELO ORDEM DE FORNECIMENTO.docx")
     
     tabela = document.tables[0]
     nItem = 1
