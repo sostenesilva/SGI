@@ -11,38 +11,55 @@ class Fornecedores (models.Model):
     Representante = models.CharField(max_length=200, null=True, blank=True)
     Contato = models.CharField(max_length=100, null=True, blank=True)
     Email = models.EmailField(null=True, blank=True)
+    Banco = models.CharField(max_length=200, null=True, blank=True)
+    Agencia = models.CharField(max_length=200, null=True, blank=True)
+    Conta = models.CharField(max_length=200, null=True, blank=True)
 
     def __str__(self) -> str:
         return '{} - {}'.format(self.NumeroDocumentoAjustado,self.RazaoSocial)
 
 class Contratos (models.Model):
-    TipoProcesso = models.CharField(max_length=100, null=True, blank=True)
+    TipoProcesso = models.CharField(max_length=100, null=True, blank=True, verbose_name='Modalidade')
     Fornecedor = models.ForeignKey(Fornecedores, on_delete=models.PROTECT)
-    LinkEdital = models.URLField(null=True, blank=True)
-    LinkContrato = models.URLField(null=True, blank=True)
+    LinkEdital = models.URLField(null=True, blank=True, verbose_name='Edital')
+    LinkContrato = models.URLField(null=True, blank=True, verbose_name='Contrato')
     Situacao = models.CharField(max_length=50, null=True, blank=True)
-    SiglaUG = models.CharField(max_length=10, null=True, blank=True)
+    SiglaUG = models.CharField(max_length=10, null=True, blank=True, verbose_name='UG')
     Objeto = models.TextField(null=True, blank=True)
     Valor = models.FloatField(null=True, blank=True)
-    UnidadeOrcamentaria = models.CharField(max_length=100, null=True, blank=True)
+    UnidadeOrcamentaria = models.CharField(max_length=100, null=True, blank=True, verbose_name='Unidade Orçamentária')
     CodigoUG = models.CharField(max_length=10, null=True, blank=True)
     PortariaComissaoLicitacao = models.CharField(max_length=100, null=True, blank=True)
-    NumeroProcesso = models.CharField(max_length=10, null=True, blank=True)
-    UnidadeGestora = models.CharField(max_length=100, null=True, blank=True)
+    NumeroProcesso = models.CharField(max_length=10, null=True, blank=True, verbose_name='Processo')
+    UnidadeGestora = models.CharField(max_length=100, null=True, blank=True, verbose_name='Unidade Gestora')
     CodigoContrato = models.CharField(max_length=10, null=True, blank=True)
-    AnoContrato = models.CharField(max_length=4, null=True, blank=True)
+    AnoContrato = models.CharField(max_length=4, null=True, blank=True, verbose_name='Ano')
     Vigencia = models.CharField(max_length=100, null=True, blank=True)
     Estagio = models.CharField(max_length=100, null=True, blank=True)
     CodigoPL = models.CharField(max_length=10, null=True, blank=True)
-    NumeroDocumento = models.CharField(max_length=50, null=True, blank=True)
+    NumeroDocumento = models.CharField(max_length=50, null=True, blank=True, verbose_name='Documento')
     Municipio = models.CharField(max_length=10, null=True, blank=True)
     TipoDocumento = models.CharField(max_length=10, null=True, blank=True)
-    NumeroContrato = models.CharField(max_length=5, null=True, blank=True)
+    NumeroContrato = models.CharField(max_length=5, null=True, blank=True, verbose_name='Contrato')
     Esfera = models.CharField(max_length=1, null=True, blank=True)
-    AnoProcesso = models.CharField(max_length=4, null=True, blank=True)
-    
+    AnoProcesso = models.CharField(max_length=4, null=True, blank=True, verbose_name='Ano')
+    AtualizarItens = models.BooleanField(default=True)
+
     def __str__(self) -> str:
-        return '{}/{} - {}'.format(self.NumeroContrato,self.AnoContrato,self.TipoProcesso)
+        return '{}/{} - {} - {}'.format(self.NumeroContrato,self.AnoContrato,self.TipoProcesso,self.Fornecedor)
+
+class TermoAditivo (models.Model):
+    Contrato = models.ForeignKey(Contratos, on_delete=models.PROTECT)
+    CodigoContrato = models.IntegerField(null=True, blank=True)
+    LinkArquivo = models.URLField(null=True, blank=True)
+    NumeroTermoAditivo = models.CharField(max_length=20, null=True, blank=True)
+    Vigencia = models.CharField(max_length=200, null=True, blank=True)
+    JustificativaTermoAditivo = models.TextField(null=True, blank=True)
+    ValorTermoAditivo = models.FloatField(null=True,blank=True)
+    AnoTermoAditivo = models.IntegerField(null=True, blank=True)
+
+    def __str__(self) -> str:
+        return f'Termo Aditivo {self.NumeroTermoAditivo}/{self.AnoTermoAditivo} - Contrato {self.Contrato}'
 
 def diretorioOF (instance, filename):
     return 'ordem de fornecimento/{}'.format(filename)
@@ -55,6 +72,7 @@ class Itens (models.Model):
     CodigoItem = models.CharField(max_length=10, null=True, blank=True)
     Quantidade = models.IntegerField(null=True, blank=True)
     PrecoTotal = models.FloatField(null=True, blank=True)
+    Contrato = models.ForeignKey(Contratos, on_delete=models.CASCADE)
 
     def __str__(self) -> str:
         return '{}'.format(self.Descricao)

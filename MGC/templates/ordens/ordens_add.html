@@ -16,10 +16,27 @@
     <form action="{% url 'contrato_add_of' contrato.id %}" method="post">
         <div class="row">             
             {% csrf_token %}
-            {{ fornecedor_form.as_p }}
-            {{ of_form.as_p }}
-            {{ fiscal_form.as_p }}
-            
+            <div class="row">
+                <div class="col-6">
+                    <p>Nome:{{ fornecedor_form.RazaoSocial }}</p>
+                    <p>CNPJ/CPF:{{ fornecedor_form.NumeroDocumentoAjustado }}</p>
+                    <p>Representante:{{ fornecedor_form.Representante }}</p>
+                </div>
+                <div class="col-6">
+                    <p>Endereço:{{ fornecedor_form.Endereco }}</p>
+                    <p>Contato:{{ fornecedor_form.Contato }}</p>
+                    <p>Email:{{ fornecedor_form.Email }}</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-6">
+                    {{ of_form.as_p }}
+                </div>
+                <div class="col-6">
+                    {{ fiscal_form.as_p }}
+                </div>
+            </div>
+
             <div class="table-overflow form-control form-control-sm" style="max-height: 500px;">
                 <table class="table table-striped table-sm">
                     <thead>
@@ -56,6 +73,7 @@
             <div class="p-1">
                 <button type="submit" class="btn btn-sm btn-success">Adicionar</button>
                 <a href="{% url 'contratos' %}" class="btn btn-sm btn-danger">Cancelar</a>
+                <a href="{% url 'contratos_additens' contrato.id %}" class="btn btn-sm btn-secondary">Adicionar Itens Manualmente</a>
             </div>
         </div>
     </form>

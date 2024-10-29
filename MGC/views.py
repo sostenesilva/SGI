@@ -1,3 +1,5 @@
+from functools import reduce
+from operator import or_
 from django.shortcuts import render,redirect, HttpResponse
 from . import forms, models
 from django.contrib.auth.models import Group, User
@@ -7,6 +9,7 @@ from datetime import date
 import requests, json
 from docx import Document, document, table
 from python_docx_replace import docx_replace
+import pandas as pd
 
 #------------------- PÁGINAS DE DASHBOARD -------------------#
 @login_required
@@ -46,12 +49,17 @@ def dashboard(request):
 @login_required
 def contratos (request):
 
-    contratos = models.Contratos.objects.all()
-
+    
+    buscar = request.GET.get('buscar')
+    if buscar:
+        contratos = models.Contratos.objects.filter(Fornecedor__RazaoSocial__icontains = buscar) | models.Contratos.objects.filter(NumeroContrato__icontains = buscar) | models.Contratos.objects.filter(NumeroProcesso__icontains = buscar) | models.Contratos.objects.filter(AnoContrato__icontains = buscar) | models.Contratos.objects.filter(AnoProcesso__icontains = buscar)
+    else:
+        contratos = models.Contratos.objects.all()
+        
     contratos_paginator = Paginator(contratos,20)
     page_num_contratos = request.GET.get('page')
     page_contratos = contratos_paginator.get_page(page_num_contratos)
- 
+    
     context = {
         'contratos': page_contratos
     }
@@ -158,7 +166,8 @@ def contratos_add_of(request,contrato_pk):
 
 
         SaldoContratoSec.save()
-        return redirect('contratos')
+        fornecedor_form.save()
+        return redirect(request.META.get('HTTP_REFERER'))
     
     context = {
         'of_form': of_form,
@@ -169,6 +178,57 @@ def contratos_add_of(request,contrato_pk):
     }
 
     return render(request, 'ordens/ordens_add.html',context)
+
+@login_required
+def contratos_additens(request,contrato_pk):
+    contrato = models.Contratos.objects.get(pk=contrato_pk)
+    itensof = models.Itens.objects.all()
+    
+    if request.POST:
+        print(request.FILES.get('itens'))
+        dataframe = pd.read_excel(request.FILES.get('itens'))
+        for index, row in dataframe.iterrows():
+            itemadd, itembool = models.Itens.objects.update_or_create(
+                Descricao = row[0],
+                Unidade = row[1],
+                CodigoContratoOriginal = contrato.CodigoContrato,
+                PrecoUnitario = float(str(row[3]).replace('.','').replace(',','.')),
+                Quantidade = str(str(row[2])[:-5]).replace('.','').replace(',','.'),
+                PrecoTotal = float(str(row[4]).replace('.','').replace(',','.')),
+            )
+            
+            itemadd.save()
+        contrato.AtualizarItens = False
+        contrato.save()
+
+
+        # cestaitens = enumerate(request.POST.getlist('quantidade'))
+        # SaldoContratoSec, ContratoSecCriado = models.SaldoContratoSec.objects.update_or_create(contrato = contrato, sec = models.Group.objects.get(pk=request.POST['sec']), fiscal = models.User.objects.get(pk=request.POST['fiscal']))
+        # for itemcesta,qtd in cestaitens:
+        #     if qtd != '0':
+        #         entradasec = models.EntradaSec()
+        #         entradasec.contrato = contrato
+        #         entradasec.saldocontratosec = SaldoContratoSec
+        #         entradasec.item = itensof[itemcesta]
+        #         entradasec.quantidade = int(qtd)
+        #         SaldoContratoSec.saldo += (entradasec.item.PrecoUnitario * entradasec.quantidade)
+        #         entradasec.sec = models.Group.objects.get(pk=request.POST['sec'])
+        #         entradasec.usuario = request.user
+        #         entradasec.save()
+
+
+        # SaldoContratoSec.save()
+        return redirect(request.META.get('HTTP_REFERER'))
+    
+    context = {
+        # 'of_form': of_form,
+        # 'fiscal_form': fiscal_form,
+        # 'contrato': contrato,
+        # 'itensof': itensof,
+        # 'fornecedor_form': fornecedor_form,
+    }
+
+    return render(request, 'contratos/contratos_additens.html',context)
 
 #CONTRATOS LICON
 @login_required
@@ -182,7 +242,6 @@ def contratos_request(request):
                 RazaoSocial = contrato['RazaoSocial'],
                 CPF_CNPJ = contrato['CPF_CNPJ'],
         )
-
         fornecedor.NumeroDocumentoAjustado = contrato['NumeroDocumento']
         fornecedor.save()
 
@@ -196,15 +255,16 @@ def contratos_request(request):
                 UnidadeGestora = contrato['UnidadeGestora'],
                 Fornecedor = fornecedor
                 )
+
             
         except:
             cont, cont_criado = models.Contratos.objects.update_or_create(
                 NumeroContrato = contrato['NumeroContrato'],
                 AnoContrato = contrato['AnoContrato'], 
                 UnidadeGestora = contrato['UnidadeGestora'],
-                Fornecedor = fornecedor               
+                Fornecedor = fornecedor
                 )
-        
+
         cont.LinkContrato = contrato['LinkArquivo']
         cont.Situacao = contrato['Situacao']
         cont.SiglaUG = contrato['SiglaUG']
@@ -230,24 +290,24 @@ def contratos_request(request):
             if cont.CodigoPL == processo['CODIGOPL']:    
                 cont.Objeto = processo['OBJETOCONFORMEEDITAL']
                 cont.LinkEdital = processo['LinkArquivo']
-    
         cont.save()
 
-
-        itens_licon = requests.get('https://sistemas.tcepe.tc.br/DadosAbertos/ContratoItemObjeto!json?CodigoContratoOriginal={}'.format(cont.CodigoContrato)).json()['resposta']['conteudo']
-        for item in itens_licon:
-            itemcontrato, itemcontrato_criado = models.Itens.objects.update_or_create(
-                CodigoContratoOriginal = item['CodigoContratoOriginal'],
-                Descricao = item['Descricao']
-            )
-            itemcontrato.Unidade = item['Unidade']
-            itemcontrato.CodigoItem = item['CodigoItem']
-            itemcontrato.PrecoUnitario = float(item['PrecoUnitario'])
-            itemcontrato.Quantidade = float(item['Quantidade'])
-            itemcontrato.PrecoTotal = float(item['PrecoTotal'])
-            itemcontrato.save()
-
-    return redirect('contratos')
+        if cont.AtualizarItens == True:
+            itens_licon = requests.get('https://sistemas.tcepe.tc.br/DadosAbertos/ContratoItemObjeto!json?CodigoContratoOriginal={}'.format(cont.CodigoContrato)).json()['resposta']['conteudo']
+            
+            for item in itens_licon:
+                itemcontrato, itemcontrato_criado = models.Itens.objects.update_or_create(
+                    CodigoContratoOriginal = item['CodigoContratoOriginal'],
+                    Descricao = item['Descricao'],
+                    Contrato = models.Contratos.objects.get(CodigoContrato= item['CodigoContratoOriginal'])
+                )
+                itemcontrato.Unidade = item['Unidade']
+                itemcontrato.CodigoItem = item['CodigoItem']
+                itemcontrato.PrecoUnitario = float(item['PrecoUnitario'])
+                itemcontrato.Quantidade = float(item['Quantidade'])
+                itemcontrato.PrecoTotal = float(item['PrecoTotal'])
+                itemcontrato.save()
+    return redirect(request.META.get('HTTP_REFERER'))
 
 
 #------------------- PÁGINAS DE ORDEM DE FORNECIMENTO -------------------#
@@ -353,7 +413,7 @@ def of_emitir (request,saldoof_pk):
         fornecedor_form.save()
         ordem.arquivo = emitirDocOf(request, ordem ,listaitens)
         ordem.save()
-        return redirect('ordens')
+        return redirect(request.META.get('HTTP_REFERER'))
 
     context = {
         'ordem_form': ordem_form,

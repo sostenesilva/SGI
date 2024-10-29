@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block head_title %} Adicionar Itens {% endblock head_title %}
+
+{% block contentdash %}
+    <div class="d-flex justify-content-between">
+        <h1>Adicionar Itens - PROCESSO Nº {{ contrato.NumeroProcesso }}/{{ contrato.AnoProcesso }} - CONTRATO Nº {{ contrato.NumeroContrato }}/{{ contrato.AnoContrato }}</h1>
+    </div>
+    <p>
+        <small>Valor adjudicado: R${{ contrato.Valor }} | Edital: <a href="{{ contrato.LinkEdital }}" target="_blank">clique para visualizar o edital</a> | Contrato: <a href="{{ contrato.LinkContrato }}" target="_blank">clique para visualizar o contrato</a><b></b></small><br>
+        <small>Objeto: {{ contrato.Objeto|truncatewords:40 }}</small>
+        <small>Contratada: <b>{{ contrato.Fornecedor.RazaoSocial }}</b> | CNPJ: <b>{{ contrato.NumeroDocumento }}</b> | Vigência: <b>{{ contrato.Vigencia }}</b></small>
+    </p>
+    <hr>
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <form class="form-control" action="" method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <input type="file" class="form-control" name="itens" id="itens">
+                    <hr>
+                    <div style="text-align: center;">
+                        
+                        <button type="submit" class="btn btn-sm btn-success">Enviar itens</button>
+                        <a href="{% url 'contratos' %}" class="btn btn-sm btn-danger">Cancelar</a>
+                    </div>
+                </form>
+            </div>
+            <div class="col">
+                <p>Para evitar erros, anexe uma planilha com o seguinte cabeçalho:</p>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Descrição</th>
+                    <th>Unidade</th>
+                    <th>Quantidade</th>
+                    <th>Preço Unitário</th>
+                    <th>Preço Total</th>
+                </tr>
+            </thead>
+        </table>
+            </div>
+        </div>
+        </div>   
+{% endblock contentdash %}

@@ -97,7 +97,10 @@
                         </td> -->
                         <td>{{ log.usuario }}</td>
                         <td>
-                            <a href="/{{ log.arquivo }}" class="btn btn-success btn-sm"><i class="lni lni-eye"></i></a>
+                            <div class='btn-group btn-group-sm' role='group'></div>
+                                <a href="/{{ log.arquivo }}" class="btn btn-success btn-sm"><i class="lni lni-eye"></i></a>
+                                <a href="#" class="btn btn-primary btn-sm"><i class="lni lni-dollar"></i></a>
+                            </div>
                         </td>
                         {% if perms.auth.Controle %}
                             <td>
