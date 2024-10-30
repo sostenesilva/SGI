@@ -191,6 +191,7 @@ def contratos_additens(request,contrato_pk):
             itemadd, itembool = models.Itens.objects.update_or_create(
                 Descricao = row[0],
                 Unidade = row[1],
+                Contrato = contrato,
                 CodigoContratoOriginal = contrato.CodigoContrato,
                 PrecoUnitario = float(str(row[3]).replace('.','').replace(',','.')),
                 Quantidade = str(str(row[2])).replace('.','').replace(',','.'),
