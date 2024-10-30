@@ -219,7 +219,7 @@ def contratos_additens(request,contrato_pk):
 
 
         # SaldoContratoSec.save()
-        return redirect(request.META.get('HTTP_REFERER'))
+        return redirect('contratos')
     
     context = {
         # 'of_form': of_form,
