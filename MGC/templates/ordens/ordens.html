@@ -21,7 +21,7 @@
                     <th scope="col">Contratada</th>
                     <th scope="col">Fiscal</th>
                     <th scope="col">Valor</th>
-                    {% if perms.auth.Gestor %}
+                    {% if perms.auth.GESTOR %}
                         <th scope="col">Ações</th>
                     {% endif %}
                 </tr>
@@ -48,7 +48,7 @@
                     <td style="width: 30%;">{{ ordem.contrato.Fornecedor.RazaoSocial }}</td>
                     <td>{{ ordem.fiscal }}</td>
                     <td>R$ {{ ordem.saldo|floatformat:2 }}</td>
-                    {% if perms.auth.Gestor %}
+                    {% if perms.auth.GESTOR %}
                         <td>
                             <div class='btn-group btn-group-sm' role='group'>
                                 <a href="{{ ordem.contrato.LinkContrato }}" class="btn btn-secondary" target="_blank"><i class="lni lni-add-files"></i></a>
