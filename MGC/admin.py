@@ -13,7 +13,7 @@ class Contratos(admin.ModelAdmin):
 class Itens(admin.ModelAdmin):
     list_display = ('Descricao','Contrato')
     list_filter = ('Contrato',)
-    search_fields = ('Descricao','Contrato',)
+    search_fields = ('Descricao',)
 
 
 admin.site.register(models.EntradaSec)
