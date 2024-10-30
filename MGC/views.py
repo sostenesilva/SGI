@@ -193,9 +193,12 @@ def contratos_additens(request,contrato_pk):
                 Unidade = row[1],
                 Contrato = contrato,
                 CodigoContratoOriginal = contrato.CodigoContrato,
-                PrecoUnitario = float(str(row[3]).replace('.','').replace(',','.')),
-                Quantidade = str(str(row[2])).replace('.','').replace(',','.'),
-                PrecoTotal = float(str(row[4]).replace('.','').replace(',','.')),
+                # PrecoUnitario = float(str(row[3]).replace('.','').replace(',','.')),
+                # Quantidade = str(str(row[2])).replace('.','').replace(',','.'),
+                # PrecoTotal = float(str(row[4]).replace('.','').replace(',','.')),
+                PrecoUnitario = float(str(row[3])),
+                Quantidade = str(str(row[2])),
+                PrecoTotal = float(str(row[4])),
             )
             
             itemadd.save()
@@ -464,11 +467,43 @@ def emitirDocOf (request, ordem, listadeitens):
 
     return diretorio
 
+# def emitirDocPagamento (request, ordem, listadeitens):
+#     document = Document("media/solicitação de pagamento/SOLICITAÇÃO DE PAGAMENTO - MODELO.docx")
 
+#     # for itemlista in listadeitens:
+#     #     row = tabela.add_row().cells
+#     #     row[0].text = str(nItem)
+#     #     row[1].text = itemlista.item.Descricao
+#     #     row[2].text = str(itemlista.quantidade)
+#     #     row[3].text = itemlista.item.Unidade
+#     #     row[4].text = 'R$ '+ f'{itemlista.item.PrecoUnitario:.2f}'.replace('.',',')
+#     #     row[5].text = 'R$ '+ f'{itemlista.totalporitem:.2f}'.replace('.',',')
+#     #     nItem += 1
+#     mes = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro']
+#     mydict = {
+#         'idOrdem': ordem.id,
+#         'descricaoDaOF': ordem.descricao,
+#         'valorTotalOF': f'{ordem.valor:.2f}'.replace('.',','),
+#         'contratada': ordem.SaldoContratoSec.contrato.Fornecedor.RazaoSocial,
+#         'cnpj': ordem.SaldoContratoSec.contrato.Fornecedor.NumeroDocumentoAjustado,
+#         'data': f'{ordem.dataehora.day} de {mes[ordem.dataehora.month-1]} de {ordem.dataehora.year}',
+#         'contrato': f'{ordem.SaldoContratoSec.contrato.NumeroContrato}/{ordem.SaldoContratoSec.contrato.AnoContrato}',
+#         'processo': f'{ordem.SaldoContratoSec.contrato.NumeroProcesso}/{ordem.SaldoContratoSec.contrato.AnoProcesso}',
+#         'ug': f'{ordem.SaldoContratoSec.contrato.UnidadeOrcamentaria.upper()}',
+#         'endereco': f'{ordem.SaldoContratoSec.contrato.Fornecedor.Endereco}',
+#         'representante': f'{ordem.SaldoContratoSec.contrato.Fornecedor.Representante}',
+#         'fone': f'{ordem.SaldoContratoSec.contrato.Fornecedor.Contato}',
+#         'email': f'{ordem.SaldoContratoSec.contrato.Fornecedor.Email}',
+#         'objeto': f'{ordem.SaldoContratoSec.contrato.Objeto}',
+#     }
+
+#     docx_replace(document, **mydict )
+#     diretorio = f'media/ordem de fornecimento/2024/{ordem.id}.docx'
+#     document.save(diretorio)
+#     return diretorio
 
 def of_edit (request, saldoof_pk):
     pass
-
  
 @login_required
 def of_log_delet(request, saldoof_pk, of_log_pk):
