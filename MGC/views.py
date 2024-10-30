@@ -193,7 +193,7 @@ def contratos_additens(request,contrato_pk):
                 Unidade = row[1],
                 CodigoContratoOriginal = contrato.CodigoContrato,
                 PrecoUnitario = float(str(row[3]).replace('.','').replace(',','.')),
-                Quantidade = str(str(row[2])[:-5]).replace('.','').replace(',','.'),
+                Quantidade = str(str(row[2])).replace('.','').replace(',','.'),
                 PrecoTotal = float(str(row[4]).replace('.','').replace(',','.')),
             )
             
