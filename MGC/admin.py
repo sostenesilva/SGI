@@ -17,6 +17,7 @@ class Itens(admin.ModelAdmin):
 
 
 admin.site.register(models.EntradaSec)
+admin.site.register(models.SaidaSec)
 admin.site.register(models.Ordem)
 admin.site.register(models.SaldoContratoSec)
 admin.site.register(Permission)
