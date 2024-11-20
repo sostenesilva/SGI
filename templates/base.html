@@ -48,19 +48,19 @@
                         </a>
                     </li>
                 {% endif %}
-                {% if perms.auth.FISCAL or perms.auth.GESTOR %}
+                <!-- {% if perms.auth.FISCAL or perms.auth.GESTOR %}
                     <li class="sidebar-item">
                         <a href="{% url 'painelfiscal' %}" class="sidebar-link">
                             <i class="lni lni-consulting"></i>
                             <span>Painel do Fiscal</span>
                         </a>
                     </li>
-                {% endif %}
+                {% endif %} -->
                 {% if perms.auth.Controle %}
                     <li class="sidebar-item">
-                        <a href="/admin" class="sidebar-link">
+                        <a href="/admin" target="_blank" class="sidebar-link">
                             <i class="lni lni-pencil-alt"></i>
-                            <span>Configurações ADMIN</span>
+                            <span>Painel Admin</span>
                         </a>
                     </li>
                 {% endif %}

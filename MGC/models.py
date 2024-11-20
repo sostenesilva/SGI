@@ -106,7 +106,7 @@ class Ordem (models.Model):
     usuario = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.PROTECT)
     SaldoContratoSec = models.ForeignKey(SaldoContratoSec, on_delete=models.PROTECT)
     descricao = models.TextField(null=True, blank=True)
-    codigo = models.UUIDField(max_length=8,null=True, blank=True)
+    codigo = models.UUIDField(null=True, blank=True)
 
     def __str__(self) -> str:
         return 'Contrato {} - {} - R$ {}'.format(self.SaldoContratoSec.contrato, self.SaldoContratoSec.sec, self.valor)

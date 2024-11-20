@@ -10,6 +10,7 @@ import requests, json
 from docx import Document, document, table
 from python_docx_replace import docx_replace
 import pandas as pd
+import uuid
 
 #------------------- PÁGINAS DE DASHBOARD -------------------#
 @login_required
@@ -167,7 +168,7 @@ def contratos_add_of(request,contrato_pk):
 
         SaldoContratoSec.save()
         fornecedor_form.save()
-        return redirect(request.META.get('HTTP_REFERER'))
+        return redirect('contratos')
     
     context = {
         'of_form': of_form,
@@ -415,9 +416,10 @@ def of_emitir (request,saldoof_pk):
         ordem.descricao = request.POST.get('descricao')
         ordem.valor = valordaordem
         fornecedor_form.save()
+        ordem.codigo = uuid.uuid4()
         ordem.arquivo = emitirDocOf(request, ordem ,listaitens)
         ordem.save()
-        return redirect(request.META.get('HTTP_REFERER'))
+        return redirect('of_enviar', saldoof_pk)
 
     context = {
         'ordem_form': ordem_form,
@@ -445,7 +447,7 @@ def emitirDocOf (request, ordem, listadeitens):
         nItem += 1
     mes = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro']
     mydict = {
-        'idOrdem': ordem.id,
+        'idOrdem': f'{ordem.codigo}',
         'descricaoDaOF': ordem.descricao,
         'valorTotalOF': f'{ordem.valor:.2f}'.replace('.',','),
         'contratada': ordem.SaldoContratoSec.contrato.Fornecedor.RazaoSocial,
