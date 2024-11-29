@@ -259,7 +259,6 @@ def contratos_request(request):
                 AnoProcesso = contrato['AnoProcesso'], 
                 Valor = float(contrato['Valor']),
                 Fornecedor = fornecedor,
-                create_defaults = {'AtualizarItens':True, 'AtualizarDados':True}
                 )
 
         except:
@@ -268,8 +267,8 @@ def contratos_request(request):
                 AnoContrato = contrato['AnoContrato'], 
                 Valor = float(contrato['Valor']),
                 Fornecedor = fornecedor,
-                create_defaults = {'AtualizarItens':True, 'AtualizarDados':True}
                 )
+        
         cont.save()
         if cont.AtualizarDados == True:
             cont.UnidadeGestora = contrato['UnidadeGestora']
