@@ -251,7 +251,7 @@ def contratos_request(request):
         fornecedor.save()
 
         try:
-            cont, cont_criado = models.Contratos.objects.aupdate_or_create(
+            cont, cont_criado = models.Contratos.objects.update_or_create(
                 NumeroContrato = contrato['NumeroContrato'],
                 AnoContrato = contrato['AnoContrato'],
                 TipoProcesso = contrato['TipoProcesso'], 
@@ -263,7 +263,7 @@ def contratos_request(request):
                 )
 
         except:
-            cont, cont_criado = models.Contratos.objects.aupdate_or_create(
+            cont, cont_criado = models.Contratos.objects.update_or_create(
                 NumeroContrato = contrato['NumeroContrato'],
                 AnoContrato = contrato['AnoContrato'], 
                 Valor = float(contrato['Valor']),
