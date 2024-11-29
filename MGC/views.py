@@ -257,47 +257,46 @@ def contratos_request(request):
                 TipoProcesso = contrato['TipoProcesso'], 
                 NumeroProcesso = contrato['NumeroProcesso'], 
                 AnoProcesso = contrato['AnoProcesso'], 
-                UnidadeGestora = contrato['UnidadeGestora'],
+                Valor = float(contrato['Valor']),
                 Fornecedor = fornecedor
                 )
 
-            
         except:
             cont, cont_criado = models.Contratos.objects.update_or_create(
                 NumeroContrato = contrato['NumeroContrato'],
                 AnoContrato = contrato['AnoContrato'], 
-                UnidadeGestora = contrato['UnidadeGestora'],
+                Valor = float(contrato['Valor']),
                 Fornecedor = fornecedor
                 )
+        cont.save()
+        if cont.AtualizarDados == True:
+            cont.UnidadeGestora = contrato['UnidadeGestora']
+            cont.LinkContrato = contrato['LinkArquivo']
+            cont.Situacao = contrato['Situacao']
+            cont.SiglaUG = contrato['SiglaUG']
+            cont.UnidadeOrcamentaria = contrato['UnidadeOrcamentaria']
+            cont.CodigoUG = contrato['CodigoUG']
+            cont.CodigoContrato = contrato['CodigoContrato']
+            cont.Vigencia = contrato['Vigencia']
+            cont.Estagio = contrato['Estagio']
 
-        cont.LinkContrato = contrato['LinkArquivo']
-        cont.Situacao = contrato['Situacao']
-        cont.SiglaUG = contrato['SiglaUG']
-        cont.Valor = float(contrato['Valor'])
-        cont.UnidadeOrcamentaria = contrato['UnidadeOrcamentaria']
-        cont.CodigoUG = contrato['CodigoUG']
-        #cont.PortariaComissaoLicitacao = contrato['PortariaComissaoLicitacao']
-        cont.CodigoContrato = contrato['CodigoContrato']
-        cont.Vigencia = contrato['Vigencia']
-        cont.Estagio = contrato['Estagio']
-
-        try:
-            cont.CodigoPL = contrato['CodigoPL']
-        except:
-            cont.CodigoPL = ''
+            try:
+                cont.CodigoPL = contrato['CodigoPL']
+            except:
+                cont.CodigoPL = ''
         
-        cont.NumeroDocumento = contrato['NumeroDocumento']
-        cont.Municipio = contrato['Municipio']
-        cont.TipoDocumento = contrato['TipoDocumento']
-        cont.Esfera = contrato['Esfera']
+            cont.NumeroDocumento = contrato['NumeroDocumento']
+            cont.Municipio = contrato['Municipio']
+            cont.TipoDocumento = contrato['TipoDocumento']
+            cont.Esfera = contrato['Esfera']
 
-        for processo in processos_licon:
-            if cont.CodigoPL == processo['CODIGOPL']:    
-                cont.Objeto = processo['OBJETOCONFORMEEDITAL']
-                cont.LinkEdital = processo['LinkArquivo']
+            for processo in processos_licon:
+                if cont.CodigoPL == processo['CODIGOPL']:
+                    cont.Objeto = processo['OBJETOCONFORMEEDITAL']
+                    cont.LinkEdital = processo['LinkArquivo']
         cont.save()
 
-        if cont.AtualizarItens == True:
+        if cont.AtualizarItens:
             itens_licon = requests.get('https://sistemas.tcepe.tc.br/DadosAbertos/ContratoItemObjeto!json?CodigoContratoOriginal={}'.format(cont.CodigoContrato)).json()['resposta']['conteudo']
             
             for item in itens_licon:
@@ -464,7 +463,7 @@ def emitirDocOf (request, ordem, listadeitens):
     }
 
     docx_replace(document, **mydict )
-    diretorio = f'media/ordem de fornecimento/2024/{ordem.id}.docx'
+    diretorio = f'media/ordem de fornecimento/2024/{ordem}.docx'
     document.save(diretorio)
 
     return diretorio

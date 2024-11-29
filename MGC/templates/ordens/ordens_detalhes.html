@@ -38,7 +38,7 @@
                         <small>R$ {{ saldodisponivel|floatformat:2 }}</small>
                     </div>
                     <a href="{% url 'of_emitir' SaldoContratoSec.id %}" class="btn btn-sm btn-primary my-3">Emitir nova ordem</a>
-                </div>  
+                </div> 
             </div>
         </div>
         <div class="col-9">
@@ -99,7 +99,7 @@
                         <td>
                             <div class='btn-group btn-group-sm' role='group'></div>
                                 <a href="/{{ log.arquivo }}" class="btn btn-success btn-sm"><i class="lni lni-eye"></i></a>
-                                <a href="#" class="btn btn-primary btn-sm"><i class="lni lni-dollar"></i></a>
+                                <!-- <a href="#" class="btn btn-primary btn-sm"><i class="lni lni-dollar"></i></a> -->
                             </div>
                         </td>
                         {% if perms.auth.Controle %}

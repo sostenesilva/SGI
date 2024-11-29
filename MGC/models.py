@@ -29,7 +29,6 @@ class Contratos (models.Model):
     Valor = models.FloatField(null=True, blank=True)
     UnidadeOrcamentaria = models.CharField(max_length=100, null=True, blank=True, verbose_name='Unidade Orçamentária')
     CodigoUG = models.CharField(max_length=10, null=True, blank=True)
-    PortariaComissaoLicitacao = models.CharField(max_length=100, null=True, blank=True)
     NumeroProcesso = models.CharField(max_length=10, null=True, blank=True, verbose_name='Processo')
     UnidadeGestora = models.CharField(max_length=100, null=True, blank=True, verbose_name='Unidade Gestora')
     CodigoContrato = models.CharField(max_length=10, null=True, blank=True)
@@ -44,6 +43,7 @@ class Contratos (models.Model):
     Esfera = models.CharField(max_length=1, null=True, blank=True)
     AnoProcesso = models.CharField(max_length=4, null=True, blank=True, verbose_name='Ano')
     AtualizarItens = models.BooleanField(default=True)
+    AtualizarDados = models.BooleanField(default=True)
 
     def __str__(self) -> str:
         return '{}/{} - {} - {}'.format(self.NumeroContrato,self.AnoContrato,self.TipoProcesso,self.Fornecedor)
@@ -109,7 +109,7 @@ class Ordem (models.Model):
     codigo = models.UUIDField(null=True, blank=True)
 
     def __str__(self) -> str:
-        return 'Contrato {} - {} - R$ {}'.format(self.SaldoContratoSec.contrato, self.SaldoContratoSec.sec, self.valor)
+        return '{} - {} - {} - R$ {}'.format(self.codigo,self.SaldoContratoSec.contrato.Fornecedor.RazaoSocial, self.SaldoContratoSec.sec, self.valor)
 
 class SaidaSec (models.Model):
     ordem = models.ForeignKey(Ordem, on_delete=models.CASCADE)
@@ -121,4 +121,4 @@ class SaidaSec (models.Model):
     totalporitem = models.FloatField(null=True, blank=True)
 
     def __str__(self) -> str:
-        return '{} - {} - R$ {}'.format(self.ordem, self.contrato, self.item)
+        return '{} - {}'.format(self.ordem.codigo, self.item)

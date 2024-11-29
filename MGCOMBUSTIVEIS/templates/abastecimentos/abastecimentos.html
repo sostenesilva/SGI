@@ -1,0 +1,110 @@
+{% extends "basecombustiveis.html" %}
+
+{% block head_title %} Abastecimentos {% endblock head_title %}
+
+{% block contentdash %}
+    <div class="d-flex justify-content-between">
+            <h4><b>SGI</b> - Abastecimentos</h4>
+            <a type="button" class="btn btn-success" href="#"><i class="lni lni-plus"></i> Registrar Abastecimento</a>
+    </div>
+    <hr>
+    <form class="form-inline" action="." method="get">
+        <div class="row container-fluid ">
+            <div class="col-sm-4">
+                <input type="text" id="buscar" name="buscar" class="form-group form-control" placeholder="Placa, data, valor, motorista...">
+            </div>
+            <div class="col">
+                <input type="submit" class="btn btn-primary form-group" value="Buscar">
+            </div>
+        </div>
+    </form>
+    <br>
+    <div class="table-responsive">
+        <table class="table table-sm table-striped">
+            <thead>
+                <tr>
+                    <th scope="col">Data</th>
+                    <th scope="col">Placa</th>
+                    <th scope="col">UG</th>
+                    <th scope="col">Litros</th>
+                    <th scope="col">Valor Unitário</th>
+                    <th scope="col">Total</th>
+                    {% if perms.auth.Controle %}
+                        <th scope="col">Ações</th>
+                    {% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for abastecimento in abastecimentos %}
+                    <tr>
+                        <td>{{ abastecimento.data }}</td>
+                        <td>{{ abastecimento.veiculo.placa }}</td>
+                        <td>{{ abastecimento.veiculo.secretaria }}</td>
+                        <td>{{ abastecimento.quantidade }}</td>
+                        <td>{{ abastecimento.valorUnitario }}</td>
+                        <td>{{ abastecimento.valorTotal }}</td>
+                        {% if perms.auth.Controle %}
+                            <td>
+                                <div class='btn-group btn-group-sm' role='group'>
+                                    <a href="#" class="btn btn-secondary" target="_blank"><i class="lni lni-consulting"></i></a>
+                                </div>
+                            </td>
+                        {% endif %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="wrapper justify-content-center">
+        <nav aria-label="Page navigation">
+            <ul class="pagination pagination-sm">
+
+                {% if abastecimentos.has_previous %}
+                    <li class="page-item">
+
+                        {% if request.GET.buscar %}
+                            <a class="page-link" href="?page=1&buscar={{request.GET.buscar}}" aria-label="Anterior">
+                        {% else %}
+                            <a class="page-link" href="?page=1" aria-label="Anterior">
+                        {% endif %}
+                            <span aria-hidden="true">&laquo;</span>
+                            <span class="sr-only">Primeira</span>
+                        </a>
+                    </li>   
+                {% endif %}
+            
+                {% for n in abastecimentos.paginator.page_range %}
+
+                    {% if abastecimentos.number == n %}
+                        <li class="page-item active">
+                            <span class="page-link">{{ n }}</span>
+                        </li>
+                    {% elif n > abastecimentos.number|add:'-3' and n < abastecimentos.number|add:'3' %}
+                        {% if request.GET.buscar %}
+                            <li class="page-item"><a class="page-link" href="?page={{ n }}&buscar={{request.GET.buscar}}">{{ n }}</a></li>
+                        {% else %}
+                            <li class="page-item"><a class="page-link" href="?page={{ n }}">{{ n }}</a></li>
+                        {% endif %}
+                    {% endif %}
+
+
+
+                {% endfor %}
+            
+                {% if abastecimentos.has_next %}
+                    <li class="page-item">
+                        {% if request.GET.buscar %}
+                            <a class="page-link" href="?page={{ abastecimentos.paginator.num_pages }}&buscar={{request.GET.buscar}}" aria-label="Próxima">
+                        {% else %}
+                            <a class="page-link" href="?page={{ abastecimentos.paginator.num_pages }}" aria-label="Próxima">
+                        {% endif %}
+                            <span aria-hidden="true">&raquo;</span>
+                            <span class="sr-only">Última</span>
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>    
+{% endblock contentdash %}
