@@ -11,6 +11,8 @@ from docx import Document, document, table
 from python_docx_replace import docx_replace
 import pandas as pd
 import uuid
+from django.db.models import Sum
+
 
 #------------------- PÁGINAS DE DASHBOARD -------------------#
 @login_required
@@ -141,38 +143,40 @@ def contratos (request):
 
 #     return render(request, 'contratos/contratos_enviarof.html',context)
 @login_required
-def contratos_add_of(request,contrato_pk):
-    contrato = models.Contratos.objects.get(pk=contrato_pk)
-    of_form = forms.SaldoSec_form(request.POST or None)
-    fiscal_form = forms.Fiscal_form(request.POST or None)
+def contratos_addsaldo(request,contrato_pk):
+    contrato = models.Contratos.objects.get(pk=contrato_pk) #INSTÂNCIA DO CONTRATO ATUAL
+    
+    #FORMULÁRIOS
+    saldocontratosec_form = forms.SaldoContratoSec_form(request.POST or None)
     fornecedor_form = forms.Fornecedor_form(request.POST or None,instance=contrato.Fornecedor)
-    itensof = models.Itens.objects.filter(CodigoContratoOriginal=contrato.CodigoContrato)
-    controleEntradas = models.EntradaSec.objects.filter(contrato=contrato)
+    
+    itensof = models.Itens.objects.filter(CodigoContratoOriginal=contrato.CodigoContrato) #FILTRAR ITENS DO CONTRATO
+
     
     if request.POST:
-        print(request.POST)
-        cestaitens = enumerate(request.POST.getlist('quantidade'))
+        quantidades = request.POST.getlist('quantidade')
+        item_ids = request.POST.getlist('item_id')
         SaldoContratoSec, ContratoSecCriado = models.SaldoContratoSec.objects.update_or_create(contrato = contrato, sec = models.Group.objects.get(pk=request.POST['sec']), fiscal = models.User.objects.get(pk=request.POST['fiscal']))
-        for itemcesta,qtd in cestaitens:
-            if qtd != '0':
-                entradasec = models.EntradaSec()
-                entradasec.contrato = contrato
-                entradasec.saldocontratosec = SaldoContratoSec
-                entradasec.item = itensof[itemcesta]
-                entradasec.quantidade = int(qtd)
-                SaldoContratoSec.saldo += (entradasec.item.PrecoUnitario * entradasec.quantidade)
-                entradasec.sec = models.Group.objects.get(pk=request.POST['sec'])
-                entradasec.usuario = request.user
+        
+        for item_id,qtd in zip(item_ids,quantidades):
+            if qtd and int(qtd) > 0:
+                entradasec = models.EntradaSec.objects.create(
+                    saldocontratosec = SaldoContratoSec,
+                    item = models.Itens.objects.get(pk = item_id),
+                    quantidade = int(qtd),
+                    usuario = request.user
+                )
+
                 entradasec.save()
 
-
         SaldoContratoSec.save()
+
         fornecedor_form.save()
+
         return redirect('contratos')
     
     context = {
-        'of_form': of_form,
-        'fiscal_form': fiscal_form,
+        'saldocontratosec_form': saldocontratosec_form,
         'contrato': contrato,
         'itensof': itensof,
         'fornecedor_form': fornecedor_form,
@@ -180,13 +184,13 @@ def contratos_add_of(request,contrato_pk):
 
     return render(request, 'ordens/ordens_add.html',context)
 
+
 @login_required
 def contratos_additens(request,contrato_pk):
     contrato = models.Contratos.objects.get(pk=contrato_pk)
     itensof = models.Itens.objects.all()
     
     if request.POST:
-        print(request.FILES.get('itens'))
         dataframe = pd.read_excel(request.FILES.get('itens'))
         for index, row in dataframe.iterrows():
             itemadd, itembool = models.Itens.objects.update_or_create(
@@ -194,9 +198,6 @@ def contratos_additens(request,contrato_pk):
                 Unidade = row[1],
                 Contrato = contrato,
                 CodigoContratoOriginal = contrato.CodigoContrato,
-                # PrecoUnitario = float(str(row[3]).replace('.','').replace(',','.')),
-                # Quantidade = str(str(row[2])).replace('.','').replace(',','.'),
-                # PrecoTotal = float(str(row[4]).replace('.','').replace(',','.')),
                 PrecoUnitario = float(str(row[3])),
                 Quantidade = str(str(row[2])),
                 PrecoTotal = float(str(row[4])),
@@ -206,31 +207,9 @@ def contratos_additens(request,contrato_pk):
         contrato.AtualizarItens = False
         contrato.save()
 
-
-        # cestaitens = enumerate(request.POST.getlist('quantidade'))
-        # SaldoContratoSec, ContratoSecCriado = models.SaldoContratoSec.objects.update_or_create(contrato = contrato, sec = models.Group.objects.get(pk=request.POST['sec']), fiscal = models.User.objects.get(pk=request.POST['fiscal']))
-        # for itemcesta,qtd in cestaitens:
-        #     if qtd != '0':
-        #         entradasec = models.EntradaSec()
-        #         entradasec.contrato = contrato
-        #         entradasec.saldocontratosec = SaldoContratoSec
-        #         entradasec.item = itensof[itemcesta]
-        #         entradasec.quantidade = int(qtd)
-        #         SaldoContratoSec.saldo += (entradasec.item.PrecoUnitario * entradasec.quantidade)
-        #         entradasec.sec = models.Group.objects.get(pk=request.POST['sec'])
-        #         entradasec.usuario = request.user
-        #         entradasec.save()
-
-
-        # SaldoContratoSec.save()
         return redirect('contratos')
     
     context = {
-        # 'of_form': of_form,
-        # 'fiscal_form': fiscal_form,
-        # 'contrato': contrato,
-        # 'itensof': itensof,
-        # 'fornecedor_form': fornecedor_form,
     }
 
     return render(request, 'contratos/contratos_additens.html',context)
@@ -351,75 +330,80 @@ def painelfiscal (request):
     
     return render(request, 'ordens/painelfiscal.html', context)
 
-def of_enviar (request,saldoof_pk):
-    SaldoContratoSec = models.SaldoContratoSec.objects.get(pk=saldoof_pk)
+def saldo_detalhes (request,saldodetalhes_pk):
+    SaldoContratoSec = models.SaldoContratoSec.objects.get(pk=saldodetalhes_pk)
     ContratoSec = SaldoContratoSec.contrato
-    itensof = models.Itens.objects.filter(CodigoContratoOriginal=ContratoSec.CodigoContrato)
+
+
+    itensof = models.Itens.objects.filter(Contrato=ContratoSec)
     entradasSec = models.EntradaSec.objects.filter(saldocontratosec=SaldoContratoSec)
-    Ordem_hist = models.Ordem.objects.filter(SaldoContratoSec=SaldoContratoSec).order_by('-dataehora')
+
+
+    Ordem_hist = models.Ordem.objects.filter(saldoContratosec=SaldoContratoSec).order_by('-dataehora')
     
     ordens_paginator = Paginator(Ordem_hist,6)
     page_num_ordens = request.GET.get('page')
     page_ordens_log = ordens_paginator.get_page(page_num_ordens)
 
     consumido = 0
-    for ordem in Ordem_hist:
-        consumido += ordem.valor
+    # for ordem in Ordem_hist:
+    #     consumido += ordem.valor
 
-    saldodisponivel = SaldoContratoSec.saldo - consumido
 
     context = {
         'page_ordens_log': page_ordens_log,
         'contrato': ContratoSec,
         'SaldoContratoSec': SaldoContratoSec,
         'consumido': consumido,
-        'saldodisponivel': saldodisponivel,
         'itensof': itensof,
         'itemEntrada': entradasSec,
     }
 
     return render(request, 'ordens/ordens_detalhes.html',context)
 
-def of_emitir (request,saldoof_pk):
-    SaldoContratoSec = models.SaldoContratoSec.objects.get(pk=saldoof_pk)
+def of_emitir (request,saldodetalhes_pk):
+    SaldoContratoSec = models.SaldoContratoSec.objects.get(pk=saldodetalhes_pk)
     ContratoSec = SaldoContratoSec.contrato
-    itensof = models.Itens.objects.filter(CodigoContratoOriginal=ContratoSec.CodigoContrato)
+
+    itensof = models.Itens.objects.filter(Contrato=ContratoSec)
     entradasSec = models.EntradaSec.objects.filter(saldocontratosec=SaldoContratoSec)
+
     fornecedor_form = forms.Fornecedor_form(request.POST or None,instance=ContratoSec.Fornecedor)
-
-
-    ContratoSec_hist = models.Ordem.objects.filter(SaldoContratoSec = SaldoContratoSec).order_by('-dataehora')
 
     ordem_form = forms.Ordem_form(request.POST or None)
 
     if request.POST:
-        cestaitens = enumerate(request.POST.getlist('quantidade'))
-        ordem = models.Ordem.objects.create(SaldoContratoSec = SaldoContratoSec, usuario = request.user)
+        item_ids = request.POST.getlist('item_id')
+        print(item_ids)
+        quantidades = request.POST.getlist('quantidade')
+        print(quantidades)
+
+        ordem = models.Ordem.objects.create(saldoContratosec = SaldoContratoSec,usuario = request.user, valor = 0)
         valordaordem = 0
         listaitens = []
-
-        for itemcesta,qtd in cestaitens:
-            if qtd != '0':
+        print('CHEGUEI AQUI ANTES DO LAÇO!!!')
+        for item_id,qtd in zip(item_ids,quantidades):
+            print(f'Item: {item_id} - {qtd}')
+            if qtd and int(qtd) > 0:
                 saidasec = models.SaidaSec()
-                saidasec.contrato = ContratoSec
+
                 saidasec.ordem = ordem
-                saidasec.item = itensof[itemcesta]
+                saidasec.item = itensof.get(pk = item_id)
                 saidasec.quantidade = int(qtd)
-                saidasec.totalporitem = saidasec.quantidade * saidasec.item.PrecoUnitario
                 saidasec.usuario = request.user
 
                 valordaordem += (saidasec.item.PrecoUnitario * saidasec.quantidade)
-
-                saidasec.save()
+                print(f'Preço unitário: {saidasec.item.PrecoUnitario} - Quantidade: {saidasec.quantidade} - Total: {saidasec.item.PrecoUnitario * saidasec.quantidade} - Acumulado: {valordaordem} - Tipo: {type(valordaordem)}')
                 listaitens.append(saidasec)
-        
+                saidasec.save()
+
         ordem.descricao = request.POST.get('descricao')
         ordem.valor = valordaordem
         fornecedor_form.save()
         ordem.codigo = uuid.uuid4()
         ordem.arquivo = emitirDocOf(request, ordem ,listaitens)
         ordem.save()
-        return redirect('of_enviar', saldoof_pk)
+        return redirect('saldo_detalhes', SaldoContratoSec.id)
 
     context = {
         'ordem_form': ordem_form,
@@ -443,24 +427,25 @@ def emitirDocOf (request, ordem, listadeitens):
         row[2].text = str(itemlista.quantidade)
         row[3].text = itemlista.item.Unidade
         row[4].text = 'R$ '+ f'{itemlista.item.PrecoUnitario:.2f}'.replace('.',',')
-        row[5].text = 'R$ '+ f'{itemlista.totalporitem:.2f}'.replace('.',',')
+        totalporitem = itemlista.quantidade*itemlista.item.PrecoUnitario
+        row[5].text = 'R$ '+ f'{totalporitem:.2f}'.replace('.',',')
         nItem += 1
     mes = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro']
     mydict = {
         'idOrdem': f'{ordem.codigo}',
         'descricaoDaOF': ordem.descricao,
         'valorTotalOF': f'{ordem.valor:.2f}'.replace('.',','),
-        'contratada': ordem.SaldoContratoSec.contrato.Fornecedor.RazaoSocial,
-        'cnpj': ordem.SaldoContratoSec.contrato.Fornecedor.NumeroDocumentoAjustado,
+        'contratada': ordem.saldoContratosec.contrato.Fornecedor.RazaoSocial,
+        'cnpj': ordem.saldoContratosec.contrato.Fornecedor.NumeroDocumentoAjustado,
         'data': f'{ordem.dataehora.day} de {mes[ordem.dataehora.month-1]} de {ordem.dataehora.year}',
-        'contrato': f'{ordem.SaldoContratoSec.contrato.NumeroContrato}/{ordem.SaldoContratoSec.contrato.AnoContrato}',
-        'processo': f'{ordem.SaldoContratoSec.contrato.NumeroProcesso}/{ordem.SaldoContratoSec.contrato.AnoProcesso}',
-        'ug': f'{ordem.SaldoContratoSec.contrato.UnidadeOrcamentaria.upper()}',
-        'endereco': f'{ordem.SaldoContratoSec.contrato.Fornecedor.Endereco}',
-        'representante': f'{ordem.SaldoContratoSec.contrato.Fornecedor.Representante}',
-        'fone': f'{ordem.SaldoContratoSec.contrato.Fornecedor.Contato}',
-        'email': f'{ordem.SaldoContratoSec.contrato.Fornecedor.Email}',
-        'objeto': f'{ordem.SaldoContratoSec.contrato.Objeto}',
+        'contrato': f'{ordem.saldoContratosec.contrato.NumeroContrato}/{ordem.saldoContratosec.contrato.AnoContrato}',
+        'processo': f'{ordem.saldoContratosec.contrato.NumeroProcesso}/{ordem.saldoContratosec.contrato.AnoProcesso}',
+        'ug': f'{ordem.saldoContratosec.contrato.UnidadeOrcamentaria.upper()}',
+        'endereco': f'{ordem.saldoContratosec.contrato.Fornecedor.Endereco}',
+        'representante': f'{ordem.saldoContratosec.contrato.Fornecedor.Representante}',
+        'fone': f'{ordem.saldoContratosec.contrato.Fornecedor.Contato}',
+        'email': f'{ordem.saldoContratosec.contrato.Fornecedor.Email}',
+        'objeto': f'{ordem.saldoContratosec.contrato.Objeto}',
     }
 
     docx_replace(document, **mydict )

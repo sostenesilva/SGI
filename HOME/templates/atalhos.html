@@ -11,41 +11,82 @@
             <img class="logo" style="width: 30%;" src="{% static 'img/LOGO-CORTES3-668x1024.png' %}" alt="logomarca">
         </div>
     </div>
+    <!-- <div class="col">
+        <div>SISTEMA DE GESTÃO DA INFORMAÇÃO</div>
+    </div> -->
 </div>
 
-<div class="row row-cols-1 row-cols-md-4 g-4 justify-content-md-center my-2">
-    <div class="col">
+<div class="row row-cols-1 row-cols-md-3 g-4 justify-content-md-center my-2  px-5">
+
+    <div class="col col-md-3">
         <a href="{% url 'mgc' %}" class="card">
-            <div class="card-body">
-                <h5 class="card-header">MGC</h5>
-                <small class="card-text">Módulo de Gestão e Fiscalização de Contratos</small>
+            <div class="card-header text-muted">
+                <small style="font-size: smaller;">Módulo</small>
+            </div>
+            <div class="card-body py-2">
+                <h5 class="card-title my-0" style="font-weight: bold;">CONTRATOS</h5>
+            </div>
+            <div class="card-footer py-0 my-0" style="background-color:white;">
+                <small class="text-muted" style="font-size:x-small; font-style: italic;">Ambiente para gestão e fiscalização eficiente dos contratos públicos</small>
             </div>
         </a>
     </div>
-    <div class="col">
+
+    <div class="col col-md-3">
         <a href="{% url 'dashcombustiveis' %}" class="card">
-            <div class="card-body">
-                <h5 class="card-header">COMBUSTÍVEIS</h5>
-                <small class="card-text">Módulo de Gestão e Fiscalização dos abastecimentos</small>
+            <div class="card-header text-muted">
+                <small style="font-size: smaller;">Módulo</small>
+            </div>
+            <div class="card-body py-2">
+                <h5 class="card-title my-0" style="font-weight: bold;">COMBUSTÍVEIS</h5>
+            </div>
+            <div class="card-footer py-0 my-0" style="background-color:white;">
+                <small class="text-muted" style="font-size:x-small; font-style: italic;">Ambiente para gestão dos abastecimentos</small>
             </div>
         </a>
     </div>
-    <div class="col">
+
+    <div class="col col-md-3">
         <a href="https://itmpe.pythonanywhere.com/" class="card">
-            <div class="card-body">
-                <h5 class="card-header">ITMPE</h5>
-                <small class="card-text">Acompanhamento continuado dos critérios avaliados pelo Tribunal de Contas</small>
+            <div class="card-header text-muted">
+                <small style="font-size: smaller;">Módulo</small>
+            </div>
+            <div class="card-body py-2">
+                <h5 class="card-title my-0" style="font-weight: bold;">TRANSPARÊNCIA</h5>
+            </div>
+            <div class="card-footer py-0 my-0" style="background-color:white;">
+                <small class="text-muted" style="font-size:x-small; font-style: italic;">Gestão dos índices de transparência avaliados pelo ITMPE/LNTP do tribunal de contas</small>
             </div>
         </a>
     </div>
-    <div class="col">
+
+    <div class="col col-md-3">
         <a href="https://transparencia.cortes.pe.gov.br/app/pe/cortes/1" class="card">
-            <div class="card-body">
-                <h5 class="card-header">Portal da Transparência</h5>
-                <small class="card-text">Ferramenta desenvolvida para permitir à sociedade acompanhar o uso dos recursos públicos</small>
+            <div class="card-header text-muted">
+                <small style="font-size: smaller;">Atalho</small>
+            </div>
+            <div class="card-body py-2">
+                <h5 class="card-title my-0" style="font-weight: bold;">PORTAL DA TRANSPARÊNCIA</h5>
+            </div>
+            <div class="card-footer py-0 my-0" style="background-color:white;">
+                <small class="text-muted" style="font-size:x-small; font-style: italic;">Atalho para o portal da transparência do município</small>
             </div>
         </a>
     </div>
+
+    <div class="col col-md-3">
+        <a href="{% url 'dashregularidadefiscal' %}" class="card">
+            <div class="card-header text-muted">
+                <small style="font-size: smaller;">Módulo</small>
+            </div>
+            <div class="card-body py-2">
+                <h5 class="card-title my-0" style="font-weight: bold;">REGULARIDADE FISCAL</h5>
+            </div>
+            <div class="card-footer py-0 my-0" style="background-color:white;">
+                <small class="text-muted" style="font-size:x-small; font-style: italic;">Acompanhar periódicamente a regularidade fiscal dos prestadores de serviço</small>
+            </div>
+        </a>
+    </div> 
 </div>
 
 

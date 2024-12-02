@@ -28,7 +28,7 @@
                 <textarea rows="5" class="form-control form-control-sm" name="descricao" id="id_descricao"></textarea>
                 <div style="padding-top: 0.5rem;">
                     <button type="submit" class="btn btn-success btn-sm">Emitir OF</button>
-                    <a href="{% url 'of_enviar' SaldoContratoSec.id %}" class="btn btn-danger btn-sm">Cancelar</a>
+                    <a href="{% url 'saldo_detalhes' SaldoContratoSec.id %}" class="btn btn-danger btn-sm">Cancelar</a>
                 </div>
             </div>
                 
@@ -49,11 +49,10 @@
                         {% for entrada in entradasSec %}
                             <tr>
                                 <td style="font-size: smaller;" scope="col">{{ entrada.item.Descricao }}</td>
-                                {% if entrada.item|totalPorItem:'dif_sec' != 0 %}
-                                    <td style="width: 10%;" scope="col" style="width: 7%;"><input class="form-control form-control-sm" style="text-align: center;" type="number" name="quantidade" id="quantidade" value="0"></td>
-                                {% else %}
-                                    <td scope="col" style="width: 7%;"><input class="form-control form-control-sm" style="text-align: center;" type="number" name="quantidade" id="quantidade" value="0" readonly></td>
-                                {% endif %}
+                                <td style="width: 10%;" scope="col" style="width: 7%;">
+                                    <input type="hidden" name="item_id" value="{{ entrada.item.id }}">
+                                    <input class="form-control form-control-sm" style="text-align: center;" type="number" name="quantidade" min="0" max="{{ entrada.item|totalPorItem:'dif_sec' }}" value="0">
+                                </td>
                                 <td scope="col">{{ entrada.item.Unidade }}</td>
                                 <td scope="col">R${{ entrada.item.PrecoUnitario }}</td>
                                 <td scope="col">{{ entrada.item|totalPorItem:'entrada_sec' }}</td>

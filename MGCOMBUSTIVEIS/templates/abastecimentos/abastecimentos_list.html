@@ -1,0 +1,17 @@
+{% for abastecimento in abastecimentos %}
+    <tr>
+        <td>{{ abastecimento.data }}</td>
+        <td>{{ abastecimento.veiculo.placa }}</td>
+        <td>{{ abastecimento.veiculo.secretaria }}</td>
+        <td>{{ abastecimento.quantidade }}</td>
+        <td>{{ abastecimento.valorUnitario }}</td>
+        <td>{{ abastecimento.valorTotal }}</td>
+        {% if perms.auth.Controle %}
+            <td>
+                <div class='btn-group btn-group-sm' role='group'>
+                    <a hx-get="{% url 'edit_abastecimento' abastecimento.pk %}" hx-target="#dialog" class="btn btn-secondary"><i class="lni lni-pencil-alt"></i></a>
+                </div>
+            </td>
+        {% endif %}
+    </tr>
+{% endfor %}

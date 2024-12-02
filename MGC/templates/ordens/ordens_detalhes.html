@@ -25,17 +25,17 @@
 
                     <div class="card-header bg-white"><b>Valor contratado</b></div>
                     <div class="card-body p-1">
-                        <small>R$ {{ SaldoContratoSec.saldo|floatformat:2 }}</small>
+                        <small>R$ {{ SaldoContratoSec.totalEntradas|floatformat:2 }}</small>
                     </div>
 
                     <div class="card-header bg-white"><b>Saldo consumido</b></div>
                     <div class="card-body p-1">
-                        <small>R$ {{ consumido|floatformat:2 }}</small>
+                        <small>R$ {{ SaldoContratoSec.totalSaidas|floatformat:2 }}</small>
                     </div>
 
                     <div class="card-header bg-white"><b>Saldo disponível</b></div>
                     <div class="card-body p-1">
-                        <small>R$ {{ saldodisponivel|floatformat:2 }}</small>
+                        <small>R$ {{ SaldoContratoSec.saldoAtual|floatformat:2 }}</small>
                     </div>
                     <a href="{% url 'of_emitir' SaldoContratoSec.id %}" class="btn btn-sm btn-primary my-3">Emitir nova ordem</a>
                 </div> 
@@ -104,7 +104,7 @@
                         </td>
                         {% if perms.auth.Controle %}
                             <td>
-                                <a href="{% url 'of_log_delet' log.SaldoContratoSec.id log.id %}" class="btn btn-success btn-sm"><i class="lni lni-trash-can"></i></a>
+                                <a href="{% url 'of_log_delet' log.saldoContratosec.id log.id %}" class="btn btn-success btn-sm"><i class="lni lni-trash-can"></i></a>
                             </td>
                         {% endif %}
                     </tr>

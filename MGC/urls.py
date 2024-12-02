@@ -11,17 +11,17 @@ urlpatterns = [
     # path('processos/editar/<int:processo_pk>', views.processos_edit, name='processo_edit'),
     # path('processos/deletar/<int:processo_pk>', views.processos_delet, name='processo_delet'),
 
-    path('contratos/', views.contratos, name='contratos'),
+    path('contratos/', views.contratos, name='contratos'), #VISUALIZAR TODOS OS CONTRATOS
     # path('contratos/adicionar/<int:processo_pk>/', views.contratos_add, name='contratos_add'),
-    path('contratos/addof/<int:contrato_pk>/', views.contratos_add_of, name='contrato_add_of'),
+    path('contratos/addsaldo/<int:contrato_pk>/', views.contratos_addsaldo, name='contrato_addsaldo'),
     path('contratos/additens/<int:contrato_pk>/', views.contratos_additens, name='contratos_additens'),
     # path('contratos/anexarof/<int:contrato_pk>/', views.contrato_enviar, name='contrato_enviar'), #ADAPTAR PARA ORDENS/ANEXAR
     # path('contratos/editar/<int:contrato_pk>', views.contrato_edit, name='contrato_edit'),
     # path('contratos/deletar/<int:contrato_pk>', views.contrato_delet, name='contrato_delet'),
 
     path('contratos/ordens/', views.ordens, name='ordens'),
-    path('contratos/ordens/detalhes/<int:saldoof_pk>/', views.of_enviar, name='of_enviar'),
-    path('contratos/ordens/detalhes/<int:saldoof_pk>/emitir', views.of_emitir, name='of_emitir'),
+    path('contratos/ordens/detalhes/<int:saldodetalhes_pk>/', views.saldo_detalhes, name='saldo_detalhes'),
+    path('contratos/ordens/detalhes/<int:saldodetalhes_pk>/emitir', views.of_emitir, name='of_emitir'),
     path('contratos/ordens/detalhes/<int:saldoof_pk>/emitirdoc', views.emitirDocOf, name='emitirDocOf'),
 
     path('contratos/ordens/detalhes/<int:saldoof_pk>/<int:of_log_pk>', views.of_log_delet, name='of_log_delet'),

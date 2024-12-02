@@ -7,6 +7,7 @@ urlpatterns = [
     path('', include('HOME.urls')),
     path('admin/', admin.site.urls),
     path('accounts/', include('allauth.urls')),
-    path('mgc/',include('MGC.urls')),
-    path('mgcombustiveis/',include('MGCOMBUSTIVEIS.urls')),
+    path('gestaocontratos/',include('MGC.urls')),
+    path('combustiveis/',include('MGCOMBUSTIVEIS.urls')),
+    path('regularidadefiscal/',include('MGREGULARIDADEFISCAL.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

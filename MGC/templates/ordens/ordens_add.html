@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load somaitens %}
 
-{% block head_title %} Ordem de Fornecimento {% endblock head_title %}
+{% block head_title %} Saldo da Secretaria {% endblock head_title %}
 
 {% block contentdash %}
     <div class="d-flex justify-content-between">
@@ -13,7 +13,7 @@
         <small>Contratada: <b>{{ contrato.Fornecedor.RazaoSocial }}</b> | CNPJ: <b>{{ contrato.NumeroDocumento }}</b> | Vigência: <b>{{ contrato.Vigencia }}</b></small>
     </p>
     <hr>
-    <form action="{% url 'contrato_add_of' contrato.id %}" method="post">
+    <form action="{% url 'contrato_addsaldo' contrato.id %}" method="post">
         <div class="row">             
             {% csrf_token %}
             <div class="row">
@@ -30,10 +30,10 @@
             </div>
             <div class="row">
                 <div class="col-6">
-                    {{ of_form.as_p }}
+                    {{ saldocontratosec_form.sec }}
                 </div>
                 <div class="col-6">
-                    {{ fiscal_form.as_p }}
+                    {{ saldocontratosec_form.fiscal }}
                 </div>
             </div>
 
@@ -53,11 +53,10 @@
                         {% for item in itensof %}
                             <tr>
                                 <td scope="col">{{ item.Descricao }}</td>
-                                {% if item|totalPorItem:'dif_total' %}
-                                    <td scope="col" style="width: 7%;"><input class="form-control form-control-sm" style="text-align: center;" type="number" name="quantidade" id="quantidade" value="0"></td>
-                                {% else %}
-                                    <td scope="col" style="width: 7%;"><input class="form-control form-control-sm" style="text-align: center;" type="number" name="quantidade" id="quantidade" value="0" readonly></td>
-                                {% endif %}
+                                <td scope="col" style="width: 7%;">
+                                    <input type="hidden" name="item_id" value="{{ item.id }}">
+                                    <input class="form-control form-control-sm" style="text-align: center;" type="number" name="quantidade" value="0">
+                                </td>
                                 <td scope="col">{{ item.Unidade }}</td>
                                 <td scope="col">R${{ item.PrecoUnitario }}</td>
                                 <td scope="col">{{ item.Quantidade }}</td>
@@ -76,8 +75,5 @@
             </div>
         </div>
     </form>
-        
-        
-    
-    
+
 {% endblock contentdash %}

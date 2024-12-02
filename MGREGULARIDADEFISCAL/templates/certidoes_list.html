@@ -1,0 +1,14 @@
+{% for certidao in certidoes %}
+    <tr>
+        <td>{{ certidao.tipo }}</td>
+        <td>{{ certidao.dataEmissao }}</td>
+        <td>{{ certidao.dataValidade }}</td>
+        <!-- {% if perms.auth.Controle %}
+            <td>
+                <div class='btn-group btn-group-sm' role='group'>
+                    <a hx-get="#" hx-target="#dialog" class="btn btn-secondary"><i class="lni lni-pencil-alt"></i></a>
+                </div>
+            </td>
+        {% endif %} -->
+    </tr>
+{% endfor %}

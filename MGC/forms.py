@@ -16,34 +16,28 @@ from . import models
 #             'valor': forms.NumberInput(attrs={'class':'form-control'}),
 #         }
 
+
+
+
 class Ordem_form (forms.ModelForm):
     class Meta:
         model = models.Ordem
-        fields = ('valor','arquivo')
+        fields = '__all__'
 
         widgets = {
             'valor': forms.NumberInput(attrs={'class':'form-control'}),
             'arquivo': forms.FileInput(attrs={'class':'form-control','rows':'5', 'name':'arquivo'}),
         }
 
-class SaldoSec_form (forms.ModelForm):
+class SaldoContratoSec_form (forms.ModelForm):
     class Meta:
-        model = models.EntradaSec
-        fields = ('sec',)
+        model = models.SaldoContratoSec
+        fields = ('sec','fiscal',)
 
         widgets = {
             'sec': forms.Select(attrs={'class':'form-control'}),
-        }
-
-class Fiscal_form (forms.ModelForm):
-    class Meta:
-        model = models.SaldoContratoSec
-        fields = ('fiscal',)
-
-        widgets = {
             'fiscal': forms.Select(attrs={'class':'form-control'}),
         }
-
 
 class Fornecedor_form (forms.ModelForm):
     class Meta:
@@ -58,6 +52,19 @@ class Fornecedor_form (forms.ModelForm):
             'Contato': forms.TextInput(attrs={'class':'form-control'}),
             'Email': forms.EmailInput(attrs={'class':'form-control'}),
         }
+
+class EntradaIten (forms.ModelForm):
+    class Meta:
+        model = models.EntradaSec
+        fields = ('quantidade',)
+
+
+
+
+
+
+
+
 # class Avaliacao_form (forms.ModelForm):
 #     class Meta:
 #         model = Db_Avaliacao

@@ -1,0 +1,23 @@
+{% for fornecedor in fornecedores %}
+    <tr>
+        <td>
+            <a type="button" style="color: black;" hx-get="{% url 'regularidade_resumo' fornecedor.id %}" hx-target="#dialog">
+                {{ fornecedor.NumeroDocumentoAjustado }}
+            </a>
+        </td>
+        <td>
+            <a type="button" style="color: black;" hx-get="{% url 'regularidade_resumo' fornecedor.id %}" hx-target="#dialog">
+                {{ fornecedor.RazaoSocial }}
+            </a>
+        </td>
+        <!-- {% if perms.auth.Controle %}
+            <td>
+                <div class='btn-group btn-group-sm' role='group'>
+                    <a hx-get="#" hx-target="#dialog" class="btn btn-secondary"><i class="lni lni-pencil-alt"></i></a>
+                </div>
+            </td>
+        {% endif %} -->
+        <!-- </a> -->
+    </tr>
+    
+{% endfor %}

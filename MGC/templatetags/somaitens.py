@@ -26,9 +26,9 @@ def totalPorItem(modelitem,param):
     elif param == 'dif_sec':
         for entrada in entradaitens:
             if entrada['item'] == modelitem.id:
-                print('entrei no item {}'.format(entrada['item']))
+                # print('entrei no item {}'.format(entrada['item']))
                 for saida in saidaitens:
-                    print('entrei no saída')
+                    # print('entrei no saída')
                     if saida['item'] == modelitem.id:
                         return entrada['SomaQTD']-saida['SomaQTD']
                 return entrada['SomaQTD']
