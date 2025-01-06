@@ -22,6 +22,7 @@ class Certidao(models.Model):
     dataValidade = models.DateField()
     autenticacao = models.CharField(max_length=100, null=True, blank=True)
     autor = models.ForeignKey(User, on_delete=models.PROTECT)
+    irregular = models.BooleanField(default=False)
     arquivo = models.FileField(upload_to=diretorioCertidao)
 
     class Meta:
@@ -50,4 +51,4 @@ class Declaracao(models.Model):
             return certidoes
 
     def __str__(self):
-        return f'Declaração {self.codigo} - {self.fornecedor}'
+        return f'Declaração - {self.fornecedor} - {self.codigo}'
