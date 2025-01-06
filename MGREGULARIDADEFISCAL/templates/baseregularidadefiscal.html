@@ -1,4 +1,4 @@
-{% load static %}
+{% load static custom_filters %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -190,9 +190,14 @@
     </div>
 
 
-    <!-- Placeholder for the modal -->
+    <!-- Placeholder for the modal 1 -->
     <div id="modal" class="modal fade">
         <div id="dialog" class="modal-dialog modal-lg" hx-target="this"></div>
+    </div>
+
+    <!-- Placeholder for the modal 2 -->
+    <div id="modal2" class="modal fade">
+        <div id="dialog2" class="modal-dialog modal-lg" hx-target="this"></div>
     </div>
 
     <!-- Empty toast to show the message -->
@@ -216,11 +221,15 @@
     <script>
     ; (function () {
         const modal = new bootstrap.Modal(document.getElementById("modal"))
+        const modal2 = new bootstrap.Modal(document.getElementById("modal2"))
 
         htmx.on("htmx:afterSwap", (e) => {
         // Response targeting #dialog => show the modal
         if (e.detail.target.id == "dialog") {
             modal.show()
+        }
+        if (e.detail.target.id == "dialog2") {
+            modal2.show()
         }
         })
 
@@ -230,14 +239,20 @@
             modal.hide()
             e.detail.shouldSwap = false
         }
+        if (e.detail.target.id == "dialog2" && !e.detail.xhr.response) {
+            modal2.hide()
+            e.detail.shouldSwap = false
+        }
         })
 
         // Remove dialog content after hiding
         htmx.on("hidden.bs.modal", () => {
         document.getElementById("dialog").innerHTML = ""
+        document.getElementById("dialog2").innerHTML = ""
         })
         })()
     </script>
+
     <script>
         ; (function () {
         const toastElement = document.getElementById("toast")

@@ -1,0 +1,96 @@
+@page {
+    size: A4;
+    margin: 0cm; /* Ajuste as margens para incluir header e footer */
+}
+
+body {
+    font-family: Arial, sans-serif;
+    text-align: justify;
+    line-height: 1.4;
+    margin: 0;
+}
+
+h1 {
+    text-align: center;
+    font-size: 24px;
+}
+
+header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 5cm;
+    text-align: center;
+    background-size: 100%;
+    background-repeat: no-repeat;
+    background-position: 2cm;
+}
+
+header .brasao {
+    position: fixed;
+    top: 1.2cm;
+    left: 1.5cm;
+    right: 0;
+    height: 2cm;
+    text-align: right;
+}
+
+footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 5cm;
+    text-align: bottom;
+    background-size: 100%;
+    background-repeat: no-repeat;
+    background-position: -2cm;
+}
+
+.content {
+    margin-left: 3cm;
+    margin-right: 3cm;
+    margin-top: 3.5cm; /* Espaço para o cabeçalho */
+    margin-bottom: 4cm; /* Espaço para o rodapé */
+}
+
+.section-title {
+    font-weight: bold;
+    font-size: 16px;
+    text-transform: uppercase;
+    margin-top: 0.7cm;
+    margin-bottom: 0cm;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+table th, table td {
+    border: 1px solid #ddd;
+    text-align: center;
+}
+
+table th {
+    background-color: #f4f4f4;
+}
+
+.instructions {
+    font-size: 14px;
+}
+
+.signature {
+    text-align: right;
+    font-size: 14px;
+}
+
+.dados-footer{
+    width: fit-content;
+    position:fixed;
+    top: 91%;
+    right: 7%;
+    text-align: right;
+    font-size: 14px;
+}

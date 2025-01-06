@@ -7,5 +7,7 @@ urlpatterns = [
     path('certidoeslist/<int:fornecedor_id>/', views.certidoes_list, name='certidoes_list'),
     path('declaracoeslist/<int:fornecedor_id>/', views.declaracoes_list, name='declaracoes_list'),
     path('regularidaderesumo/<int:fornecedor_id>/', views.regularidade_resumo, name='regularidade_resumo'),
+    path('adicionarcertidoes/<int:fornecedor_id>/', views.certidoes_add, name='certidoes_add'),
+    path('emitirdeclaracao/<int:fornecedor_id>/', views.emitir_declaracao, name='emitir_declaracao'),
 
 ]

@@ -1,14 +1,13 @@
+{% load custom_filters %}
 {% for certidao in certidoes %}
     <tr>
-        <td>{{ certidao.tipo }}</td>
-        <td>{{ certidao.dataEmissao }}</td>
-        <td>{{ certidao.dataValidade }}</td>
-        <!-- {% if perms.auth.Controle %}
+            <td>{{ certidao.tipo }}</td>
+            <td>{{ certidao.dataEmissao|date_format }}</td>
+            <td>{{ certidao.dataValidade|date_format }}</td>
             <td>
                 <div class='btn-group btn-group-sm' role='group'>
-                    <a hx-get="#" hx-target="#dialog" class="btn btn-secondary"><i class="lni lni-pencil-alt"></i></a>
+                    <a type="btn" href="/media/{{ certidao.arquivo }}" target="_blank"><i class="lni lni-eye"></i></a>
                 </div>
             </td>
-        {% endif %} -->
     </tr>
 {% endfor %}

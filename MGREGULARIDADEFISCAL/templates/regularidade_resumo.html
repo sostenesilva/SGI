@@ -1,11 +1,20 @@
 <div class="modal-content">
-    <div class="modal-header">
-        <h5 class="modal-title">Regularidade Fiscal</h5>
+    <div class="modal-header justify-content-between">
+
+            <h5 class="modal-title">Regularidade Fiscal</h5>
+            <div>
+                <div class="btn-group">
+                    <a type="button" class="btn btn-sm btn-light" hx-get="{% url 'certidoes_add' fornecedor.id %}" hx-target="#dialog">Incluir Certidão</a>
+                    <a type="button" class="btn btn-sm btn-light" href="{% url 'emitir_declaracao' fornecedor.id %}">Emitir Declaração</a>
+                </div>
+            </div>
     </div>
     <div class="modal-body">
         <div class="row justify-content-center">
-            <div class="col-md-8">
+
+            <div class="col-md-6">
                 <h5 style="text-align: center;">Certidões</h5>
+                
                 <div class="table-overflow" style="max-height: 400px;">
                     <table class="table table-sm table-striped">
                         <thead>
@@ -13,6 +22,7 @@
                                 <th scope="col">Certidão</th>
                                 <th scope="col">Emissão</th>
                                 <th scope="col">Validade</th>
+                                <th scope="col">Ações</th>
                             </tr>
                         </thead>
             
@@ -27,13 +37,15 @@
                 </div>
             </div>
     
-            <div class="col-md-4">
+            <div class="col-md-6">
                 <h5 style="text-align: center;">Declarações</h5>
                 <div class="table-overflow" style="max-height: 400px;">
                     <table class="table table-sm table-striped">
                         <thead>
                             <tr>
                                 <th scope="col">Emissão</th>
+                                <th scope="col">Validade</th>
+                                <th scope="col">Ações</th>
                             </tr>
                         </thead>
             

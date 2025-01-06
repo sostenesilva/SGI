@@ -1,0 +1,46 @@
+{% load custom_filters %}
+<div class="modal-content">
+    <div class="modal-header justify-content-between">
+
+            <h5 class="modal-title">Adicionar Certidoes</h5>
+            <div>
+                <small style="font-size: x-small;">
+                    Fornecedor: <b>{{ fornecedor.RazaoSocial|truncatechars:40 }} ({{ fornecedor.NumeroDocumentoAjustado }})</b>
+                </small>
+            </div>
+    </div>
+    <div class="modal-body">
+        <form action="{% url 'certidoes_add' fornecedor.id %}" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ certidoes_form.management_form }}
+            {% for form in certidoes_form %}
+            <div class="form-container" style="border: 1px solid #ccc; padding: 10px; margin-bottom: 10px; border-radius: 5px;">
+                <!-- Exibe o texto humanizado do campo 'tipo' como label -->
+                <small class="form-label" style="display: block; font-weight: bold; margin-bottom: 5px;">
+                    {{ form.fields.tipo.choices|get_choice_label:form.initial.tipo }}
+                </small>
+
+                <!-- Renderiza os campos do formulário -->
+                <div class="form-group d-flex">
+                    <div class="col-2 px-1">{{ form.dataEmissao }}</div>
+                    <div class="col-2 px-1">{{ form.dataValidade }}</div>
+                    <div class="col-3 px-1">{{ form.autenticacao }}</div>
+                    <div class="col-5 px-1">{{ form.arquivo }}</div>
+                </div>
+        
+                <!-- Campo hidden -->
+                {{ form.fornecedor }}
+                {{ form.autor }}
+                {{ form.tipo }}
+            </div>
+            {% endfor %}
+            <div class="d-flex justify-content-center">
+                <button type="submit" class="btn btn-sm btn-success mx-2">Enviar</button>
+                <a hx-get="{% url 'regularidade_resumo' fornecedor.id %}" hx-target="#dialog" class="btn btn-sm btn-danger mx-2">Cancelar</a>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <small style="font-size: xx-small;">Informações enviadas por <b>{{ request.user }}</b></small>
+    </div>    
+</div>
