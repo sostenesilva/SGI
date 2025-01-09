@@ -6,10 +6,7 @@
             <tr>
                 <td>
                     <strong>Fornecedor:</strong> {{ declaracao.fornecedor.RazaoSocial }}
-                </td>
-            </tr>
-            <tr>
-                <td>
+                </td><td>
                     <strong>CNPJ/CPF:</strong> {{ declaracao.fornecedor.NumeroDocumentoAjustado }}
                 </td>
             </tr>
@@ -17,13 +14,14 @@
                 <td>
                     <strong>Data de Emissão:</strong> {{ declaracao.data_emissao|date_format }}
                 </td>
+                <td>
+                    <strong>Vigência:</strong> {{ declaracao.data_inicio|date_format }} à {{ declaracao.data_validade|date_format }}
+                </td>
             </tr>
             <tr>
                 <td>
                     <strong>Chave de Autenticidade:</strong> {{ declaracao.codigo }}
                 </td>
-            </tr>
-            <tr>
                 <td>
                     <a type="btn" href="/{{ declaracao.arquivo }}" target="_blank"><i class="lni lni-eye"></i> Visualizar declaração</a>
                 </td>
@@ -33,6 +31,7 @@
 
     <div class="certidoes-info">
         <h4>Certidões Vinculadas</h4>
+        <strong>Situação: </strong>{% if regularidade %}Regular{% else %}Certidões insuficientes para atestar a regularidade{% endif %}
         <table class="table table-striped">
             <thead>
                 <tr>
@@ -45,13 +44,23 @@
             </thead>
             <tbody>
                 {% for tipo, certidao in certidoes.items %}
-                    <tr>
-                        <td>{{ tipo }}</td>
-                        <td>{{ certidao.dataEmissao }}</td>
-                        <td>{{ certidao.dataValidade }}</td>
-                        <td>{{ certidao.autenticacao }}</td>
-                        <td><a href="{{ certidao.arquivo.url }}" download>Baixar</a></td>
-                    </tr>
+                    {% if certidao %}
+                        <tr>
+                            <td>{{ tipo }}</td>
+                            <td>{{ certidao.dataEmissao }}</td>
+                            <td>{{ certidao.dataValidade }}</td>
+                            <td>{{ certidao.autenticacao }}</td>
+                            <td><a href="{{ certidao.arquivo.url }}" download>Baixar</a></td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td>{{ tipo }}</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>Não localizada</td>
+                            <td>-</td>
+                        </tr>
+                    {% endif %}
                 {% endfor %}
             </tbody>
         </table>

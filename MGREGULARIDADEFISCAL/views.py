@@ -3,7 +3,7 @@ from django.shortcuts import redirect, render
 from datetime import date
 from weasyprint import CSS, HTML
 from docx import Document
-import pypandoc
+from django.contrib.auth.decorators import login_required
 from python_docx_replace import docx_replace
 import base64
 from SGI import settings
@@ -15,12 +15,10 @@ from django.template.loader import render_to_string
 def fornecedores_list(request):
     fornecedores = Fornecedores.objects.all()
     buscar = request.GET.get('buscar')
-    print(buscar)
     if buscar:
         fornecedores = Fornecedores.objects.filter(RazaoSocial__icontains=buscar)
     else:
         fornecedores = Fornecedores.objects.all()
-
     return render(request, 'fornecedores_list.html', {'fornecedores':fornecedores})
 
 def certidoes_list(request, fornecedor_id):
@@ -58,6 +56,7 @@ def declaracoes_list(request, fornecedor_id):
     declaracoes = models.Declaracao.objects.filter(fornecedor__pk=fornecedor_id)
     return render(request, 'declaracoes_list.html', {'declaracoes':declaracoes})
 
+@login_required
 def regularidade_resumo(request, fornecedor_id):
     fornecedor = Fornecedores.objects.get(pk = fornecedor_id)
     return render(request, 'regularidade_resumo.html', {'fornecedor':fornecedor})
@@ -83,7 +82,7 @@ def emitir_declaracao(request,fornecedor_id):
 
     # Verifica se todas as certidões foram encontradas
     faltando = [tipo for tipo, certidao in certidoes.items() if certidao is None]
-    
+
     print(certidoes)
 
     if faltando:
@@ -100,6 +99,7 @@ def encode_image_base64(image_path):
     with open(image_path, "rb") as img_file:
         return base64.b64encode(img_file.read()).decode("utf-8")
 
+@login_required
 def ver_declaracao (request, declaracao):
 
     header_image = encode_image_base64("static/img/header.png")
@@ -185,8 +185,8 @@ def ver_declaracao (request, declaracao):
                 <h2 class="section-title">Instruções para Validação</h2>
                 <p style="margin:0px">Esta declaração possui uma chave de autenticidade, que permite a consulta online das certidões associadas e de sua validade.</p>
                 <p style="margin-bottom:0px">Para verificar esta declaração, acesse o site:</p>
-                <p style="margin:0px">https://cortes.sginformacao.com.br/regularidadefiscal/consultar</p>
-                <p style="text-align:left">Chave de autenticação: <strong>{declaracao.codigo}</strong></p>
+                <p style="margin:0px; font-size: small;">https://cortes.sginformacao.com.br/regularidadefiscal/consultar</p>
+                <p style="text-align:left; font-size: small;">Chave de autenticação: <strong>{declaracao.codigo}</strong></p>
                 <p><strong>Observações Importantes:</strong></p>
                 <ul>
                     <li>A validade desta declaração está condicionada à vigência das certidões apresentadas.</li>
@@ -212,7 +212,6 @@ def ver_declaracao (request, declaracao):
 
     html.write_pdf(caminho_pdf, stylesheets=[css])
 
-    # HTML(string=template, base_url=request.build_absolute_uri('/')).write_pdf(caminho_pdf,  stylesheets=[CSS('static/css/detail_pdf_gen.css')],  presentational_hints=True)
     return caminho_pdf
 
 def consulta_externa(request):
@@ -222,13 +221,13 @@ def dadosdeclaracao_externa (request):
     chave = request.GET.get('chave')
     declaracao = models.Declaracao.objects.get(codigo = chave)
     certidoes = declaracao.get_certidoes()
+    regularidade = True
+    for tipo,certidao in certidoes.items():
+        if not certidao:
+            regularidade = False
+    return render(request, 'dadosdeclaracao_externa.html',{'declaracao': declaracao, 'certidoes':certidoes, 'regularidade':regularidade})
 
-
-
-
-    return render(request, 'dadosdeclaracao_externa.html',{'declaracao': declaracao, 'certidoes':certidoes})
-
-
+@login_required
 def dashregularidade(request):
     # fornecedor = Fornecedores.objects.get(pk = 1)
     # print(fornecedor)
