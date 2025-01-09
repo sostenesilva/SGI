@@ -4,7 +4,7 @@ from MGC.models import Fornecedores
 from django.contrib.auth.models import Group, User
 
 def diretorioCertidao (instance, filename):
-    return f'MGREGULARIDAFISCAL/certidões/{instance.dataEmissao.year}/{instance.tipo}/{instance.dataEmissao.day}-{instance.dataEmissao.month}-{instance.dataEmissao.year} - {instance.tipo} - {instance.fornecedor.RazaoSocial}.pdf'
+    return f'MGREGULARIDADEFISCAL/certidões/{instance.dataEmissao.year}/{instance.tipo}/{instance.dataEmissao.day}-{instance.dataEmissao.month}-{instance.dataEmissao.year} - {instance.tipo} - {instance.fornecedor.RazaoSocial}.pdf'
 
 class Certidao(models.Model):
 
@@ -30,11 +30,19 @@ class Certidao(models.Model):
 
     def __str__(self):
         return f'{self.tipo} - {self.dataEmissao} à {self.dataValidade} - {self.fornecedor}'
-    
+
+
+def diretorioDeclaracao (instance, filename):
+    return f'MGREGULARIDADEFISCAL/declarações/{instance.data_emissao.year}/{instance.codigo}.pdf'
+
+
 class Declaracao(models.Model):
     fornecedor = models.ForeignKey(Fornecedores, on_delete=models.PROTECT)
     codigo = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     data_emissao = models.DateField(auto_now_add=True)
+    data_inicio = models.DateField(null=True, blank=True)
+    data_validade = models.DateField(null=True, blank=True)
+    arquivo = models.FileField(null=True, blank=True)
 
     def get_certidoes(self):
             """

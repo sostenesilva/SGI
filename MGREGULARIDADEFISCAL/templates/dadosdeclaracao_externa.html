@@ -1,0 +1,61 @@
+{% load custom_filters %}
+{% if declaracao %}
+    <div class="declaracao-info">
+        <h4>Dados da Declaração</h4>
+        <table class="table table-overflow">
+            <tr>
+                <td>
+                    <strong>Fornecedor:</strong> {{ declaracao.fornecedor.RazaoSocial }}
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <strong>CNPJ/CPF:</strong> {{ declaracao.fornecedor.NumeroDocumentoAjustado }}
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <strong>Data de Emissão:</strong> {{ declaracao.data_emissao|date_format }}
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <strong>Chave de Autenticidade:</strong> {{ declaracao.codigo }}
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <a type="btn" href="/{{ declaracao.arquivo }}" target="_blank"><i class="lni lni-eye"></i> Visualizar declaração</a>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="certidoes-info">
+        <h4>Certidões Vinculadas</h4>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Certidão</th>
+                    <th>Data de Emissão</th>
+                    <th>Data de Validade</th>
+                    <th>Autenticação</th>
+                    <th>Download</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for tipo, certidao in certidoes.items %}
+                    <tr>
+                        <td>{{ tipo }}</td>
+                        <td>{{ certidao.dataEmissao|date_format }}</td>
+                        <td>{{ certidao.dataValidade|date_format }}</td>
+                        <td>{{ certidao.autenticacao }}</td>
+                        <td><a href="{{ certidao.arquivo.url }}" download>Baixar</a></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% else %}
+    <p class="error-message">Declaração não encontrada ou inválida. Verifique a chave de autenticidade e tente novamente.</p>
+{% endif %}

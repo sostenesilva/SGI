@@ -52,7 +52,6 @@ def certidoes_add(request, fornecedor_id):
                 print (f'Erro: {form.errors} / Quantidade: {len(form.errors)}')
         return redirect('dashregularidadefiscal')
             
-
     return render(request, 'certidoes_add.html', {'certidoes_form':formset, 'fornecedor':fornecedor})
 
 def declaracoes_list(request, fornecedor_id):
@@ -68,6 +67,20 @@ def emitir_declaracao(request,fornecedor_id):
     declaracao = models.Declaracao.objects.create(fornecedor=fornecedor)
     certidoes = declaracao.get_certidoes()
 
+    certidao_max = date(2500,1,1)
+    certidao_min = date(2000,1,1)
+
+    for tipo, certidao in certidoes.items():
+        if certidao:
+            if certidao.dataValidade < certidao_max:
+                certidao_max = certidao.dataValidade
+            if certidao.dataEmissao > certidao_min:
+                certidao_min = certidao.dataEmissao
+    
+    declaracao.data_inicio = certidao_min
+    declaracao.data_validade = certidao_max
+
+
     # Verifica se todas as certidões foram encontradas
     faltando = [tipo for tipo, certidao in certidoes.items() if certidao is None]
     
@@ -76,7 +89,9 @@ def emitir_declaracao(request,fornecedor_id):
     if faltando:
         print(f"Certidões faltando: {', '.join(faltando)}")
 
-    ver_declaracao(request,declaracao)
+    caminho = ver_declaracao(request,declaracao)
+    declaracao.arquivo = caminho
+    declaracao.save()
 
     return redirect('dashregularidadefiscal')
 
@@ -91,18 +106,12 @@ def ver_declaracao (request, declaracao):
     footer_image = encode_image_base64("static/img/footer.png")
     brasao_image = encode_image_base64("static/img/logo-horizontal.png")
 
-    certidoes_html=""
-    certidao_max = date(2500,1,1)
-    certidao_min = date(2000,1,1)
+    certidaoIndisponivel = False
 
+    certidoes_html=""
+    
     for tipo, certidao in declaracao.get_certidoes().items():
         if certidao:
-            if certidao.dataValidade < certidao_max:
-                certidao_max = certidao.dataValidade
-            if certidao.dataEmissao > certidao_min:
-                certidao_min = certidao.dataEmissao
-
-
             certidoes_html += f"""
             <tr>
                 <td>{tipo}</td>
@@ -110,6 +119,16 @@ def ver_declaracao (request, declaracao):
                 <td>{certidao.dataValidade.strftime('%d/%m/%Y')}</td>
                 <td>{certidao.autenticacao}</td>
             </tr>"""
+        else:
+            certidaoIndisponivel = True
+            certidoes_html += f"""
+            <tr>
+                <td>{tipo}</td>
+                <td>-</td>
+                <td>-</td>
+                <td>Não localizado</td>
+            </tr>"""
+
 
     template = f"""
     <!DOCTYPE html>
@@ -136,12 +155,17 @@ def ver_declaracao (request, declaracao):
             <!-- Conteúdo Principal -->
         <div class="content">
             <h1 style="text-align: center;">Declaração de Conformidade Fiscal</h1>
-            <p>Emitimos a presente Declaração de Conformidade Fiscal, confirmando que o fornecedor abaixo identificado atende aos requisitos de regularidade fiscal, conforme documentação apresentada e validada por esta administração pública.</p>
+            <p>Emitimos a presente Declaração de Conformidade Fiscal a fim de verificar se o fornecedor abaixo identificado atende aos requisitos de regularidade fiscal, conforme documentação apresentada e validada por esta administração pública.</p>
             <p style="margin:0; padding:0;"><strong>Fornecedor:</strong> {declaracao.fornecedor.RazaoSocial}</p>
-            <p style="margin:0; padding:0;"><strong>CNPJ/CPF:</strong> {declaracao.fornecedor.NumeroDocumentoAjustado}</p>
-            <p style="margin:0; padding:0;"><strong>Vigência: </strong> {certidao_min.strftime('%d/%m/%Y')} à {certidao_max.strftime('%d/%m/%Y')}</p>
+            <p style="margin:0; padding:0;"><strong>CNPJ/CPF:</strong> {declaracao.fornecedor.NumeroDocumentoAjustado}</p>"""
+    
+    if certidaoIndisponivel:
+        template += f"""<p style="margin:0; padding:0;color: red;"><strong>Situação:</strong> Certidões insuficientes para atestar a regularidade</p>"""
+    else:
+        template += f"""<p style="margin:0; padding:0;"><strong>Situação:</strong> Regular</p>
+        <p style="margin:0; padding:0;"><strong>Vigência: </strong> {declaracao.data_inicio.strftime('%d/%m/%Y')} à {declaracao.data_validade.strftime('%d/%m/%Y')}</p>"""
 
-            <h2 class="section-title">Certidões</h2>
+    template += f"""<h2 class="section-title">Certidões</h2>
             <table>
                 <thead>
                     <tr>
@@ -159,7 +183,9 @@ def ver_declaracao (request, declaracao):
     template += f"""</tbody>
                 </table>
                 <h2 class="section-title">Instruções para Validação</h2>
-                <p style="margin:0px">Esta declaração possui uma chave de autenticidade, que permite a consulta online das certidões associadas e de sua validade. Para verificar esta declaração, acesse o site: <strong>https://cortes.sginformacao.com.br/regularidadefiscal/consultar</strong></p>
+                <p style="margin:0px">Esta declaração possui uma chave de autenticidade, que permite a consulta online das certidões associadas e de sua validade.</p>
+                <p style="margin-bottom:0px">Para verificar esta declaração, acesse o site:</p>
+                <p style="margin:0px">https://cortes.sginformacao.com.br/regularidadefiscal/consultar</p>
                 <p>Chave de autenticação: <strong>{declaracao.codigo}</strong></p>
                 <p><strong>Observações Importantes:</strong></p>
                 <ul>
@@ -187,11 +213,20 @@ def ver_declaracao (request, declaracao):
     html.write_pdf(caminho_pdf, stylesheets=[css])
 
     # HTML(string=template, base_url=request.build_absolute_uri('/')).write_pdf(caminho_pdf,  stylesheets=[CSS('static/css/detail_pdf_gen.css')],  presentational_hints=True)
-    return html
+    return caminho_pdf
 
-    
+def consulta_externa(request):
+    return render(request,'consultadeclaracao.html',{})
+
+def dadosdeclaracao_externa (request):
+    chave = request.GET.get('chave')
+    declaracao = models.Declaracao.objects.get(codigo = chave)
+    certidoes = declaracao.get_certidoes()
 
 
+
+
+    return render(request, 'dadosdeclaracao_externa.html',{'declaracao': declaracao, 'certidoes':certidoes})
 
 
 def dashregularidade(request):
