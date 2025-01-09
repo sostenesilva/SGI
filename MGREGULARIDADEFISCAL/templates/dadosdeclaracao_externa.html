@@ -47,8 +47,8 @@
                 {% for tipo, certidao in certidoes.items %}
                     <tr>
                         <td>{{ tipo }}</td>
-                        <td>{{ certidao.dataEmissao|date_format }}</td>
-                        <td>{{ certidao.dataValidade|date_format }}</td>
+                        <td>{{ certidao.dataEmissao }}</td>
+                        <td>{{ certidao.dataValidade }}</td>
                         <td>{{ certidao.autenticacao }}</td>
                         <td><a href="{{ certidao.arquivo.url }}" download>Baixar</a></td>
                     </tr>
