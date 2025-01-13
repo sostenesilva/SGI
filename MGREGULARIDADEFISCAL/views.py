@@ -186,7 +186,8 @@ def ver_declaracao (request, declaracao):
                 <p style="margin:0px">Esta declaração possui uma chave de autenticidade, que permite a consulta online das certidões associadas e de sua validade.</p>
                 <p style="margin-bottom:0px">Para verificar esta declaração, acesse o site:</p>
                 <p style="margin:0px; font-size: small;">https://cortes.sginformacao.com.br/regularidadefiscal/consultar</p>
-                <p style="text-align:left; font-size: small;">Chave de autenticação: <strong>{declaracao.codigo}</strong></p>
+                <p style="text-align:left; font-size: small;">Chave de autenticação:</p>
+                <p style="text-align:left; font-size: small;"><strong>{declaracao.codigo}</strong></p>
                 <p><strong>Observações Importantes:</strong></p>
                 <ul>
                     <li>A validade desta declaração está condicionada à vigência das certidões apresentadas.</li>

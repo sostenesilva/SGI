@@ -3,7 +3,7 @@ from . import views
 
 urlpatterns = [
     path('', views.dashregularidade, name='dashregularidadefiscal'),
-    path('consulta', views.consulta_externa, name='consulta_externa'),
+    path('consultar', views.consulta_externa, name='consulta_externa'),
     path('consulta/dadosdeclaracao', views.dadosdeclaracao_externa, name='dadosdeclaracao_externa'),
     path('fornecedoreslist/', views.fornecedores_list, name='fornecedores_list'),
     path('certidoeslist/<int:fornecedor_id>/', views.certidoes_list, name='certidoes_list'),
