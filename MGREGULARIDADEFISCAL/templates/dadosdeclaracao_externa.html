@@ -15,7 +15,11 @@
                     <strong>Data de Emissão:</strong> {{ declaracao.data_emissao|date_format }}
                 </td>
                 <td>
-                    <strong>Vigência:</strong> {{ declaracao.data_inicio|date_format }} à {{ declaracao.data_validade|date_format }}
+                    {% if declaracao.data_validade %}
+                        <strong>Vigência:</strong> {{ declaracao.data_inicio|date_format }} à {{ declaracao.data_validade|date_format }}
+                    {% else %}
+                        <strong>Vigência:</strong> -
+                    {% endif %}
                 </td>
             </tr>
             <tr>
