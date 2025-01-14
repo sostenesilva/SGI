@@ -24,7 +24,7 @@ def fornecedores_list(request):
     return render(request, 'fornecedores_list.html', {'fornecedores':fornecedores})
 
 def certidoes_list(request, fornecedor_id):
-    certidoes = models.Certidao.objects.filter(fornecedor__pk=fornecedor_id).order_by('dataEmissao')
+    certidoes = models.Certidao.objects.filter(fornecedor__pk=fornecedor_id).order_by('-dataEmissao')
     return render(request, 'certidoes_list.html', {'certidoes':certidoes})
 
 def certidoes_add(request, fornecedor_id):
@@ -55,7 +55,7 @@ def certidoes_add(request, fornecedor_id):
     return render(request, 'certidoes_add.html', {'certidoes_form':formset, 'fornecedor':fornecedor})
 
 def declaracoes_list(request, fornecedor_id):
-    declaracoes = models.Declaracao.objects.filter(fornecedor__pk=fornecedor_id).order_by('data_emissao')
+    declaracoes = models.Declaracao.objects.filter(fornecedor__pk=fornecedor_id).order_by('-data_emissao')
     return render(request, 'declaracoes_list.html', {'declaracoes':declaracoes})
 
 @login_required
@@ -70,16 +70,23 @@ def emitir_declaracao(request,fornecedor_id):
 
     certidao_max = date(2500,1,1)
     certidao_min = date(2000,1,1)
-
+    certidao_none = False
     for tipo, certidao in certidoes.items():
         if certidao:
             if certidao.dataValidade < certidao_max:
                 certidao_max = certidao.dataValidade
             if certidao.dataEmissao > certidao_min:
                 certidao_min = certidao.dataEmissao
-    
+        else:
+            certidao_none = True
+
     declaracao.data_inicio = certidao_min
-    declaracao.data_validade = certidao_max
+
+    if certidao_none:
+        declaracao.data_validade = None
+    else:
+        declaracao.data_validade = certidao_max
+        
 
 
     # Verifica se todas as certidões foram encontradas
@@ -93,14 +100,14 @@ def emitir_declaracao(request,fornecedor_id):
     caminho = ver_declaracao(request,declaracao)
     declaracao.arquivo = caminho
     declaracao.save()
-    return HttpResponse(
-                status=204,
-                headers={
-                    'HX-Trigger': json.dumps({
-                        "DeclaracoesListChanged": None,
-                        "showMessage": f"Declaração emitida!"
-                    })
-                })
+    # return HttpResponse(
+    #             status=204,
+    #             headers={
+    #                 'HX-Trigger': json.dumps({
+    #                     "DeclaracoesListChanged": None,
+    #                     "showMessage": f"Declaração emitida!"
+    #                 })
+    #             })
 
     return redirect('dashregularidadefiscal')
 
