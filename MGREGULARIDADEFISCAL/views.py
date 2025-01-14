@@ -121,7 +121,7 @@ def ver_declaracao (request, declaracao):
 
     header_image = encode_image_base64("static/img/header.png")
     footer_image = encode_image_base64("static/img/footer.png")
-    brasao_image = encode_image_base64("static/img/logo-horizontal.png")
+    brasao_image = encode_image_base64("static/img/logo_cor_horizontal.png")
 
     certidaoIndisponivel = False
 

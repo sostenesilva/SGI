@@ -17,10 +17,10 @@ h1 {
 
 header {
     position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 5cm;
+    top: 0cm;
+    left: -20cm;
+    right: 0cm;
+    height: 8cm;
     text-align: center;
     background-size: 100%;
     background-repeat: no-repeat;
