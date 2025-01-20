@@ -1,17 +1,17 @@
 {% extends "basecombustiveis.html" %}
 
-{% block head_title %} Abastecimentos {% endblock head_title %}
+{% block head_title %} Condutores {% endblock head_title %}
 
 {% block contentdash %}
     <div class="d-flex justify-content-between">
-            <h4><b>SGI</b> - Abastecimentos</h4>
-            <a type="button" class="btn btn-success" hx-get="{% url 'add_abastecimento' %}" hx-target="#dialog"><i class="lni lni-plus"></i> Registrar Abastecimento</a>
+            <h4><b>SGI</b> - Condutores</h4>
+            <a type="button" class="btn btn-success" hx-get="{% url 'add_condutores' %}" hx-target="#dialog"><i class="lni lni-plus"></i> Adicionar Condutor</a>
     </div>
     <hr>
     <!-- <form class="form-inline" action="." method="get">
         <div class="row container-fluid ">
             <div class="col-sm-4">
-                <input type="text" id="buscar" name="buscar" class="form-group form-control" placeholder="Placa, data, valor, motorista...">
+                <input type="text" id="buscar" name="buscar" class="form-group form-control" placeholder="Nome, Sobrenome, CPF...">
             </div>
             <div class="col">
                 <input type="submit" class="btn btn-primary form-group" value="Buscar">
@@ -23,22 +23,21 @@
         <table class="table table-sm table-striped">
             <thead>
                 <tr>
-                    <th scope="col">Data</th>
-                    <th scope="col">Placa</th>
-                    <th scope="col">UG</th>
-                    <th scope="col">Litros</th>
-                    <th scope="col">Valor Unitário</th>
-                    <th scope="col">Total</th>
-                    {% if perms.auth.Controle %}
-                        <th scope="col">Ações</th>
-                    {% endif %}
+                    <th scope="col">Nome</th>
+                    <th scope="col">CPF</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Validade da CNH</th>
+                    <th scope="col">Categoria</th>
+                    <th scope="col">Curso Escolar</th>
+                    <th scope="col">Observações</th>
+                    <th scope="col">Ações</th>
                 </tr>
             </thead>
 
-            <tbody hx-trigger="load, AbastecimentosListChanged from:body" hx-get="{% url 'abastecimentos_list' %}" hx-target="this">
+            <tbody hx-trigger="load, CondutoresListChanged from:body" hx-get="{% url 'condutores_list' %}" hx-target="this">
                 <tr>
                   <td class="spinner-border" role="status">
-                    <span class="visually-hidden">Loading...</span>
+                    <span class="visually-hidden">Carregando...</span>
                   </td>
                 </tr>
             </tbody>
@@ -49,7 +48,7 @@
         <nav aria-label="Page navigation">
             <ul class="pagination pagination-sm">
 
-                {% if abastecimentos.has_previous %}
+                {% if condutores.has_previous %}
                     <li class="page-item">
 
                         {% if request.GET.buscar %}
@@ -63,13 +62,13 @@
                     </li>   
                 {% endif %}
             
-                {% for n in abastecimentos.paginator.page_range %}
+                {% for n in condutores.paginator.page_range %}
 
-                    {% if abastecimentos.number == n %}
+                    {% if condutores.number == n %}
                         <li class="page-item active">
                             <span class="page-link">{{ n }}</span>
                         </li>
-                    {% elif n > abastecimentos.number|add:'-3' and n < abastecimentos.number|add:'3' %}
+                    {% elif n > condutores.number|add:'-3' and n < condutores.number|add:'3' %}
                         {% if request.GET.buscar %}
                             <li class="page-item"><a class="page-link" href="?page={{ n }}&buscar={{request.GET.buscar}}">{{ n }}</a></li>
                         {% else %}
@@ -81,12 +80,12 @@
 
                 {% endfor %}
             
-                {% if abastecimentos.has_next %}
+                {% if condutores.has_next %}
                     <li class="page-item">
                         {% if request.GET.buscar %}
-                            <a class="page-link" href="?page={{ abastecimentos.paginator.num_pages }}&buscar={{request.GET.buscar}}" aria-label="Próxima">
+                            <a class="page-link" href="?page={{ condutores.paginator.num_pages }}&buscar={{request.GET.buscar}}" aria-label="Próxima">
                         {% else %}
-                            <a class="page-link" href="?page={{ abastecimentos.paginator.num_pages }}" aria-label="Próxima">
+                            <a class="page-link" href="?page={{ condutores.paginator.num_pages }}" aria-label="Próxima">
                         {% endif %}
                             <span aria-hidden="true">&raquo;</span>
                             <span class="sr-only">Última</span>
@@ -95,5 +94,5 @@
                 {% endif %}
             </ul>
         </nav>
-    </div>    
+    </div>
 {% endblock contentdash %}

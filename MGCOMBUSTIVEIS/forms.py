@@ -1,34 +1,51 @@
 from django import forms
 from . import models
 
-
-class Veiculo_form(forms.ModelForm):
-
+class Frota_form(forms.ModelForm):
     class Meta:
         model = models.veiculo
-        fields = ('placa','secretaria','modelo','descricao','observacao')
+        fields = '__all__'
 
-        widgets = {
-            'placa': forms.TextInput(attrs={'class':'form-control'}),
-            'secretaria': forms.Select(attrs={'class':'form-control'}),
-            'modelo': forms.TextInput(attrs={'class':'form-control'}),
-            'descricao': forms.TextInput(attrs={'class':'form-control'}),
-            'observacao': forms.TextInput(attrs={'class':'form-control'}),
+        widgets= {
+            'placa':forms.TextInput(attrs={'class':'form-control', 'type':'text','placeholder':'Ex.: ABC1234', 'required':'True'}),
+            'ano':forms.TextInput(attrs={'class':'form-control', 'type':'number','placeholder':'Ex.: 2023', 'required':'True'}),
+            'modelo':forms.TextInput(attrs={'class':'form-control', 'type':'text','placeholder':'Ex.: Toyota Corolla', 'required':'True'}),
+            'secretaria':forms.TextInput(attrs={'class':'form-control', 'type':'text','placeholder':'Ex.: Educação', 'required':'True'}),
+            'descricao':forms.Textarea(attrs={'class':'form-control', 'type':'text', 'rows':'2', 'placeholder':'Detalhes sobre o veículo', 'required':'True'}),
+            'status':forms.Select(attrs={'class':'form-select'}),
+            'propriedade':forms.Select(attrs={'class':'form-select'}),
+            'observacao':forms.Textarea(attrs={'class':'form-control', 'rows':'2'})
+        }
+
+class Condutores_form(forms.ModelForm):
+    class Meta:
+        model = models.condutor
+        fields = '__all__'
+
+        widgets= {
+            'nome':forms.TextInput(attrs={'class':'form-control', 'type':'text','placeholder':'Nome completo', 'required':'True'}),
+            'cpf':forms.TextInput(attrs={'class':'form-control', 'type':'text','placeholder':'XXX.XXX.XXX-XX', 'required':'True'}),
+            'status':forms.Select(attrs={'class':'form-select'}),
+            'validadeCNH':forms.DateInput(format=('%Y-%m-%d'),attrs={'class':'form-control', 'type':'date'}),
+            'categoriaCNH':forms.TextInput(attrs={'class':'form-control', 'type':'text', 'placeholder':"Ex.: AB, C"}),
+            'cursoEscolar':forms.CheckboxInput(attrs={'class':'form-check-input', 'type':'checkbox','placeholder':'Ex.: 6,49'}),
+            'observacoes':forms.Textarea(attrs={'class':'form-control', 'rows':'2'})
         }
 
 class Abastecimentos_form(forms.ModelForm):
-
     class Meta:
         model = models.Abastecimentos
-        fields = ('data','veiculo','tipo','quantidade','valorUnitario','condutor','fiscal','km')
-
-        widgets = {
-            'data': forms.DateInput(attrs={'class':'form-control'}),
-            'veiculo': forms.Select(attrs={'class':'form-control'}),
-            'tipo': forms.TextInput(attrs={'class':'form-control'}),
-            'quantidade': forms.TextInput(attrs={'class':'form-control'}),
-            'valorUnitario': forms.NumberInput(attrs={'class':'form-control'}),
-            'condutor': forms.Select(attrs={'class':'form-control'}),
-            'fiscal': forms.Select(attrs={'class':'form-control'}),
-            'km': forms.NumberInput(attrs={'class':'form-control'}),
+        fields = '__all__'
+    
+        widgets= {
+            'veiculo':forms.Select(attrs={'class':'form-control'}),
+            'condutor':forms.Select(attrs={'class':'form-control'}),
+            'fiscal':forms.Select(attrs={'class':'form-control'}),
+            'data':forms.DateInput(format=('%Y-%m-%d'), attrs={'class':'form-control', 'type':'date', 'required':'True'}),
+            'tipo':forms.Select(attrs={'class':'form-select', 'required':'True'}),
+            'valorUnitario':forms.NumberInput(attrs={'class':'form-control', 'required':'True', 'type':'number','placeholder':'Ex.: 6,49'}),
+            'quantidade':forms.NumberInput(attrs={'class':'form-control', 'required':'True', 'type':'number','placeholder':'Ex.: 50,5'}),
+            'valorTotal':forms.NumberInput(attrs={'class':'form-control', 'readonly':'True', 'type':'number','placeholder':'Ex.: 324,50'}),
+            'km':forms.NumberInput(attrs={'class':'form-control', 'type':'number','placeholder':'Ex.: 15000'}),
+            'status':forms.Select(attrs={'class':'form-select', 'required':'True'}),
         }

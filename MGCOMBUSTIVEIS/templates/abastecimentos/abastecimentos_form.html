@@ -4,9 +4,49 @@
       <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
     </div>
     <div class="modal-body">
-        <div class="mb-3">
-            {{ form.as_p }}
+      <div class="row g-3">
+        <div class="col-md-6">
+            <label for="data" class="form-label">Data</label>
+            {{form.data}}
         </div>
+        <div class="col-md-6">
+            <label for="veiculo" class="form-label">Veículo</label>
+            <p>{{form.veiculo}}</p>
+        </div>
+        <div class="col-md-6">
+            <label for="tipo" class="form-label">Tipo de Combustível</label>
+            {{form.tipo}}
+            </select>
+        </div>
+        <div class="col-md-6">
+            <label for="quantidade" class="form-label">Quantidade (Litros)</label>
+            {{form.quantidade}}
+        </div>
+        <div class="col-md-6">
+            <label for="valorUnitario" class="form-label">Valor Unitário (R$)</label>
+            {{form.valorUnitario}}
+        </div>
+        <div class="col-md-6">
+            <label for="valorTotal" class="form-label">Valor Total (R$)</label>
+            {{form.valorTotal}}
+        </div>
+        <div class="col-md-6">
+            <label for="condutor" class="form-label">Condutor</label>
+            <p>{{ form.condutor }}</p>
+        </div>
+        <div class="col-md-6">
+            <label for="fiscal" class="form-label">Fiscal</label>
+            <p>{{ form.fiscal }}</p>
+        </div>
+        <div class="col-md-6">
+            <label for="km" class="form-label">Quilometragem</label>
+            {{form.km}}
+        </div>
+        <div class="col-md-6">
+            <label for="status" class="form-label">Status</label>
+            {{form.status}}
+        </div>
+      </div>
     </div>
     <div class="modal-footer">
       <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
@@ -15,3 +55,25 @@
       <button type="submit" class="btn btn-primary">Salvar</button>
     </div>
   </form>
+
+  <script>
+
+    // Referências aos campos
+    const quantidadeInput = document.getElementById('id_quantidade');
+    const valorUnitarioInput = document.getElementById('id_valorUnitario');
+    const valorTotalInput = document.getElementById('id_valorTotal');
+
+    // Função para calcular o valor total
+    function calcularTotal() {
+      console.log(document.getElementById('quantidade')); // Verifique se não é null
+
+      const quantidade = parseFloat(quantidadeInput.value) || 0; // Valor padrão é 0 se vazio
+      const valorUnitario = parseFloat(valorUnitarioInput.value) || 0; // Valor padrão é 0 se vazio
+      const total = quantidade * valorUnitario; // Multiplicação
+      valorTotalInput.value = total.toFixed(2); // Define o valor total com 2 casas decimais
+    }
+
+    // Adiciona os eventos de input para calcular em tempo real
+    quantidadeInput.addEventListener('input', calcularTotal);
+    valorUnitarioInput.addEventListener('input', calcularTotal);
+</script>

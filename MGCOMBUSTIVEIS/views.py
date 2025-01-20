@@ -5,7 +5,6 @@ from . import models, forms
 from django.core.paginator import Paginator
 
 
-
 def dashcombustiveis(request):
     
     context = {
@@ -13,10 +12,9 @@ def dashcombustiveis(request):
 
     return render (request,'dashcombustiveis.html',context)
 
-
+#-------------- ABASTECIMENTOS -----------------------#
 def abastecimentos(request):
     return render (request,'abastecimentos/abastecimentos.html',{})
-
 
 def abastecimentos_list(request):
     # buscar = request.GET.get('buscar')
@@ -26,10 +24,11 @@ def abastecimentos_list(request):
     abastecimentos = models.Abastecimentos.objects.all()
     return render(request, 'abastecimentos/abastecimentos_list.html', {'abastecimentos': abastecimentos})
 
-
 def add_abastecimento(request):
     if request.method == "POST":
         form = forms.Abastecimentos_form(request.POST or None)
+        print(form.is_valid())
+
         if form.is_valid():
             # print(form.cleaned_data)
             form.instance.valorTotal = form.instance.valorUnitario * form.instance.quantidade
@@ -53,7 +52,6 @@ def add_abastecimento(request):
         'form': form,
     })
 
-
 def edit_abastecimento(request, abastecimento_pk):
     abastecimento_instance = models.Abastecimentos.objects.get(pk = abastecimento_pk)
     form = forms.Abastecimentos_form(request.POST or None, instance = abastecimento_instance)
@@ -74,5 +72,115 @@ def edit_abastecimento(request, abastecimento_pk):
             })
 
     return render (request, 'abastecimentos/abastecimentos_form.html', {
+        'form':form,
+    })
+
+#-------------- FROTA --------------------------------#
+def frota(request):
+    return render (request,'frota/frota.html',{})
+
+def frota_list(request):
+    frota = models.veiculo.objects.all()
+    return render(request, 'frota/frota_list.html', {'frota': frota})
+
+def add_frota(request):
+    if request.method == "POST":
+        form = forms.Frota_form(request.POST or None)
+        print(form.is_valid())
+        if form.is_valid():
+            # ALTERAR A PARTIR DAQUI
+            form.save()
+            return HttpResponse(
+                status=204,
+                headers={
+                    'HX-Trigger': json.dumps({
+                        "FrotaListChanged": None,
+                        "showMessage": f"Veículo registrado!"
+                    })
+                })
+        else:
+            return render(request, 'frota/frota_form.html', {
+                'form': form,
+            })
+    else:
+        form = forms.Frota_form()
+    return render(request, 'frota/frota_form.html', {
+        'form': form,
+    })
+
+def edit_frota(request, frota_pk):
+    frota_instance = models.veiculo.objects.get(pk = frota_pk)
+    form = forms.Frota_form(request.POST or None, instance = frota_instance)
+    if request.POST:
+        if form.is_valid:
+            form.save()
+            return HttpResponse(
+                status=204,
+                headers={
+                    'HX-Trigger': json.dumps({
+                        "FrotaListChanged": None,
+                        "showMessage": f"Veículo editado com sucesso!"
+                    })
+                })
+        else:
+            return render(request, 'frota/frota_form.html', {
+                'form': form,
+            })
+
+    return render (request, 'frota/frota_form.html', {
+        'form':form,
+    })
+
+#-------------- CONDUTORES --------------------------------#
+def condutores(request):
+    return render (request,'condutores/condutores.html',{})
+
+def condutores_list(request):
+    condutores = models.condutor.objects.all()
+    return render(request, 'condutores/condutores_list.html', {'condutores': condutores})
+
+def add_condutores(request):
+    if request.method == "POST":
+        form = forms.Condutores_form(request.POST or None)
+        if form.is_valid():
+            form.save()
+            return HttpResponse(
+                status=204,
+                headers={
+                    'HX-Trigger': json.dumps({
+                        "CondutoresListChanged": None,
+                        "showMessage": f"Condutor registrado!"
+                    })
+                })
+        else:
+            return render(request, 'condutores/condutores_form.html', {
+                'form': form,
+            })
+    else:
+        form = forms.Condutores_form()
+    return render(request, 'condutores/condutores_form.html', {
+        'form': form,
+    })
+
+def edit_condutores(request, condutor_pk):
+    condutores_instance = models.condutor.objects.get(pk = condutor_pk)
+    form = forms.Condutores_form(request.POST or None, instance = condutores_instance)
+    if request.POST:
+        if form.is_valid:
+            form.save()
+            return HttpResponse(
+                status=204,
+                headers={
+                    'HX-Trigger': json.dumps({
+                        "CondutoresListChanged": None,
+                        "showMessage": f"Condutor editado com sucesso!"
+                    })
+                })
+        else:
+            return render(request, 'condutores/condutores_form.html', {
+                'form': form,
+            })
+
+    return render (request, 'condutores/condutores_form.html', {
         'form':form,
     })

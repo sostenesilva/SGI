@@ -1,0 +1,15 @@
+{% for veiculo in frota %}
+    <tr>
+        <td>{{ veiculo.placa }}</td>
+        <td>{{ veiculo.modelo }}</td>
+        <td>{{ veiculo.ano }}</td>
+        <td>{{ veiculo.secretaria }}</td>
+        <td>{{ veiculo.status }}</td>
+        <td>{{ veiculo.propriedade }}</td>
+        <td>
+            <div class='btn-group btn-group-sm' role='group'>
+                <a hx-get="{% url 'edit_frota' veiculo.pk %}" hx-target="#dialog" class="btn btn-secondary"><i class="lni lni-pencil-alt"></i></a>
+            </div>
+        </td>
+    </tr>
+{% endfor %}

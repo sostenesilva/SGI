@@ -1,0 +1,20 @@
+{% for condutor in condutores %}
+    <tr>
+        <td>{{ condutor.nome }}</td>
+        <td>{{ condutor.cpf }}</td>
+        <td>{{ condutor.status }}</td>
+        <td>{{ condutor.validadeCNH }}</td>
+        <td>{{ condutor.categoriaCNH }}</td>
+        {% if condutor.cursoEscolar %}
+            <td>Sim</td>
+        {% else %}
+            <td>Não</td>
+        {% endif %}
+        <td>{{ condutor.observacoes }}</td>
+        <td>
+            <div class='btn-group btn-group-sm' role='group'>
+                <a hx-get="{% url 'edit_condutores' condutor.pk %}" hx-target="#dialog" class="btn btn-secondary"><i class="lni lni-pencil-alt"></i></a>
+            </div>
+        </td>
+    </tr>
+{% endfor %}

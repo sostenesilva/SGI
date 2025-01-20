@@ -1,0 +1,47 @@
+<form hx-post="{{ request.path }}" hx-headers='{"X-CSRFToken":"{{ csrf_token }}"}' class="modal-content">
+    <div class="modal-header">
+      <h5 class="modal-title">Informações do Condutor</h5>
+      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    </div>
+    <div class="modal-body">
+      <div class="row g-3">
+        <div class="col-md-12">
+            <label for="nome" class="form-label">Nome</label>
+            {{form.nome}}
+        </div>
+        <div class="col-md-6">
+            <label for="cpf" class="form-label">CPF</label>
+            {{form.cpf}}
+        </div>
+        <div class="col-md-6">
+            <label for="status" class="form-label">Status</label>
+            {{form.status}}
+        </div>
+        <div class="col-md-6">
+            <label for="validadeCNH" class="form-label">Validade da CNH</label>
+            {{form.validadeCNH}}
+        </div>
+        <div class="col-md-6">
+            <label for="categoriaCNH" class="form-label">Categoria da CNH</label>
+            {{form.categoriaCNH}}
+        </div>
+        <div class="col-md-12">
+            <div class="form-check">
+                {{form.cursoEscolar}}
+                <label class="form-check-label" for="cursoEscolar">Possui curso para transporte escolar</label>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <label for="observacoes" class="form-label">Observações</label>
+            {{form.observacoes}}
+        </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+        Cancelar
+      </button>
+      <button type="submit" class="btn btn-primary">Salvar</button>
+    </div>
+  </form>
+
+  

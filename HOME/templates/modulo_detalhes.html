@@ -1,0 +1,22 @@
+<div>
+    <h3>{{ modulo.nome }}</h3>
+    <p>{{ modulo.descricao }}</p>
+    <a href="/{{ modulo.link_modulo }}" class="btn btn-primary mb-3">Acessar Módulo</a>
+    <hr>
+    <h4>Tutoriais</h4>
+    <div class="row">
+        {% for tutorial in modulo.tutoriais.all %}
+        <div class="col-md-6 col-lg-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">{{ tutorial.titulo }}</h5>
+                    <p class="card-text">{{ tutorial.conteudo|truncatechars:100 }}</p>
+                    {% if tutorial.link_arquivo %}
+                    <a href="{{ tutorial.link_arquivo }}" class="btn btn-sm btn-secondary">Baixar Tutorial</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
