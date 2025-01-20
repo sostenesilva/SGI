@@ -67,7 +67,6 @@ class TermoAditivo (models.Model):
 
 class Itens (models.Model):
     Contrato = models.ForeignKey(Contratos, on_delete=models.CASCADE)
-
     Descricao = models.TextField(null=True, blank=True)
     CodigoContratoOriginal = models.CharField(max_length=10)
     Unidade = models.CharField(max_length=50, null=True, blank=True)

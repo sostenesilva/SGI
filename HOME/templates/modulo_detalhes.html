@@ -11,8 +11,8 @@
                 <div class="card-body">
                     <h5 class="card-title">{{ tutorial.titulo }}</h5>
                     <p class="card-text">{{ tutorial.conteudo|truncatechars:100 }}</p>
-                    {% if tutorial.link_arquivo %}
-                    <a href="{{ tutorial.link_arquivo }}" class="btn btn-sm btn-secondary">Baixar Tutorial</a>
+                    {% if tutorial.arquivo %}
+                    <a href="/media/{{ tutorial.arquivo }}" target="_blank" class="btn btn-sm btn-secondary">Baixar Tutorial</a>
                     {% endif %}
                 </div>
             </div>

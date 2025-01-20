@@ -8,10 +8,13 @@ class Modulo(models.Model):
     def __str__(self):
         return self.nome
 
+def diretorioTutorial (instance, filename):
+    return f'HOME/Tutoriais/{instance.modulo}/{instance.titulo}.pdf'
+
 class Tutorial(models.Model):
     titulo = models.CharField(max_length=200)
     conteudo = models.TextField()
-    link_arquivo = models.URLField(blank=True, null=True)  # Link para PDF ou outro material
+    arquivo = models.FileField(upload_to=diretorioTutorial,blank=True, null=True)  # Link para PDF ou outro material
     modulo = models.ForeignKey(Modulo, related_name="tutoriais", on_delete=models.CASCADE)
 
     def __str__(self):
