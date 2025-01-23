@@ -33,13 +33,13 @@ input,textarea{
 }
 
 button{
-    background-color: #92c332;
+    background-color: #3261a7;
     border: none;
     border-radius: .5rem;
     padding: 0.5rem 1.2rem;
     color:#fff
 }
 button:hover{
-    background-color: #477a4a;
+    background-color: #224d8e;
 }
 

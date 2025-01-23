@@ -4,8 +4,8 @@
     list-style-type:none;
 }
 
-a.sidebar-link {
-    padding: .625rem 1.625rem;
+.sidebar-link {
+    padding: .625rem 1rem;
     color: #707070;
     display: block;
     font-size: 0.9rem;
@@ -16,14 +16,26 @@ a.sidebar-link {
 
 .sidebar-link i {
     font-size: 1.1rem;
-    margin-right: .75rem;
+    /* margin-right: .75rem; */
 }
 
 a.sidebar-link:hover {
     background-color: #ffffff;
-    border-left: 3px solid #9AD037;
+    border-left: 3px solid #3261a7;
 }
 
 .sidebar-item {
     position: relative;
+}
+
+.sidebar-footer{
+    position: absolute;
+    bottom: 0;
+    padding: .625rem 1rem;
+    color: #707070;
+    display: block;
+    font-size: 0.9rem;
+    white-space: nowrap;
+    border-left: 3px solid transparent;
+    text-decoration: none;
 }

@@ -1,22 +1,26 @@
 <div>
-    <h3>{{ modulo.nome }}</h3>
+    <h3>Módulo <b>{{ modulo.nome }}</b></h3>
     <p>{{ modulo.descricao }}</p>
     <a href="/{{ modulo.link_modulo }}" class="btn btn-primary mb-3">Acessar Módulo</a>
     <hr>
-    <h4>Tutoriais</h4>
-    <div class="row">
-        {% for tutorial in modulo.tutoriais.all %}
-        <div class="col-md-6 col-lg-4">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">{{ tutorial.titulo }}</h5>
-                    <p class="card-text">{{ tutorial.conteudo|truncatechars:100 }}</p>
-                    {% if tutorial.arquivo %}
-                    <a href="/media/{{ tutorial.arquivo }}" target="_blank" class="btn btn-sm btn-secondary">Baixar Tutorial</a>
-                    {% endif %}
+    <h5>Manuais, Cartilhas e Informativos</h5>
+    <div class="row my-3">
+        {% if modulo.tutoriais.all %}
+            {% for tutorial in modulo.tutoriais.all %}
+            <div class="col-md-6 col-lg-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title" style="font-size: medium; font-weight: bold;">{{ tutorial.titulo }}</h5>
+                        <p class="card-text" style="font-size: small;">{{ tutorial.conteudo|truncatechars:100 }}</p>
+                        {% if tutorial.arquivo %}
+                        <a href="/media/{{ tutorial.arquivo }}" target="_blank" class="btn btn-sm btn-secondary">Baixar Tutorial</a>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
-        </div>
-        {% endfor %}
+            {% endfor %}
+        {% else %}
+            <p style="font-style: italic; font-size: small;">Nenhuma informação disponível no momento.</p>
+        {% endif %}
     </div>
 </div>

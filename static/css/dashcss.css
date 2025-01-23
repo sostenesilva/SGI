@@ -102,7 +102,7 @@ a.sidebar-link {
 
 a.sidebar-link:hover {
     background-color: #ffffff;
-    border-left: 3px solid #9AD037;
+    border-left: 3px solid #3261a7;
 }
 
 .sidebar-item {
@@ -198,4 +198,9 @@ table{
 
 .table-overflow {
     overflow-y:auto;
+}
+
+.sidebar-footer{
+    position: absolute;
+    bottom: 0;
 }

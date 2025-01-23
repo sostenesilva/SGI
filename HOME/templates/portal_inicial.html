@@ -37,17 +37,36 @@
                     <img style="width:70%;" src="{% static 'img/LOGO-CORTES3-668x1024.png' %}" alt="logomarca">
                 </div>
                 <hr>
-                <h5 class="mx-4 mb-2" style="color: #474747;"><b>Módulos do Sistema</b></h5>
-                <ul class="sidebar-nav py-0">
-                    {% for modulo in modulos %}
-                    <li class="sidebar-item">
-                        <a href="#" class="sidebar-link" hx-get="{% url 'modulo_detalhes' modulo.id %}" hx-target="#modulo-content">
-                            - {{ modulo.nome }}
+                <div class="mx-4 mb-2">
+                    <h5 class="" style="color: #474747;"><b>Módulos do Sistema</b></h5>
+                    <ul class="sidebar-nav py-0">
+                        {% for modulo in modulos %}
+                        <li class="sidebar-item">
+                            <a href="#" class="sidebar-link" hx-get="{% url 'modulo_detalhes' modulo.id %}" hx-target="#modulo-content">
+                                - {{ modulo.nome }}
+                            </a>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div class="sidebar-footer">
+                    {% if perms.auth.Controle %}
+                        <a href="/admin" target="_blank" class="sidebar-link">
+                            <i class="lni lni-pencil-alt"></i>
+                            <span>Painel Admin</span>
                         </a>
-                    </li>
-                    {% endfor %}
-                </ul>
+                    {% endif %}
+                    <div class="sidebar-link">
+                        <i class="lni lni-user"></i>
+                        <span>{{ request.user }}</span>
+                    </div>
+                    <a href="/accounts/logout/" class="sidebar-link">
+                        <i class="lni lni-exit"></i>
+                        <span>Logout</span>
+                    </a>
+                </div>
             </div>
+            
 
             <!-- Conteúdo do Módulo -->
             <div class="col-md-8 col-lg-9">

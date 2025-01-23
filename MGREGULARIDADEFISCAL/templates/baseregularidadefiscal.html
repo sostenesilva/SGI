@@ -70,14 +70,7 @@
                         </a>
                     </li>
                 {% endif %} -->
-                {% if perms.auth.Controle %}
-                    <li class="sidebar-item">
-                        <a href="/admin" target="_blank" class="sidebar-link">
-                            <i class="lni lni-pencil-alt"></i>
-                            <span>Painel Admin</span>
-                        </a>
-                    </li>
-                {% endif %}
+                
 
                 <!--
                     <li class="sidebar-item">
@@ -175,14 +168,18 @@
             </ul>
 
             <div class="sidebar-footer">
+                {% if perms.auth.Controle %}
+                    <a href="/admin" target="_blank" class="sidebar-link">
+                        <i class="lni lni-pencil-alt"></i>
+                        <span>Painel Admin</span>
+                    </a>
+                {% endif %}
                 <a href="#" class="sidebar-link">
                     <div>
                         <i class="lni lni-user"></i>
                         <span>{{ request.user }}</span>
                     </div>
                 </a>
-
-            <div class="sidebar-footer">
                 <a href="/accounts/logout/" class="sidebar-link">
                     <i class="lni lni-exit"></i>
                     <span>Logout</span>
