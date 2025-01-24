@@ -1,13 +1,45 @@
+from datetime import date, timedelta
 import json
 from django.http import HttpResponse
 from django.shortcuts import render
 from . import models, forms
 from django.core.paginator import Paginator
+from . import models
+from django.db.models import Count, Sum
+
 
 
 def dashcombustiveis(request):
     
+    # Resumo geral
+    total_veiculos = models.veiculo.objects.count()
+    total_condutores = models.condutor.objects.count()
+    total_abastecimentos = models.Abastecimentos.objects.count()
+
+    # Gráficos
+    veiculos_secretaria = models.veiculo.objects.values('secretaria').annotate(total=Count('id'))
+    veiculos_secretaria_labels = [v['secretaria'] for v in veiculos_secretaria]
+    veiculos_secretaria_data = [v['total'] for v in veiculos_secretaria]
+
+    consumo_meses = models.Abastecimentos.objects.filter(data__gte=date.today()-timedelta(days=180)).values('data__month').annotate(
+        total=Sum('quantidade'))
+    consumo_meses_labels = [f"Mês {c['data__month']}" for c in consumo_meses]
+    consumo_meses_data = [c['total'] for c in consumo_meses]
+
+    # Tabelas
+    ultimos_abastecimentos = models.Abastecimentos.objects.order_by('-data')[:5]
+    cnh_vencendo = models.condutor.objects.filter(validadeCNH__lte=date.today() + timedelta(days=180))
+
     context = {
+        'total_veiculos': total_veiculos,
+        'total_condutores': total_condutores,
+        'total_abastecimentos': total_abastecimentos,
+        'veiculos_secretaria_labels': veiculos_secretaria_labels,
+        'veiculos_secretaria_data': veiculos_secretaria_data,
+        'consumo_meses_labels': consumo_meses_labels,
+        'consumo_meses_data': consumo_meses_data,
+        'ultimos_abastecimentos': ultimos_abastecimentos,
+        'cnh_vencendo': cnh_vencendo,
     }
 
     return render (request,'dashcombustiveis.html',context)

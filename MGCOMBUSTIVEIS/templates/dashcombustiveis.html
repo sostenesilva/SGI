@@ -3,29 +3,142 @@
 {% block head_title %} Dashboard {% endblock head_title %}
 
 {% block contentdash %}
+<div class="container-fluid my-4">
     <div class="d-flex justify-content-between">
         <h4><b>SGI</b> - Dashboard</h4>
     </div>
     <hr>
-    <div class="row justify-content-center">
-        <h4>
-            Em desenvolvimento...
-        </h4>
-    <!--  for dado in estatistica  -->
-        <!-- <div class="card m-1 text-dark bg-white" style="max-width: 16rem;">
-            <div class="card-header bg-white pb-0"><b> dado.secretaria </b></div>
-            <div class="card-body p-1 pb-3">
-                <p class="titulo-card">Avaliações</p>
-                <small class="estatistica">
-                    <p>Registradas: <b> dado.avaliacoes_registradas </b></p>
-                    <p>Pendentes: <b> dado.avaliacoes_pendentes </b></p>
-                    <p>Data limite: <b> dado.avaliacoes_pendentes_datalimite </b></p>
-                    <p>Em análise: <b> dado.avaliacoes_pendentes </b></p>
-                    <p>Movimentações: <b> dado.movimentacoes </b></p>
-                </small>
+    <!-- Resumo Geral -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card text-bg-primary">
+                <div class="card-body">
+                    <p class="card-text display-8">Total de Veículos: {{ total_veiculos }}</p>
+                </div>
             </div>
-        </div>    -->
-    <!--  endfor  -->
+        </div>
+        <div class="col-md-4">
+            <div class="card text-bg-success">
+                <div class="card-body">
+                    <p class="card-text display-8">Total de Condutores: {{ total_condutores }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-bg-warning">
+                <div class="card-body">
+                    <p class="card-text display-8">Total de Abastecimentos: {{ total_abastecimentos }}</p>
+                </div>
+            </div>
+        </div>
     </div>
-    
+
+    <!-- Gráficos -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Distribuição de Veículos por Secretaria</h5>
+                    <canvas id="veiculosPorSecretaria" style="max-width: 300px; max-height: 300px;"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Consumo de Combustível (Últimos Meses)</h5>
+                    <canvas id="consumoCombustivel"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabelas Resumidas -->
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Últimos Abastecimentos</h5>
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Data</th>
+                                <th>Veículo</th>
+                                <th>Tipo</th>
+                                <th>Valor (R$)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for abastecimento in ultimos_abastecimentos %}
+                            <tr>
+                                <td>{{ abastecimento.data }}</td>
+                                <td>{{ abastecimento.veiculo.placa }}</td>
+                                <td>{{ abastecimento.tipo }}</td>
+                                <td>{{ abastecimento.valorTotal }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Condutores com CNH Próxima do Vencimento</h5>
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>CNH</th>
+                                <th>Validade</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for condutor in cnh_vencendo %}
+                            <tr>
+                                <td>{{ condutor.nome }}</td>
+                                <td>{{ condutor.categoriaCNH }}</td>
+                                <td>{{ condutor.validadeCNH }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Gráfico: Veículos por Secretaria
+    const ctx1 = document.getElementById('veiculosPorSecretaria').getContext('2d');
+    const veiculosPorSecretaria = new Chart(ctx1, {
+        type: 'pie',
+        data: {
+            labels: {{ veiculos_secretaria_labels|safe }},
+            datasets: [{
+                label: 'Veículos',
+                data: {{ veiculos_secretaria_data|safe }},
+                backgroundColor: ['#007bff', '#28a745', '#ffc107', '#dc3545', '#6c757d']
+            }]
+        }
+    });
+
+    // Gráfico: Consumo de Combustível
+    const ctx2 = document.getElementById('consumoCombustivel').getContext('2d');
+    const consumoCombustivel = new Chart(ctx2, {
+        type: 'line',
+        data: {
+            labels: {{ consumo_meses_labels|safe }},
+            datasets: [{
+                label: 'Litros',
+                data: {{ consumo_meses_data|safe }},
+                borderColor: '#007bff',
+                fill: false
+            }]
+        }
+    });
+</script>    
 {% endblock contentdash %}
