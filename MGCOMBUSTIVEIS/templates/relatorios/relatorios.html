@@ -1,0 +1,133 @@
+{% extends "basecombustiveis.html" %}
+
+{% block head_title %} Relatórios {% endblock head_title %}
+
+{% block contentdash %}
+
+<div class="container my-5">
+    <h1 class="mb-4 text-center">Emissão de Relatórios</h1>
+    <form method="POST" action="{% url 'emitir_relatorio' %}">
+        {% csrf_token %}
+        <!-- Seleção do Tipo de Relatório -->
+        <div class="mb-4">
+            <label for="tipo_relatorio" class="form-label">Selecione o Tipo de Relatório</label>
+            <select class="form-select" id="tipo_relatorio" name="tipo_relatorio" required>
+                <option value="" disabled selected>Escolha uma opção</option>
+                <option value="abastecimento">Relatório de Abastecimentos</option>
+                <option value="condutor">Relatório de Condutores</option>
+                <option value="frota">Relatório de Frota</option>
+            </select>
+        </div>
+
+        <!-- Filtros Dinâmicos -->
+        <div id="filtros">
+            <!-- Os campos de filtro serão carregados dinamicamente via JavaScript -->
+        </div>
+        <br>
+        <div class="d-flex justify-content-center">
+            <button type="submit" class="btn btn-primary">Gerar Relatório</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    const filtrosContainer = document.getElementById("filtros");
+    const tipoRelatorioSelect = document.getElementById("tipo_relatorio");
+
+    // Filtros por tipo de relatório
+    const filtros = {
+        abastecimento: `
+            <h5 class="mb-3">Filtros para Abastecimentos</h5>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label for="veiculo" class="form-label">Veículo</label>
+                    <select name="veiculo" id="veiculo" class="form-select">
+                        <option value="" selected>Todos</option>
+                        {% for veiculo in veiculos %}
+                            <option value="{{ veiculo.id }}">{{ veiculo.placa }} - {{ veiculo.modelo }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label for="condutor" class="form-label">Condutor</label>
+                    <select name="condutor" id="condutor" class="form-select">
+                        <option value="" selected>Todos</option>
+                        {% for condutor in condutores %}
+                            <option value="{{ condutor.id }}">{{ condutor.nome }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label for="periodo_inicio" class="form-label">Período (Início)</label>
+                    <input type="date" name="periodo_inicio" id="periodo_inicio" class="form-control">
+                </div>
+                <div class="col-md-6">
+                    <label for="periodo_fim" class="form-label">Período (Fim)</label>
+                    <input type="date" name="periodo_fim" id="periodo_fim" class="form-control">
+                </div>
+                <div class="col-md-6">
+                    <label for="status" class="form-label">Status</label>
+                    <select name="status" id="status" class="form-select">
+                        <option value="" selected>Todos</option>
+                        <option value="Aprovado">Aprovado</option>
+                        <option value="Pendente">Pendente</option>
+                        <option value="Negado">Negado</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label for="tipo_combustivel" class="form-label">Tipo de Combustível</label>
+                    <select name="tipo_combustivel" id="tipo_combustivel" class="form-select">
+                        <option value="" selected>Todos</option>
+                        <option value="Gasolina">Gasolina</option>
+                        <option value="Diesel Comum">Diesel Comum</option>
+                        <option value="Diesel S-10">Diesel S-10</option>
+                        <option value="GNV">GNV</option>
+                        <option value="Etanol">Etanol</option>
+                    </select>
+                </div>
+            </div>
+        `,
+        condutor: `
+            <h5 class="mb-3">Filtros para Condutores</h5>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label for="condutor_id" class="form-label">Condutor</label>
+                    <select name="condutor_id" id="condutor_id" class="form-select">
+                        <option value="" selected>Todos</option>
+                        {% for condutor in condutores %}
+                            <option value="{{ condutor.id }}">{{ condutor.nome }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label for="secretaria" class="form-label">Secretaria</label>
+                    <input type="text" name="secretaria" id="secretaria" class="form-control" placeholder="Digite o nome da secretaria">
+                </div>
+            </div>
+        `,
+        frota: `
+            <h5 class="mb-3">Filtros para Frota</h5>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label for="veiculo_id" class="form-label">Veículo</label>
+                    <select name="veiculo_id" id="veiculo_id" class="form-select">
+                        <option value="" selected>Todos</option>
+                        {% for veiculo in veiculos %}
+                            <option value="{{ veiculo.id }}">{{ veiculo.placa }} - {{ veiculo.modelo }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label for="secretaria" class="form-label">Secretaria</label>
+                    <input type="text" name="secretaria" id="secretaria" class="form-control" placeholder="Digite o nome da secretaria">
+                </div>
+            </div>
+        `
+    };
+
+    // Atualiza os filtros dinamicamente com base no tipo de relatório
+    tipoRelatorioSelect.addEventListener("change", (event) => {
+        filtrosContainer.innerHTML = filtros[event.target.value] || "";
+    });
+</script>
+{% endblock contentdash %}

@@ -3,3 +3,4 @@ from . import models
 
 admin.site.register(models.Modulo)
 admin.site.register(models.Tutorial)
+admin.site.register(models.Secretaria)

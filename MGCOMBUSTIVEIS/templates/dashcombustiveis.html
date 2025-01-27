@@ -13,21 +13,21 @@
         <div class="col-md-4">
             <div class="card text-bg-primary">
                 <div class="card-body">
-                    <p class="card-text display-8">Total de Veículos: {{ total_veiculos }}</p>
+                    <p class="card-text display-8"><b>Total de Veículos:</b> {{ total_veiculos }}</p>
                 </div>
             </div>
         </div>
         <div class="col-md-4">
             <div class="card text-bg-success">
                 <div class="card-body">
-                    <p class="card-text display-8">Total de Condutores: {{ total_condutores }}</p>
+                    <p class="card-text display-8"><b>Total de Condutores:</b> {{ total_condutores }}</p>
                 </div>
             </div>
         </div>
         <div class="col-md-4">
             <div class="card text-bg-warning">
                 <div class="card-body">
-                    <p class="card-text display-8">Total de Abastecimentos: {{ total_abastecimentos }}</p>
+                    <p class="card-text display-8"><b>Total de Abastecimentos:</b> {{ total_abastecimentos }}</p>
                 </div>
             </div>
         </div>
@@ -123,6 +123,22 @@
                 data: {{ veiculos_secretaria_data|safe }},
                 backgroundColor: ['#007bff', '#28a745', '#ffc107', '#dc3545', '#6c757d']
             }]
+        },
+        options:{
+            responsive: true,
+            maintainAspectRatio: true, // Mantém proporções
+            aspectRatio: 1.5, // Ajusta proporção largura/altura
+            plugins: {
+                legend: {
+                    position: 'right', // Posição da legenda
+                    labels: {
+                        boxWidth: 20, // Tamanho da caixa de cor ao lado do texto
+                        font: {
+                            size: 12 // Tamanho da fonte
+                        }
+                    }
+                }
+            }
         }
     });
 

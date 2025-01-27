@@ -1,11 +1,13 @@
 from django.db import models
 from django.contrib.auth.models import Group, User
+from HOME.models import Secretaria
 
 class veiculo(models.Model):
+
     placa = models.CharField(max_length=8)
     ano = models.IntegerField(null=True, blank=True)
     modelo = models.CharField(max_length=100, null=True, blank=True)
-    secretaria = models.CharField(max_length=50)
+    secretaria = models.ForeignKey(Secretaria, on_delete=models.PROTECT)
     descricao = models.TextField(null=True, blank=True)
     status = models.CharField(max_length=60, choices=[('Em atividade','Em atividade'),('Em manutenção','Em manutenção'),('Excluído da frota','Excluído da frota')])
     observacao = models.TextField(null=True, blank=True)
@@ -24,6 +26,7 @@ class fiscal (models.Model):
 class condutor (models.Model):
     nome = models.CharField(max_length=100)
     cpf = models.CharField(max_length=30, null=True, blank=True)
+    datanascimento = models.DateField(null=True, blank=True)
     status = models.CharField(max_length=30, choices=[('Ativo','Ativo'),('Desligado','Desligado')], default='Ativo')
     validadeCNH = models.DateField(null=True,blank=True)
     categoriaCNH = models.CharField(max_length=2, null=True, blank=True)
@@ -56,7 +59,7 @@ class Abastecimentos (models.Model):
     valorTotal = models.FloatField(null=True)
     condutor = models.ForeignKey(condutor, on_delete=models.PROTECT)
     fiscal = models.ForeignKey(fiscal, on_delete=models.PROTECT)
-    km = models.IntegerField(null=True)
+    km = models.IntegerField(null=True, blank=True)
     status = models.CharField(max_length=10,choices=status_choice,default='Pendente')
 
     def __str__(self):

@@ -1,11 +1,14 @@
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 import json
 from django.http import HttpResponse
 from django.shortcuts import render
+from weasyprint import HTML
 from . import models, forms
 from django.core.paginator import Paginator
 from . import models
 from django.db.models import Count, Sum
+from django.template.loader import render_to_string
+
 
 
 
@@ -216,3 +219,113 @@ def edit_condutores(request, condutor_pk):
     return render (request, 'condutores/condutores_form.html', {
         'form':form,
     })
+
+def emitir_relatorio(request):
+
+    # Consultar opções para os filtros
+    veiculos = models.veiculo.objects.all()
+    condutores = models.condutor.objects.all()
+    secretarias = models.veiculo.objects.values_list('secretaria', flat=True).distinct()
+
+    if request.method == "POST":
+        tipo_relatorio = request.POST.get("tipo_relatorio")
+
+        # Obter a data atual para o cabeçalho
+        agora = datetime.now()
+
+        if tipo_relatorio == "abastecimento":
+            # Filtros para abastecimentos
+            veiculo_id = request.POST.get("veiculo")
+            condutor_id = request.POST.get("condutor")
+            periodo_inicio = request.POST.get("periodo_inicio")
+            periodo_fim = request.POST.get("periodo_fim")
+            status = request.POST.get("status")
+            tipo_combustivel = request.POST.get("tipo_combustivel")
+
+            abastecimentos = models.Abastecimentos.objects.all()
+
+            # Aplicar os filtros, se existirem
+            if veiculo_id:
+                abastecimentos = abastecimentos.filter(veiculo__id=veiculo_id)
+            if condutor_id:
+                abastecimentos = abastecimentos.filter(condutor__id=condutor_id)
+            if periodo_inicio:
+                abastecimentos = abastecimentos.filter(data__gte=periodo_inicio)
+            if periodo_fim:
+                abastecimentos = abastecimentos.filter(data__lte=periodo_fim)
+            if status:
+                abastecimentos = abastecimentos.filter(status=status)
+            if tipo_combustivel:
+                abastecimentos = abastecimentos.filter(tipo=tipo_combustivel)
+
+            # Renderizar o template do relatório de abastecimentos
+            html_string = render_to_string(
+                "relatorios/relatorio_abastecimentos.html", {"abastecimentos": abastecimentos, "agora": agora}
+            )
+            pdf_file = HTML(string=html_string).write_pdf()
+
+            # Retornar o PDF
+            response = HttpResponse(pdf_file, content_type="application/pdf")
+            response["Content-Disposition"] = 'inline; filename="relatorio_abastecimentos.pdf"'
+            return response
+
+        elif tipo_relatorio == "condutor":
+            # Filtros para condutores
+            condutor_id = request.POST.get("condutor_id")
+            secretaria = request.POST.get("secretaria")
+
+            condutores = models.condutor.objects.all()
+
+            # Aplicar os filtros, se existirem
+            if condutor_id:
+                condutores = condutores.filter(id=condutor_id)
+            if secretaria:
+                condutores = condutores.filter(nome__icontains=secretaria)
+
+            # Renderizar o template do relatório de condutores
+            html_string = render_to_string(
+                "relatorios/relatorio_condutores.html", {"condutores": condutores, "agora": agora}
+            )
+            pdf_file = HTML(string=html_string).write_pdf()
+
+            # Retornar o PDF
+            response = HttpResponse(pdf_file, content_type="application/pdf")
+            response["Content-Disposition"] = 'inline; filename="relatorio_condutores.pdf"'
+            return response
+
+        elif tipo_relatorio == "frota":
+            # Filtros para frota
+            veiculo_id = request.POST.get("veiculo_id")
+            secretaria = request.POST.get("secretaria")
+
+            veiculos = models.veiculo.objects.all()
+
+            # Aplicar os filtros, se existirem
+            if veiculo_id:
+                veiculos = veiculos.filter(id=veiculo_id)
+            if secretaria:
+                veiculos = veiculos.filter(secretaria__icontains=secretaria)
+
+            # Renderizar o template do relatório de frota
+            html_string = render_to_string(
+                "relatorios/relatorio_frota.html", {"veiculos": veiculos, "agora": agora}
+            )
+            pdf_file = HTML(string=html_string).write_pdf()
+
+            # Retornar o PDF
+            response = HttpResponse(pdf_file, content_type="application/pdf")
+            response["Content-Disposition"] = 'inline; filename="relatorio_frota.pdf"'
+            return response
+
+        else:
+            # Tipo de relatório não implementado
+            return HttpResponse("Tipo de relatório não implementado.", status=400)
+
+    # Retornar a página inicial com os filtros disponíveis
+    context = {
+        "veiculos": veiculos,
+        "condutores": condutores,
+        "secretarias": secretarias,
+    }
+    # Redirecionar para a página de seleção de relatórios, caso não seja POST
+    return render(request, "relatorios/relatorios.html", context)

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Relatório de Abastecimentos</title>
+    <link rel="stylesheet" href="static/css/detail_pdf_gen.css">
+</head>
+<body>
+    <header>
+        <img class="brasao" src="data:image/png;base64,{{ brasao_image }}" alt="Brasão da Prefeitura">
+    </header>
+    <div class="content">
+        <h1 style="text-align: center;">Relatório de Abastecimentos</h1>
+        <p>Emitido em: <strong>{{ agora|date:"d/m/Y" }}</strong></p>
+
+        <h2 class="section-title">Resumo dos Abastecimentos</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Data</th>
+                    <th>Veículo</th>
+                    <th>Condutor</th>
+                    <th>Tipo de Combustível</th>
+                    <th>Quantidade (L)</th>
+                    <th>Valor Total (R$)</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for abastecimento in abastecimentos %}
+                <tr>
+                    <td>{{ abastecimento.data|date:"d/m/Y" }}</td>
+                    <td>{{ abastecimento.veiculo.placa }} - {{ abastecimento.veiculo.modelo }}</td>
+                    <td>{{ abastecimento.condutor.nome }}</td>
+                    <td>{{ abastecimento.tipo }}</td>
+                    <td>{{ abastecimento.quantidade }}</td>
+                    <td>{{ abastecimento.valorTotal|floatformat:2 }}</td>
+                    <td>{{ abastecimento.status }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <footer>
+        <div class="dados-footer">
+            <p>Rua Coronel José Belarmino, nº 048, Centro, Cortês-PE</p>
+            <p>CEP 55.525-000 | CNPJ: 10.273.548/0001-69</p>
+            <p>E-mail: gabineteprefeitacortes@gmail.com</p>
+        </div>
+    </footer>
+</body>
+</html>

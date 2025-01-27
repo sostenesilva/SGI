@@ -15,4 +15,5 @@ urlpatterns = [
     path('condutores/list', views.condutores_list, name='condutores_list'),
     path('condutores/add', views.add_condutores, name='add_condutores'),
     path('condutores/<int:condutor_pk>/edit', views.edit_condutores, name='edit_condutores'),
+    path('relatorios/', views.emitir_relatorio, name='emitir_relatorio'),
 ]

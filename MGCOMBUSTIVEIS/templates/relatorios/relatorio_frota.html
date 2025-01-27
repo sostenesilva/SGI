@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Relatório de Frota</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 2cm;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        header h1 {
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+        header p {
+            font-size: 12px;
+            color: #555;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table th, table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        table th {
+            background-color: #f4f4f4;
+        }
+        footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 12px;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Relatório de Frota</h1>
+        <p>Emitido em: {{ agora|date:"d/m/Y" }}</p>
+    </header>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Placa</th>
+                <th>Modelo</th>
+                <th>Ano</th>
+                <th>Secretaria</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for veiculo in veiculos %}
+            <tr>
+                <td>{{ veiculo.placa }}</td>
+                <td>{{ veiculo.modelo }}</td>
+                <td>{{ veiculo.ano }}</td>
+                <td>{{ veiculo.secretaria }}</td>
+                <td>{{ veiculo.status }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <footer>
+        <p>Relatório gerado automaticamente pelo sistema de gestão de frota.</p>
+    </footer>
+</body>
+</html>

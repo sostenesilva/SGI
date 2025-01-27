@@ -1,5 +1,8 @@
 from django.db import models
 
+class Secretaria(models.Model):
+    nome = models.TextField()
+
 class Modulo(models.Model):
     nome = models.CharField(max_length=100)
     descricao = models.TextField()
