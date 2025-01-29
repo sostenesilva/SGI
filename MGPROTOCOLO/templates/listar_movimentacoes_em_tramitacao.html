@@ -1,0 +1,37 @@
+{% extends 'baseprotocolo.html' %}
+
+{% block content %}
+<form method="post">
+    {% csrf_token %}
+    <h2>Movimentações em Tramitação</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th></th>
+                <th>Título</th>
+                <th>Origem</th>
+                <th>Destino</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for movimentacao in movimentacoes %}
+            <tr>
+                <td><input type="checkbox" name="movimentacoes" value="{{ movimentacao.id }}"></td>
+                <td>{{ movimentacao.documento.titulo }}</td>
+                <td>{{ movimentacao.origem }}</td>
+                <td>{{ movimentacao.destino }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h4>Destino</h4>
+    <select name="destino" class="form-control">
+        {% for setor in setores %}
+        <option value="{{ setor.id }}">{{ setor.nome }}</option>
+        {% endfor %}
+    </select>
+    <br>
+    <button type="submit" class="btn btn-primary">Emitir Protocolo</button>
+</form>
+{% endblock %}

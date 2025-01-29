@@ -8,10 +8,10 @@ class Frota_form(forms.ModelForm):
 
         widgets= {
             'placa':forms.TextInput(attrs={'class':'form-control', 'type':'text','placeholder':'Ex.: ABC1234', 'required':'True'}),
-            'ano':forms.TextInput(attrs={'class':'form-control', 'type':'number','placeholder':'Ex.: 2023', 'required':'True'}),
-            'modelo':forms.TextInput(attrs={'class':'form-control', 'type':'text','placeholder':'Ex.: Toyota Corolla', 'required':'True'}),
-            'secretaria':forms.TextInput(attrs={'class':'form-control', 'type':'text','placeholder':'Ex.: Educação', 'required':'True'}),
-            'descricao':forms.Textarea(attrs={'class':'form-control', 'type':'text', 'rows':'2', 'placeholder':'Detalhes sobre o veículo', 'required':'True'}),
+            'ano':forms.TextInput(attrs={'class':'form-control', 'type':'number','placeholder':'Ex.: 2023'}),
+            'modelo':forms.TextInput(attrs={'class':'form-control', 'type':'text','placeholder':'Ex.: Amarok'}),
+            'secretaria':forms.Select(attrs={'class':'form-select'}),
+            'descricao':forms.Textarea(attrs={'class':'form-control', 'type':'text', 'rows':'2', 'placeholder':'Detalhes sobre o veículo'}),
             'status':forms.Select(attrs={'class':'form-select'}),
             'propriedade':forms.Select(attrs={'class':'form-select'}),
             'observacao':forms.Textarea(attrs={'class':'form-control', 'rows':'2'})

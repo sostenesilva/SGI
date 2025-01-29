@@ -8,6 +8,7 @@ from django.core.paginator import Paginator
 from . import models
 from django.db.models import Count, Sum
 from django.template.loader import render_to_string
+from django.db.models.functions import ExtractMonth
 
 
 
@@ -20,13 +21,15 @@ def dashcombustiveis(request):
     total_abastecimentos = models.Abastecimentos.objects.count()
 
     # Gráficos
-    veiculos_secretaria = models.veiculo.objects.values('secretaria').annotate(total=Count('id'))
-    veiculos_secretaria_labels = [v['secretaria'] for v in veiculos_secretaria]
+    veiculos_secretaria = models.veiculo.objects.values('secretaria__nome').annotate(total=Count('id'))
+    veiculos_secretaria_labels = [v['secretaria__nome'] for v in veiculos_secretaria]  # Usando secretaria__nome
     veiculos_secretaria_data = [v['total'] for v in veiculos_secretaria]
 
-    consumo_meses = models.Abastecimentos.objects.filter(data__gte=date.today()-timedelta(days=180)).values('data__month').annotate(
-        total=Sum('quantidade'))
-    consumo_meses_labels = [f"Mês {c['data__month']}" for c in consumo_meses]
+    consumo_meses = models.Abastecimentos.objects.filter(
+        data__gte=date.today() - timedelta(days=180)
+    ).annotate(mes=ExtractMonth('data')).values('mes').annotate(total=Sum('quantidade'))
+
+    consumo_meses_labels = [f"Mês {c['mes']}" for c in consumo_meses]
     consumo_meses_data = [c['total'] for c in consumo_meses]
 
     # Tabelas

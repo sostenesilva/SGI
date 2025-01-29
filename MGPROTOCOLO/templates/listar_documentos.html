@@ -1,0 +1,68 @@
+{% extends 'baseprotocolo.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Documentos</h2>
+
+    <form method="get" class="mb-4">
+        <div class="row">
+            <div class="col-md-4">
+                <label for="tipo">Tipo de Documento:</label>
+                <select name="tipo" id="tipo" class="form-control">
+                    <option value="">Todos</option>
+                    <option value="Memorando">Memorando</option>
+                    <option value="Ofício">Ofício</option>
+                    <option value="Relatório">Relatório</option>
+                    <option value="Outro">Outro</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label for="status">Status:</label>
+                <select name="status" id="status" class="form-control">
+                    <option value="">Todos</option>
+                    <option value="Criado">Criado</option>
+                    <option value="Em Tramitação">Em Tramitação</option>
+                    <option value="Concluído">Concluído</option>
+                </select>
+            </div>
+            <div class="col-md-4 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary">Filtrar</button>
+            </div>
+        </div>
+    </form>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Título</th>
+                <th>Tipo</th>
+                <th>Origem</th>
+                <th>Destino</th>
+                <th>Status</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for documento in documentos %}
+            <tr>
+                <td>{{ documento.titulo }}</td>
+                <td>{{ documento.tipo }}</td>
+                <td>{{ documento.origem }}</td>
+                <td>{{ documento.destino }}</td>
+                <td>{{ documento.status }}</td>
+                <td>
+                    <a href="{% url 'registrar_movimentacao' documento.id %}" class="btn btn-sm btn-success">Tramitar</a>
+                    {% if documento.status != 'Concluído' %}
+                    <a href="{% url 'concluir_documento' documento.id %}" class="btn btn-sm btn-warning">Concluir</a>
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6" class="text-center">Nenhum documento encontrado.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

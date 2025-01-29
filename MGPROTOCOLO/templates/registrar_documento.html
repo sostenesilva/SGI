@@ -1,0 +1,13 @@
+{% extends 'baseprotocolo.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Registrar Documento</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Salvar</button>
+        <a href="{% url 'listar_documentos' %}" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+{% endblock %}

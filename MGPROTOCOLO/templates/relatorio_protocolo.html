@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Relatório de Protocolo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+        }
+        h1 {
+            text-align: center;
+            font-size: 24px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table th, table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        table th {
+            background-color: #f4f4f4;
+        }
+        .signature {
+            margin-top: 50px;
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+    <h1>Relatório de Protocolo</h1>
+    <p>Data de Emissão: {{ data_emissao|date:"d/m/Y" }}</p>
+    <table>
+        <thead>
+            <tr>
+                <th>Título</th>
+                <th>Origem</th>
+                <th>Destino</th>
+                <th>Data de Movimentação</th>
+                <th>Observação</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for movimentacao in movimentacoes %}
+            <tr>
+                <td>{{ movimentacao.documento.titulo }}</td>
+                <td>{{ movimentacao.origem }}</td>
+                <td>{{ movimentacao.destino }}</td>
+                <td>{{ movimentacao.data_movimentacao|date:"d/m/Y H:i" }}</td>
+                <td>{{ movimentacao.observacao }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <div class="signature">
+        ________________________________________<br>
+        Assinatura do Recebedor
+    </div>
+</body>
+</html>

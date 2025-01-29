@@ -1,0 +1,27 @@
+{% extends 'baseprotocolo.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Registrar Movimentação</h2>
+    <p><strong>Documento:</strong> {{ documento.titulo }}</p>
+    <p><strong>Origem:</strong> {{ documento.origem }}</p>
+
+    <form method="post">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="destino" class="form-label">Destino:</label>
+            <select name="destino" id="destino" class="form-control">
+                {% for setor in setores %}
+                <option value="{{ setor.id }}">{{ setor.nome }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="observacao" class="form-label">Observação:</label>
+            <textarea name="observacao" id="observacao" class="form-control"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Salvar</button>
+        <a href="{% url 'listar_documentos' %}" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+{% endblock %}

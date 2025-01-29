@@ -1,0 +1,26 @@
+{% load custom_filters %}
+<table class="table">
+    <thead>
+        <tr>
+            <th>Fonte</th>
+            <th>Recebido de</th>
+            <th>Destino</th>
+            <th>Status</th>
+            <th>Ação</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for movimentacao in movimentacoes %}
+        <tr>
+            <td>{{ movimentacao.fonte }}</td>
+            <td>{{ movimentacao.recebido_de }}</td>
+            <td>{{ movimentacao.destino }}</td>
+            <td>{{ movimentacao.status }}</td>
+            <td>
+                <input type="checkbox" name="movimentacoes" value="{{ movimentacao.id }}">
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<button type="button" class="btn btn-success" id="emitir-relatorio">Emitir Relatório</button>
