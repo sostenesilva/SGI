@@ -1,0 +1,34 @@
+<div class="modal-content" hx-debug="true">
+    <div class="modal-header justify-content-between">
+        <h5 class="modal-title">Movimentar</h5>
+    </div>
+    <div class="modal-body">
+        <div class="row justify-content-center">
+            <form action="{% url 'criar_movimentacao' processo.id %}" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="row">
+                
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        Descrição:
+                        {{ form.descricao }}
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        {{ form.setor_destino.label_tag }}
+                        {{ form.setor_destino }}
+                    </div>
+                </div>
+                <div>
+                    <button type="submit" class="btn btn-primary">Mover</button>
+                </div>
+            </div>
+            </form>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <small style="font-size: xx-small;">Informações enviadas por <b>{{ request.user }}</b></small>
+    </div>
+</div>

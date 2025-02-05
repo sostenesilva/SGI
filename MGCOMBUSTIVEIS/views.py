@@ -10,9 +10,6 @@ from django.db.models import Count, Sum
 from django.template.loader import render_to_string
 from django.db.models.functions import ExtractMonth
 
-
-
-
 def dashcombustiveis(request):
     
     # Resumo geral

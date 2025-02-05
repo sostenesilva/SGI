@@ -1,0 +1,14 @@
+<div class="modal-content" hx-debug="true">
+    <div class="modal-header justify-content-between">
+        <h5 class="modal-title">Upload de Protocolo Assinado</h5>
+    </div>
+    <div class="modal-body">
+    <form method="post" action="{% url 'anexar_comprovacao' protocolo.id %}" enctype="multipart/form-data">
+        {% csrf_token %}
+        Anexar comprovante em PDF:
+        {{ form.comprovacao }}
+        <br>
+        <button type="submit" class="btn btn-primary">Enviar</button>
+    </form>
+    </div>
+</div>

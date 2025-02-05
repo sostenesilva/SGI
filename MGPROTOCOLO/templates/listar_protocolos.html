@@ -1,0 +1,37 @@
+{% extends 'baseprotocolo.html' %}
+{% block titulo %}Protocolos de Movimentação{% endblock titulo %}
+{% block content %}
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Setor Destino</th>
+                <th>Data</th>
+                <th>Status</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for protocolo in protocolos %}
+                <tr>
+                    <td>{{ protocolo.id }}</td>
+                    <td>{{ protocolo.setor_destino.nome }}</td>
+                    <td>{{ protocolo.criado_em }}</td>
+                    <td>{{ protocolo.get_status_display }}</td>
+                    <td>
+                        {% if protocolo.status == 'pendente' %}
+                            <a hx-get="{% url 'anexar_comprovacao' protocolo.id %}" class="btn btn-info btn-sm" hx-target="#dialog" hx-trigger="click" data-bs-toggle="modal" data-bs-target="#modal">Anexar Comprovação</a>
+                        {% else %}
+                            <a hx-get="{% url 'visualizar_comprovacao' protocolo.id %}" class="btn btn-success btn-sm" hx-target="#dialog" hx-trigger="click" data-bs-toggle="modal" data-bs-target="#modal">Detalhes</a>
+                        
+                        {% endif %}
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="5">Nenhum protocolo encontrado.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

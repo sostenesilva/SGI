@@ -1,17 +1,21 @@
 from django.urls import path
 from . import views
 
-
 urlpatterns = [
-    path('', views.listar_documentos, name='listar_documentos'),
-    path('registrar/', views.registrar_documento, name='registrar_documento'),
-    path('tramitar/<int:documento_id>/', views.registrar_movimentacao, name='registrar_movimentacao'),
-    path('concluir/<int:documento_id>/', views.concluir_documento, name='concluir_documento'),
-    path('relatorio/emitir/', views.emitir_relatorio_protocolo, name='emitir_relatorio_protocolo'),  # Relatório
-    path('relatorio/upload/<int:relatorio_id>/', views.upload_relatorio, name='upload_relatorio'),  # Upload
-    path('movimentacoes/consultar/', views.consultar_movimentacao, name='consultar_movimentacao'),  # Consulta
-    path('movimentacoes/', views.listar_movimentacoes_em_tramitacao, name='listar_movimentacoes_em_tramitacao'),
-    path('protocolo/emitir/<int:protocolo_id>/', views.emitir_protocolo, name='emitir_protocolo'),
-    path('protocolos/pendentes/', views.listar_protocolos_pendentes, name='listar_protocolos_pendentes'),
-    path('protocolo/finalizar/<int:protocolo_id>/', views.finalizar_protocolo, name='finalizar_protocolo'),
+    path('', views.processos_no_setor, name='protocolo_inicial'),
+    path('processos/no-setor/', views.processos_no_setor, name='processos_no_setor'),
+    path('processos/encaminhados/', views.processos_encaminhados_pelo_setor, name='processos_encaminhados_pelo_setor'),
+    path('processos/<int:processo_id>/', views.detalhes_processo, name='detalhes_processo'),
+    path('processos/criar/', views.criar_processo, name='criar_processo'),
+    path('processos/editar/<int:processo_id>/', views.editar_processo, name='editar_processo'),
+    path('processos/<int:processo_id>/documentos/criar/', views.criar_documento, name='criar_documento'),
+    
+    path('movimentacoes/<int:processo_id>/criar/', views.criar_movimentacao, name='criar_movimentacao'),
+    path('movimentacoes/tramitacao/', views.listar_movimentacoes_tramitacao, name='listar_movimentacoes_tramitacao'),
+    path('processo/<int:processo_id>/receber/', views.receber_processo, name='receber_processo'),
+
+    path('protocolos/gerar/', views.gerar_protocolo, name='gerar_protocolo'),
+    path('protocolos/', views.listar_protocolos, name='listar_protocolos'),
+    path('protocolos/<int:protocolo_id>/comprovacao/', views.anexar_comprovacao, name='anexar_comprovacao'),
+    path('protocolos/<int:protocolo_id>/comprovacao/visualizar/', views.visualizar_comprovacao, name='visualizar_comprovacao'),
 ]

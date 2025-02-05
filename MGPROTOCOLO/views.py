@@ -1,192 +1,210 @@
 from datetime import datetime
-from django.shortcuts import get_object_or_404, render, redirect
-from .models import Documento, Setor, Movimentacao, ProtocoloMovimentacao
-from .forms import DocumentoForm
-from django.db.models import Q
-from django.template.loader import render_to_string
-from weasyprint import HTML, CSS
 from django.http import HttpResponse
-from django.db.models import Max
+from django.template.loader import render_to_string
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
+from django.db.models import Prefetch
+from weasyprint import HTML
+from .models import Processo, Documento, Movimentacao, ProtocoloMovimentacao, Setor
+from .forms import ProcessoForm, DocumentoForm, MovimentacaoForm, ComprovacaoForm
 
-def registrar_documento(request):
+@login_required
+def processos_no_setor(request):
+    """
+    Exibe os processos cuja última movimentação está no setor do usuário.
+    """
+    setor_usuario = request.user.setores.first()  # Supondo que o usuário pertence a um setor
+    processos = Processo.processos_no_setor(setor_usuario)
+    return render(request, 'processos_no_setor.html', {'processos': processos})
+
+@login_required
+def processos_encaminhados_pelo_setor(request):
+    """
+    Exibe os processos que foram encaminhados pelo setor do usuário para outros setores.
+    """
+    setor_usuario = request.user.setores.first()  # Supondo que o usuário pertence a um setor
+    processos = Processo.processos_encaminhados_pelo_setor(setor_usuario)
+    return render(request, 'processos_encaminhados_pelo_setor.html', {'processos': processos})
+
+@login_required
+def detalhes_processo(request, processo_id):
+    """
+    Exibe os detalhes de um processo específico.
+    """
+    processo = get_object_or_404(Processo, id=processo_id)
+    pode_modificar = processo.usuario_pode_modificar(request.user)
+
+    return render(request, 'detalhes_processo.html', {'processo': processo, 'pode_modificar': pode_modificar})
+
+@login_required
+def criar_processo(request):
     if request.method == 'POST':
-        form = DocumentoForm(request.POST)
+        form = ProcessoForm(request.POST, request.FILES)
+        if form.is_valid():
+            processo = form.save(commit=False)
+            processo.criado_por = request.user
+            processo.setor_demandante = request.user.setores.first()
+            processo.setor_atual = request.user.setores.first()
+            processo.save()
+
+            # Salvar documentos iniciais
+            documentos_iniciais = request.FILES.getlist('documentos_iniciais')  # Recebe múltiplos arquivos
+            for arquivo in documentos_iniciais:
+                Documento.objects.create(
+                    processo=processo,
+                    descricao=f"Documento Inicial - {arquivo.name}",
+                    classificacao='outros',
+                    tipo='inicial',
+                    arquivo=arquivo,
+                    criado_por=request.user
+                )
+
+            return redirect('detalhes_processo', processo_id=processo.id)
+    else:
+        form = ProcessoForm()
+    return render(request, 'criar_processo.html', {'form': form})
+
+@login_required
+def editar_processo(request, processo_id):
+    processo = get_object_or_404(Processo, id=processo_id)
+    if request.method == 'POST':
+        form = ProcessoForm(request.POST, instance=processo)
         if form.is_valid():
             form.save()
-            return redirect('listar_documentos')
+            return redirect('detalhes_processo', processo_id=processo.id)
+    else:
+        form = ProcessoForm(instance=processo)
+    return render(request, 'editar_processo.html', {'form': form})
+
+@login_required
+def criar_documento(request, processo_id):
+    processo = get_object_or_404(Processo, id=processo_id)
+    if request.method == 'POST':
+        form = DocumentoForm(request.POST, request.FILES)
+        if form.is_valid():
+            documento = form.save(commit=False)
+            documento.processo = processo
+            documento.criado_por = request.user 
+            documento.tipo = 'complementar'
+            documento.save()
+            return redirect('detalhes_processo', processo_id=processo.id)
     else:
         form = DocumentoForm()
+    return render(request, 'criar_documento.html', {'form': form, 'processo': processo})
 
-    return render(request, 'registrar_documento.html', {'form': form})
-
-def listar_documentos(request):
-    documentos = Documento.objects.all()
-
-    # Filtros
-    status = request.GET.get('status')
-    tipo = request.GET.get('tipo')
-    if status:
-        documentos = documentos.filter(status=status)
-    if tipo:
-        documentos = documentos.filter(tipo=tipo)
-
-    return render(request, 'listar_documentos.html', {'documentos': documentos})
-
-def registrar_movimentacao(request, documento_id):
-    documento = Documento.objects.get(id=documento_id)
-
+@login_required
+def criar_movimentacao(request, processo_id):
+    processo = get_object_or_404(Processo, id=processo_id)
     if request.method == 'POST':
-        destino = request.POST.get('destino')
-        observacao = request.POST.get('observacao')
-
-        Movimentacao.objects.create(
-            documento=documento,
-            origem=documento.origem,
-            destino=Setor.objects.get(id=destino),
-            usuario=request.user,
-            observacao=observacao
-        )
-        documento.status = 'Em Tramitação'
-        documento.save()
-
-        return redirect('listar_documentos')
-
-    setores = Setor.objects.exclude(id=documento.origem.id)
-    return render(request, 'registrar_movimentacao.html', {'documento': documento, 'setores': setores})
-
-def concluir_documento(request, documento_id):
-    documento = Documento.objects.get(id=documento_id)
-    documento.status = 'Concluído'
-    documento.data_conclusao = datetime.now()
-    documento.save()
-    return redirect('listar_documentos')
-
-def consultar_movimentacao(request):
-    query = request.GET.get('query', '')  # Texto buscado pelo usuário
-    movimentacoes = Movimentacao.objects.all()
-
-    if query:
-        # Busca por título, origem ou destino
-        movimentacoes = movimentacoes.filter(
-            Q(documento__titulo__icontains=query) |
-            Q(origem__nome__icontains=query) |
-            Q(destino__nome__icontains=query)
-        )
-
-    return render(request, 'consultar_movimentacao.html', {
-        'movimentacoes': movimentacoes,
-        'query': query,
-    })
-
-def emitir_relatorio_protocolo(request):
-    if request.method == 'POST':
-        # Obtém IDs das movimentações selecionadas
-        movimentacao_ids = request.POST.getlist('movimentacoes')
-        movimentacoes = Movimentacao.objects.filter(id__in=movimentacao_ids)
-
-        # Renderiza o HTML para o PDF
-        template = render_to_string('sei/relatorio_protocolo.html', {
-            'movimentacoes': movimentacoes,
-            'data_emissao': datetime.now(),
+        form = MovimentacaoForm(request.POST, request.FILES)
+        if form.is_valid():
+            movimentacao = form.save(commit=False)
+            movimentacao.processo = processo
+            movimentacao.setor_origem = processo.setor_atual
+            movimentacao.status = 'em_tramitacao'
+            movimentacao.confirmacao = 'pendente'
+            movimentacao.realizado_por = request.user
+            movimentacao.save()
+            return redirect('detalhes_processo', processo_id=processo.id)
+    else:
+        form = MovimentacaoForm(initial={
+            'processo': processo,
+            'setor_origem': processo.setor_atual
         })
+    return render(request, 'criar_movimentacao.html', {'form': form, 'processo': processo})
 
-        response = HttpResponse(content_type='application/pdf')
-        response['Content-Disposition'] = 'inline; filename="relatorio_protocolo.pdf"'
+@login_required
+def listar_movimentacoes_tramitacao(request):
+    usuario = request.user
+    setor_usuario = usuario.setores.first()  # Supondo que o usuário pertence a apenas um setor
 
-        HTML(string=template).write_pdf(response)
-        return response
+    if not setor_usuario:
+        return render(request, 'listar_movimentacoes_tramitacao.html', {'setores': []})
 
-    # Se não houver movimentações selecionadas, redireciona para listagem
-    return redirect('listar_documentos')
+    # Filtrar apenas movimentações enviadas pelo setor do usuário logado
+    setores = Setor.objects.prefetch_related(
+        Prefetch(
+            'movimentacoes_destino',
+            queryset=Movimentacao.objects.filter(
+                setor_origem=setor_usuario,  # Movimentações enviadas pelo setor do usuário
+                status='em_tramitacao',
+                confirmacao='pendente'
+            )
+        )
+    ).distinct()
 
-def upload_relatorio(request, relatorio_id):
-    # Obtém o documento correspondente ao relatório
-    documento = get_object_or_404(Documento, id=relatorio_id)
+    return render(request, 'listar_movimentacoes_tramitacao.html', {'setores': setores})
 
+
+@login_required
+def gerar_protocolo(request):
     if request.method == 'POST':
-        # Recebe o arquivo enviado pelo usuário
-        arquivo = request.FILES.get('arquivo')
-        if arquivo:
-            # Atribui o arquivo diretamente ao campo de arquivo no modelo
-            documento.arquivo = arquivo
-            documento.status = 'Concluído'
-            documento.data_conclusao = datetime.now()
-            documento.save()
-
-            # Atualiza as movimentações associadas
-            documento.movimentacoes.update(observacao='Aprovado pelo upload do relatório')
-
-            return redirect('listar_documentos')
-        else:
-            return render(request, 'upload_relatorio.html', {
-                'relatorio': documento,
-                'error': 'Por favor, envie um arquivo válido.',
-            })
-
-    return render(request, 'upload_relatorio.html', {'relatorio': documento})
-
-
-
-def listar_movimentacoes_em_tramitacao(request):
-    movimentacoes = Movimentacao.objects.filter(documento__status="Em Tramitação")
-    setores = Setor.objects.all()
-
-    if request.method == 'POST':
-        # Obter IDs das movimentações selecionadas
         movimentacoes_ids = request.POST.getlist('movimentacoes')
-        destino_id = request.POST.get('destino')
+        movimentacoes = Movimentacao.objects.filter(id__in=movimentacoes_ids)
 
-        if movimentacoes_ids and destino_id:
-            # Gerar um número de protocolo
-            ultimo_protocolo = ProtocoloMovimentacao.objects.aggregate(Max('id'))['id__max'] or 0
-            numero_protocolo = f"PM-{ultimo_protocolo + 1:04d}-{datetime.now().year}"
+        if movimentacoes.exists():
+            # Verificar se todas as movimentações são do mesmo setor de destino
+            setor_destino = movimentacoes.first().setor_destino
+            if not all(m.setor_destino == setor_destino for m in movimentacoes):
+                return HttpResponse("Todas as movimentações devem ser do mesmo setor de destino.", status=400)
 
             # Criar o protocolo
             protocolo = ProtocoloMovimentacao.objects.create(
-                numero=numero_protocolo,
-                destino_id=destino_id,
+                setor_destino=setor_destino,
+                criado_por=request.user
             )
-            protocolo.movimentacoes.set(Movimentacao.objects.filter(id__in=movimentacoes_ids))
-            protocolo.save()
+            protocolo.movimentacoes.set(movimentacoes)
 
-            return redirect('emitir_protocolo', protocolo_id=protocolo.id)
+            # Atualizar status das movimentações
+            movimentacoes.update(confirmacao='manual')
 
-    return render(request, 'listar_movimentacoes_em_tramitacao.html', {
-        'movimentacoes': movimentacoes,
-        'setores': setores,
-    })
+            # Gerar PDF
+            html_string = render_to_string('protocolo_pdf.html', {'protocolo': protocolo})
+            pdf_file = HTML(string=html_string).write_pdf()
 
-def emitir_protocolo(request, protocolo_id):
-    protocolo = ProtocoloMovimentacao.objects.get(id=protocolo_id)
+            # Retornar o PDF para download
+            response = HttpResponse(pdf_file, content_type='application/pdf')
+            response['Content-Disposition'] = f'attachment; filename="protocolo_{protocolo.id}.pdf"'
+            return response
 
-    # Renderizar o PDF
-    template = render_to_string('protocolo_pdf.html', {'protocolo': protocolo})
-    response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = f'inline; filename="Protocolo_{protocolo.numero}.pdf"'
+    return redirect('listar_movimentacoes_tramitacao')
 
-    HTML(string=template).write_pdf(response)
-    return response
+@login_required
+def listar_protocolos(request):
+    protocolos = ProtocoloMovimentacao.objects.all()
+    return render(request, 'listar_protocolos.html', {'protocolos': protocolos})
 
-def listar_protocolos_pendentes(request):
-    protocolos = ProtocoloMovimentacao.objects.filter(status="Pendente")
-    return render(request, 'listar_protocolos_pendentes.html', {'protocolos': protocolos})
-
-def finalizar_protocolo(request, protocolo_id):
-    protocolo = ProtocoloMovimentacao.objects.get(id=protocolo_id)
-
+@login_required
+def anexar_comprovacao(request, protocolo_id):
+    protocolo = get_object_or_404(ProtocoloMovimentacao, id=protocolo_id)
     if request.method == 'POST':
-        arquivo = request.FILES.get('arquivo_assinado')
-        if arquivo:
-            protocolo.arquivo_assinado = arquivo
-            protocolo.status = "Finalizado"
-            protocolo.save()
+        form = ComprovacaoForm(request.POST, request.FILES, instance=protocolo)
+        if form.is_valid():
+            protocolo = form.save()
+            protocolo.confirmar()  # Atualiza o status do protocolo e das movimentações
+            return redirect('listar_protocolos')
+    else:
+        form = ComprovacaoForm(instance=protocolo)
+    return render(request, 'anexar_comprovacao.html', {'form': form, 'protocolo': protocolo})
 
-            # Atualizar o status das movimentações
-            protocolo.movimentacoes.update(status="Concluído")
+@login_required
+def visualizar_comprovacao(request, protocolo_id):
+    protocolo = get_object_or_404(ProtocoloMovimentacao, id=protocolo_id)
+    return render(request, 'visualizar_comprovacao.html', {'protocolo': protocolo})
 
-            return redirect('sei:listar_protocolos_pendentes')
+@login_required
+def receber_processo(request, processo_id):
+    processo = get_object_or_404(Processo, id=processo_id)
+    
+    # Verifica se o usuário pertence ao setor atual
+    setor_usuario = request.user.setores.first()
+    ultima_movimentacao = processo.ultima_movimentacao
 
-    return render(request, 'sei/finalizar_protocolo.html', {'protocolo': protocolo})
-
-
-
+    if ultima_movimentacao and ultima_movimentacao.setor_destino == setor_usuario:
+        ultima_movimentacao.status = 'recebida'
+        ultima_movimentacao.confirmacao = 'sistema'
+        ultima_movimentacao.confirmado_por = request.user
+        ultima_movimentacao.confirmado_em = datetime.now()
+        ultima_movimentacao.save()
+    
+    return redirect('processos_no_setor')

@@ -1,37 +1,37 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <title>Protocolo de Movimentação</title>
-    <style>
-        body { font-family: Arial, sans-serif; }
-        table { width: 100%; border-collapse: collapse; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        th { background-color: #f4f4f4; }
-    </style>
 </head>
 <body>
     <h1>Protocolo de Movimentação</h1>
-    <p><strong>Número:</strong> {{ protocolo.numero }}</p>
-    <p><strong>Destino:</strong> {{ protocolo.destino.nome }}</p>
-    <p><strong>Data:</strong> {{ protocolo.data_criacao|date:"d/m/Y H:i" }}</p>
+    <p><strong>Setor Destino:</strong> {{ protocolo.setor_destino.nome }}</p>
+    <p><strong>Data:</strong> {{ protocolo.criado_em }}</p>
+    <p><strong>Gerado por:</strong> {{ protocolo.criado_por }}</p>
+
+    <h2>Movimentações</h2>
     <table>
         <thead>
             <tr>
-                <th>Título</th>
-                <th>Origem</th>
-                <th>Observação</th>
+                <th>Processo</th>
+                <th>Setor Origem</th>
+                <th>Data</th>
             </tr>
         </thead>
         <tbody>
             {% for movimentacao in protocolo.movimentacoes.all %}
-            <tr>
-                <td>{{ movimentacao.documento.titulo }}</td>
-                <td>{{ movimentacao.origem }}</td>
-                <td>{{ movimentacao.observacao }}</td>
-            </tr>
+                <tr>
+                    <td>{{ movimentacao.processo.numero }}</td>
+                    <td>{{ movimentacao.setor_origem.nome }}</td>
+                    <td>{{ movimentacao.realizado_em }}</td>
+                </tr>
             {% endfor %}
         </tbody>
     </table>
+
+    <h2>Assinatura</h2>
+    <p>_________________________________________</p>
+    <p>Setor Destino: {{ protocolo.setor_destino.nome }}</p>
 </body>
 </html>

@@ -1,0 +1,52 @@
+{% load custom_filters %}
+<div class="modal-content" hx-debug="true">
+    <div class="modal-header justify-content-between">
+        <h5 class="modal-title">Protocolo de movimentação</h5>
+    </div>
+    <div class="modal-body">
+        
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th colspan="4" class="text-center text-muted">Informações do Protocolo</th>
+                </tr>
+                <tr>
+                    <th><b>Setor de destino:</b></th>
+                    <th><b>Criado em:</b></th>
+                    <th><b>Status:</b></th>
+                    <th><b>Comprovante:</b></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>{{ protocolo.setor_destino }}</td>
+                    <td>{{ protocolo.criado_em|date_format }}</td>
+                    <td>{{ protocolo.status|upper }}</td>
+                    <td><a href="/media/{{ protocolo.comprovacao }}" target="_blank">Visualizar</a></td>
+            </tbody>
+        </table>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th colspan="4" class="text-center text-muted">Movimentações pertecentes ao Protocolo</th>
+                </tr>
+                <tr>
+                    <th>Processo</th>
+                    <th>Destino</th>
+                    <th>Autor</th>
+                    <th>Data</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for movimentacao in protocolo.movimentacoes.all %}
+                <tr>
+                    <td>{{movimentacao.processo.numero}}</td>
+                    <td>{{movimentacao.setor_destino|upper}}</td>
+                    <td>{{movimentacao.realizado_por|upper}}</td>
+                    <td>{{movimentacao.realizado_em}}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>

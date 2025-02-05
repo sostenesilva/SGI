@@ -1,0 +1,47 @@
+{% extends 'baseprotocolo.html' %}
+{% block titulo %}Processos no Setor{% endblock titulo %}
+{% block content %}
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Número</th>
+                <th>Título</th>
+                <th>Status</th>
+                <th>Demandante</th>
+                <th>Atual</th>
+                <th>Atualização</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for processo in processos %}
+                <tr>
+                    <td>{{ processo.numero }}</td>
+                    <td>{{ processo.titulo|truncatewords:30 }}</td>
+                    <td>
+                        <span class="badge {% if processo.ultima_movimentacao.status == 'recebida' %}bg-success{% else %}bg-warning{% endif %}">
+                            {{ processo.get_status_display }}
+                        </span>
+                    </td>
+                    <td>{{ processo.setor_demandante }}</td>
+                    <td>{{ processo.setor_atual }}</td>
+                    <td>{{ processo.atualizado_em|date:"d/m/Y H:i" }}</td>
+                    <td>
+                        {% if processo.ultima_movimentacao.status == 'em_tramitacao' and processo.ultima_movimentacao.confirmacao == 'pendente' %}
+                            <form method="post" action="{% url 'receber_processo' processo.id %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-sm btn-warning">Receber</button>
+                            </form>
+                        {% else %}
+                            <a href="{% url 'detalhes_processo' processo.id %}" class="btn btn-info btn-sm">Detalhes</a>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="7">Nenhum processo encontrado.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

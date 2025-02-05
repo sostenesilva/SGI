@@ -217,7 +217,7 @@ def contratos_additens(request,contrato_pk):
 #CONTRATOS LICON
 @login_required
 def contratos_request(request):
-    contratos_licon = requests.get('https://sistemas.tcepe.tc.br/DadosAbertos/Contratos!json?UnidadeOrcamentaria=Prefeitura&Esfera=M&Municipio=Cortes&AnoContrato=2024').json()['resposta']['conteudo']
+    contratos_licon = requests.get('https://sistemas.tcepe.tc.br/DadosAbertos/Contratos!json?UnidadeOrcamentaria=Prefeitura&Esfera=M&Municipio=Cortes&AnoContrato=2025').json()['resposta']['conteudo']
     processos_licon = requests.get('https://sistemas.tcepe.tc.br/DadosAbertos/LicitacaoUG!json?UG=CORTES').json()['resposta']['conteudo']
     
     for contrato in contratos_licon:
@@ -449,7 +449,7 @@ def emitirDocOf (request, ordem, listadeitens):
     }
 
     docx_replace(document, **mydict )
-    diretorio = f'media/ordem de fornecimento/2024/{ordem}.docx'
+    diretorio = f'media/ordem de fornecimento/2025/{ordem}.docx'
     document.save(diretorio)
 
     return diretorio

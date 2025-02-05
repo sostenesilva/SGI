@@ -5,10 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>
-        {% block head_title %}
-        {% endblock head_title %}
-    </title>
+    <title>Protocolo</title>
     <link rel="stylesheet" href="https://cdn.lineicons.com/4.0/lineicons.css" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="stylesheet" type="text/css" href="{% static 'css/dashcss.css' %}"/>
@@ -26,36 +23,66 @@
             </div>
 
             <ul class="sidebar-nav">
+
+
                 <li class="sidebar-item">
-                    <a href="{% url 'listar_documentos' %}" class="sidebar-link">
-                        <i class="lni lni-graph"></i>
-                        <span>Documentos</span>
+                    <a href="#" class="sidebar-link collapsed has-dropdown" data-bs-toggle="collapse"
+                        data-bs-target="#orcamentos" aria-expanded="false" aria-controls="orcamentos">
+                        <i class="lni lni-ruler-pencil"></i>
+                        <span>Processos</span>
                     </a>
+                    <ul id="orcamentos" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
+                        <li class="sidebar-item">
+                            <a href="{% url 'processos_no_setor' %}" class="sidebar-link">No Setor</a>
+                        </li>
+                        <li class="sidebar-item">
+                            <a href="{% url 'processos_encaminhados_pelo_setor' %}" class="sidebar-link">Encaminhados</a>
+                        </li>
+                        <li class="sidebar-item">
+                            <a href="{% url 'criar_processo' %}" class="sidebar-link">Criar novo</a>
+                        </li>
+                        <!-- <li class="sidebar-item">
+                            <a href="#" class="sidebar-link collapsed" data-bs-toggle="collapse"
+                                data-bs-target="#multi-three" aria-expanded="false" aria-controls="multi-three">
+                                Bancos
+                            </a>
+                            <ul id="multi-three" class="sidebar-dropdown list-unstyled collapse">
+                                <li class="sidebar-item">
+                                    <a href="#" class="sidebar-link">Banco de Preços</a>
+                                </li>
+                                <li class="sidebar-item">
+                                    <a href="#" class="sidebar-link">Banco de Equipamentos</a>
+                                </li>
+                                <li class="sidebar-item">
+                                    <a href="#" class="sidebar-link">Banco de Irradiação</a>
+                                </li>
+                            </ul>
+                        </li> -->
+                    </ul>
                 </li>
+
                 <li class="sidebar-item">
-                    <a href="{% url 'registrar_documento' %}" class="sidebar-link">
-                        <i class="lni lni-graph"></i>
-                        <span>Registrar Entrada</span>
-                    </a>
-                </li>
-                <li class="sidebar-item">
-                    <a href="{% url 'consultar_movimentacao' %}" class="sidebar-link">
-                        <i class="lni lni-graph"></i>
+                    <a href="#" class="sidebar-link collapsed has-dropdown" data-bs-toggle="collapse"
+                        data-bs-target="#movimentacoes" aria-expanded="false" aria-controls="movimentacoes">
+                        <i class="lni lni-ruler-pencil"></i>
                         <span>Movimentações</span>
                     </a>
+                    <ul id="movimentacoes" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
+                        <li class="sidebar-item">
+                            <a href="{% url 'listar_movimentacoes_tramitacao' %}" class="sidebar-link">
+                                <span>Em tramitação</span>
+                            </a>
+                        </li>
+                        <li class="sidebar-item">
+                            <a href="{% url 'listar_protocolos' %}" class="sidebar-link">
+                                <span>Comprovantes</span>
+                            </a>
+                        </li>
+                    </ul>
                 </li>
-                <li class="sidebar-item">
-                    <a href="{% url 'listar_movimentacoes_em_tramitacao' %}" class="sidebar-link">
-                        <i class="lni lni-graph"></i>
-                        <span>Movimentações Pendentes</span>
-                    </a>
-                </li>
-                <li class="sidebar-item">
-                    <a href="{% url 'listar_protocolos_pendentes' %}" class="sidebar-link">
-                        <i class="lni lni-graph"></i>
-                        <span>Protocolos Pendentes</span>
-                    </a>
-                </li>
+                
+                
+                
                 <!-- {% if perms.auth.GESTOR %}
                     <li class="sidebar-item">
                         <a href="{% url 'abastecimentos' %}" class="sidebar-link">
@@ -90,39 +117,10 @@
                 {% endif %} -->
                 
 
+                
+                
+
                 <!--
-                    <li class="sidebar-item">
-                    <a href="#" class="sidebar-link collapsed has-dropdown" data-bs-toggle="collapse"
-                        data-bs-target="#orcamentos" aria-expanded="false" aria-controls="orcamentos">
-                        <i class="lni lni-ruler-pencil"></i>
-                        <span>Avaliação Continuada</span>
-                    </a>
-                    <ul id="orcamentos" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
-                        <li class="sidebar-item">
-                            <a href="#" class="sidebar-link">Gerar orçamento</a>
-                        </li>
-                        <li class="sidebar-item">
-                            <a href="#" class="sidebar-link">Histórico de orçamentos</a>
-                        </li>
-                        <li class="sidebar-item">
-                            <a href="#" class="sidebar-link collapsed" data-bs-toggle="collapse"
-                                data-bs-target="#multi-three" aria-expanded="false" aria-controls="multi-three">
-                                Bancos
-                            </a>
-                            <ul id="multi-three" class="sidebar-dropdown list-unstyled collapse">
-                                <li class="sidebar-item">
-                                    <a href="#" class="sidebar-link">Banco de Preços</a>
-                                </li>
-                                <li class="sidebar-item">
-                                    <a href="#" class="sidebar-link">Banco de Equipamentos</a>
-                                </li>
-                                <li class="sidebar-item">
-                                    <a href="#" class="sidebar-link">Banco de Irradiação</a>
-                                </li>
-                            </ul>
-                        </li>
-                    </ul>
-                </li>
                 <li class="sidebar-item">
                     <a href="#" class="sidebar-link collapsed has-dropdown" data-bs-toggle="collapse"
                         data-bs-target="#projetos" aria-expanded="false" aria-controls="projetos">
@@ -205,6 +203,14 @@
             </div>
         </aside>
         <div class="main mx-2" style="padding: 30px; background-color: #F5F5F5;">
+            <div class="d-flex justify-content-between">
+                <h4><b>SGI</b> - {% block titulo %}{% endblock titulo %}</h4>
+                <ul class="m-0 p-0" style="font-size:smaller;">
+                    <li class="m-0 p-0"><small ><b>Usuário:</b> {{request.user|upper}}</small></li>
+                    <li class="m-0 p-0"><small><b>Setor:</b> {{request.user.setores.first|upper}}</small></li>
+                </ul>
+            </div>
+            <hr>
             {% block content %}
             {% endblock content %}
         </div>

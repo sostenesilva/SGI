@@ -1,0 +1,143 @@
+{% extends 'baseprotocolo.html' %}
+{% block titulo %}Detalhes do Processo{% endblock titulo %}
+{% block content %}
+    <!-- Cabeçalho com Informações Básicas do Processo -->
+    <div class="row">
+        <div class="col">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="card-title"><b>{{ processo.numero }} - {{ processo.titulo }}</b></p>
+                            <div style="margin: 0; padding: 0;">
+                                <li>{{ processo.descricao|title }}</li>
+                            </div>
+                        </div>
+                        <div>
+                            <li><strong>Status:</strong> {{ processo.get_status_display }}</li>
+                            <li><strong>Prazo:</strong> {{ processo.prazo|default:"-" }}</li>
+                            <li><strong>Tempo Restante:</strong> {{ processo.tempo_restante|default:"-" }} dias</li>
+                        </div>
+                        <div>
+                            <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#infoProcessoModal">
+                                <i class="lni lni-info"></i> Mais Informações
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+
+    <!-- Duas Colunas: Documentos e Movimentações -->
+    <div class="row">
+        <!-- Coluna da Esquerda: Documentos -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between">
+                        <h5 class="card-title mb-0">Documentos</h5> 
+                        {% if pode_modificar %}
+                            <button class="btn btn-sm btn-info py-0" hx-get="{% url 'criar_documento' processo.id %}" hx-target="#dialog" hx-trigger="click" data-bs-toggle="modal" data-bs-target="#modal">
+                                + Adicionar Documento
+                            </button>
+                        {% else %}
+                            <button class="btn btn-sm btn-secondary py-0" disabled>Fora do setor</button>
+                        {% endif %}
+                    </div>
+                    
+                </div>
+                <div class="card-body">
+                    {% if processo.documentos.all %}
+                        <div class="list-group">
+                            {% for documento in processo.documentos.all %}
+                                <div class="list-group-item">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h6 class="mb-1">{{ documento.descricao }}</h6>
+                                            <small class="text-muted">{{ documento.get_classificacao_display }} - {{ documento.get_tipo_display }}</small>
+                                        </div>
+                                        <div>
+                                            <a href="{{ documento.arquivo.url }}" class="btn btn-sm btn-outline-primary" target="_blank">
+                                                <i class="lni lni-download"></i> Baixar
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted">Nenhum documento encontrado.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Coluna da Direita: Movimentações -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between">
+                        <h5 class="card-title mb-0">Movimentações</h5> 
+                        {% if pode_modificar %}
+                            <button class="btn btn-sm btn-warning py-0" hx-get="{% url 'criar_movimentacao' processo.id %}" hx-target="#dialog" hx-trigger="click" data-bs-toggle="modal" data-bs-target="#modal">
+                                + Criar Movimentação
+                            </button>
+                        {% else %}
+                            <button class="btn btn-sm btn-secondary py-0" disabled>Fora do setor</button>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="card-body">
+                    {% if processo.movimentacoes.all %}
+                        <div class="list-group">
+                            {% for movimentacao in processo.movimentacoes.all %}
+                                <div class="list-group-item">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h6 class="mb-1">De {{ movimentacao.setor_origem.nome }} para {{ movimentacao.setor_destino.nome }}</h6>
+                                            <small class="text-muted">{{ movimentacao.realizado_em|date:"d/m/Y H:i" }} - {{ movimentacao.get_status_display }}</small>
+                                        </div>
+                                        <div>
+                                            <span class="badge bg-{% if movimentacao.status == 'recebida' %}success{% else %}info{% endif %}">
+                                                {{ movimentacao.get_status_display }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted">Nenhuma movimentação encontrada.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Mais Informações do Processo -->
+    <div class="modal fade" id="infoProcessoModal" tabindex="-1" aria-labelledby="infoProcessoModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="infoProcessoModalLabel">Mais Informações do Processo</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p><strong>Setor Demandante:</strong> {{ processo.setor_demandante.nome }}</p>
+                    <p><strong>Setor Fim:</strong> {{ processo.setor_fim.nome }}</p>
+                    <p><strong>Setor Atual:</strong> {{ processo.setor_atual.nome }}</p>
+                    <p><strong>Setores Envolvidos:</strong> {{ processo.setores_envolvidos|join:", " }}</p>
+                    <p><strong>Criado por:</strong> {{ processo.criado_por }}</p>
+                    <p><strong>Criado em:</strong> {{ processo.criado_em|date:"d/m/Y H:i" }}</p>
+                    <p><strong>Atualizado em:</strong> {{ processo.atualizado_em|date:"d/m/Y H:i" }}</p>
+                    <p><strong>Última Movimentação:</strong> {{ processo.ultima_movimentacao.setor_destino.nome }} em {{ processo.ultima_movimentacao.realizado_em|date:"d/m/Y H:i" }}</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
