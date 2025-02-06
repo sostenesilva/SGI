@@ -2,22 +2,18 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Protocolo de Movimentação</title>
-    <link rel="stylesheet" href="static/css/detail_pdf_gen.css">
-    <style>
-        header {
-            background-image: url("data:image/png;base64,{{ header_image }}");
-        }
-
-        footer {
-            background-image: url("data:image/png;base64,{{ footer_image }}");
-        }
-    </style>
+    <title>Protocolo de Movimentação</title>  
 </head>
 <body>
-    <header>
+    <!-- <header>
+        <img src="data:image/png;base64,{{ header_image }}" alt="Header">
         <img class="brasao" src="data:image/png;base64,{{ brasao_image }}" alt="Brasão da Prefeitura">
-    </header>
+    </header> -->
+    <style>
+        @page {
+            background-image: url("data:image/png;base64,{{ bg_timbrado }}");
+        }
+    </style>
     <div class="content">
         <h1>Protocolo de Movimentação</h1>
         <ul style="margin: 0; padding: 0; list-style: none;">
@@ -37,6 +33,7 @@
                 </tr>
             </thead>
             <tbody>
+                {% for _ in ''|center:13 %}
                 {% for movimentacao in protocolo.movimentacoes.all %}
                     <tr>
                         <td>{{ movimentacao.processo.numero }}</td>
@@ -51,6 +48,7 @@
                         <td style="border-left: none; border-right: none; height: 2px;" colspan="4"></td>
                     </tr>
                 {% endfor %}
+                {% endfor %}
             </tbody>
         </table>
 
@@ -60,12 +58,13 @@
         </div>
     </div>
 
-    <footer>
+    <!-- <footer>
+        <img src="data:image/png;base64,{{ footer_image }}" alt="Footer">
         <div class="dados-footer">
             <p style="margin:0px">Rua Coronel José Belarmino, nº 048, Centro, Cortês-PE</p>                    
             <p style="margin:0px">CEP 55.525-000 | CNPJ: 10.273.548/0001-69</p>
             <p style="margin:0px">E-mail: gabineteprefeitacortes@gmail.com</p>
         </div>
-    </footer>
+    </footer> -->
 </body>
 </html>

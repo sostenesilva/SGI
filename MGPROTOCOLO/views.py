@@ -169,6 +169,7 @@ def gerar_protocolo(request):
 
             # Converter imagens para Base64
             header_image = image_to_base64('img/header.png')
+            bg_timbrado = image_to_base64('img/bg-timbrado.png')
             footer_image = image_to_base64('img/footer.png')
             brasao_image = image_to_base64('img/logo_cor_horizontal.png')
 
@@ -182,7 +183,7 @@ def gerar_protocolo(request):
 
             # Caminho absoluto do CSS
             base_url = request.build_absolute_uri('/')
-            css_path = f".{static('css/detail_pdf_gen.css')}"
+            css_path = f".{static('css/css_protocolo_pdf.css')}"
             css = CSS(filename=css_path)
 
             # Gerar PDF
