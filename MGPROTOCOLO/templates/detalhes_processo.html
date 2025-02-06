@@ -4,7 +4,7 @@
     <!-- Cabeçalho com Informações Básicas do Processo -->
     <div class="row">
         <div class="col">
-            <div class="card mb-4">
+            <div class="card mb-2">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
@@ -28,8 +28,11 @@
             </div>
         </div>
     </div>
-    
-
+    {% if not pode_modificar %}
+        <div class="d-flex justify-content-center mb-2">
+            <small class="badge bg-secondary">Este processo está {{ processo.get_status_display|lower }} no setor {{ processo.setor_atual|title }}</small> 
+        </div>
+    {% endif %}
     <!-- Duas Colunas: Documentos e Movimentações -->
     <div class="row">
         <!-- Coluna da Esquerda: Documentos -->
@@ -42,8 +45,6 @@
                             <button class="btn btn-sm btn-info py-0" hx-get="{% url 'criar_documento' processo.id %}" hx-target="#dialog" hx-trigger="click" data-bs-toggle="modal" data-bs-target="#modal">
                                 + Adicionar Documento
                             </button>
-                        {% else %}
-                            <button class="btn btn-sm btn-secondary py-0" disabled>Fora do setor</button>
                         {% endif %}
                     </div>
                     
@@ -54,12 +55,14 @@
                             {% for documento in processo.documentos.all %}
                                 <div class="list-group-item">
                                     <div class="d-flex justify-content-between align-items-center">
-                                        <div>
-                                            <h6 class="mb-1">{{ documento.descricao }}</h6>
-                                            <small class="text-muted">{{ documento.get_classificacao_display }} - {{ documento.get_tipo_display }}</small>
+                                        <div style="font-size: small;">
+                                            <ul class="m-0 p-0" style="font-size: small;">
+                                                <li class="mb-0">{{ documento.descricao }}</li>
+                                                <li class="text-muted" style="font-size: smaller;">{{ documento.get_classificacao_display }} - {{ documento.get_tipo_display }}</li>
+                                            </ul>
                                         </div>
                                         <div>
-                                            <a href="{{ documento.arquivo.url }}" class="btn btn-sm btn-outline-primary" target="_blank">
+                                            <a href="{{ documento.arquivo.url }}" class="btn btn-sm btn-outline-primary mx-1" target="_blank">
                                                 <i class="lni lni-download"></i> Baixar
                                             </a>
                                         </div>
@@ -84,8 +87,6 @@
                             <button class="btn btn-sm btn-warning py-0" hx-get="{% url 'criar_movimentacao' processo.id %}" hx-target="#dialog" hx-trigger="click" data-bs-toggle="modal" data-bs-target="#modal">
                                 + Criar Movimentação
                             </button>
-                        {% else %}
-                            <button class="btn btn-sm btn-secondary py-0" disabled>Fora do setor</button>
                         {% endif %}
                     </div>
                 </div>
@@ -96,8 +97,11 @@
                                 <div class="list-group-item">
                                     <div class="d-flex justify-content-between align-items-center">
                                         <div>
-                                            <h6 class="mb-1">De {{ movimentacao.setor_origem.nome }} para {{ movimentacao.setor_destino.nome }}</h6>
-                                            <small class="text-muted">{{ movimentacao.realizado_em|date:"d/m/Y H:i" }} - {{ movimentacao.get_status_display }}</small>
+                                            <ul class="m-0 p-0" style="font-size: small;">
+                                                <li class="mb-0">De {{ movimentacao.setor_origem.nome }} para {{ movimentacao.setor_destino.nome }}</li>
+                                                <li class="text-muted" style="font-size: smaller;">{{ movimentacao.realizado_em|date:"d/m/Y H:i" }} - {{ movimentacao.get_status_display }}</li>
+                                            </ul>
+                                            
                                         </div>
                                         <div>
                                             <span class="badge bg-{% if movimentacao.status == 'recebida' %}success{% else %}info{% endif %}">

@@ -1,12 +1,14 @@
+import base64
 from datetime import datetime
 from django.http import HttpResponse
 from django.template.loader import render_to_string
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.db.models import Prefetch
-from weasyprint import HTML
+from weasyprint import CSS, HTML
 from .models import Processo, Documento, Movimentacao, ProtocoloMovimentacao, Setor
 from .forms import ProcessoForm, DocumentoForm, MovimentacaoForm, ComprovacaoForm
+from django.templatetags.static import static
 
 @login_required
 def processos_no_setor(request):
@@ -138,6 +140,7 @@ def listar_movimentacoes_tramitacao(request):
 
 @login_required
 def gerar_protocolo(request):
+
     if request.method == 'POST':
         movimentacoes_ids = request.POST.getlist('movimentacoes')
         movimentacoes = Movimentacao.objects.filter(id__in=movimentacoes_ids)
@@ -158,9 +161,33 @@ def gerar_protocolo(request):
             # Atualizar status das movimentações
             movimentacoes.update(confirmacao='manual')
 
+            # Função para converter imagens estáticas em Base64
+            def image_to_base64(image_path):
+                abs_path = f".{static(image_path)}"
+                with open(abs_path, "rb") as img_file:
+                    return base64.b64encode(img_file.read()).decode('utf-8')
+
+            # Converter imagens para Base64
+            header_image = image_to_base64('img/header.png')
+            footer_image = image_to_base64('img/footer.png')
+            brasao_image = image_to_base64('img/logo_cor_horizontal.png')
+
+            # Gerar HTML com contexto atualizado
+            html_string = render_to_string('protocolo_pdf.html', {
+                'protocolo': protocolo,
+                'header_image': header_image,
+                'footer_image': footer_image,
+                'brasao_image': brasao_image,
+            })
+
+            # Caminho absoluto do CSS
+            base_url = request.build_absolute_uri('/')
+            css_path = f".{static('css/detail_pdf_gen.css')}"
+            css = CSS(filename=css_path)
+
             # Gerar PDF
-            html_string = render_to_string('protocolo_pdf.html', {'protocolo': protocolo})
-            pdf_file = HTML(string=html_string).write_pdf()
+            pdf_file = HTML(string=html_string, base_url=base_url).write_pdf(stylesheets=[css])
+
 
             # Retornar o PDF para download
             response = HttpResponse(pdf_file, content_type='application/pdf')
