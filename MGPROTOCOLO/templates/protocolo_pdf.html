@@ -33,7 +33,6 @@
                 </tr>
             </thead>
             <tbody>
-                {% for _ in ''|center:13 %}
                 {% for movimentacao in protocolo.movimentacoes.all %}
                     <tr>
                         <td>{{ movimentacao.processo.numero }}</td>
@@ -47,7 +46,6 @@
                     <tr>
                         <td style="border-left: none; border-right: none; height: 2px;" colspan="4"></td>
                     </tr>
-                {% endfor %}
                 {% endfor %}
             </tbody>
         </table>
