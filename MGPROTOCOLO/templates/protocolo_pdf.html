@@ -20,13 +20,14 @@
     </header>
     <div class="content">
         <h1>Protocolo de Movimentação</h1>
-        <p><strong>Setor Destino:</strong> {{ protocolo.setor_destino.nome }}</p>
-        <p><strong>Data da entrega:</strong> {{ protocolo.criado_em }}</p>
-        <p><strong>Protocolo emitido por:</strong> {{ protocolo.criado_por }}</p>
+        <ul style="margin: 0; padding: 0; list-style: none;">
+            <li><strong>Setor Destino:</strong> {{ protocolo.setor_destino.nome }}</li>
+            <li><strong>Data da entrega:</strong> {{ protocolo.criado_em }}</li>
+            <li><strong>Protocolo emitido por:</strong> {{ protocolo.criado_por }} - Controle Interno</li>
+        </ul>
 
         <h2>Movimentações</h2>
         <table>
-            {% for movimentacao in protocolo.movimentacoes.all %}
             <thead>
                 <tr>
                     <th>Número</th>
@@ -36,7 +37,7 @@
                 </tr>
             </thead>
             <tbody>
-                
+                {% for movimentacao in protocolo.movimentacoes.all %}
                     <tr>
                         <td>{{ movimentacao.processo.numero }}</td>
                         <td>{{ movimentacao.processo.titulo }}</td>
@@ -44,10 +45,13 @@
                         <td></td>
                     </tr>
                     <tr>
-                        <td colspan="4">{{ movimentacao.processo.descricao }}</td>
+                        <td style="font-size: small; text-align: left; font-style: italic;" colspan="4"><b>Descrição:</b> {{ movimentacao.processo.descricao }}</td>
                     </tr>
+                    <tr>
+                        <td style="border-left: none; border-right: none; height: 2px;" colspan="4"></td>
+                    </tr>
+                {% endfor %}
             </tbody>
-            {% endfor %}
         </table>
 
         <div class="signature" style="margin-top: 10%;">
