@@ -52,7 +52,8 @@ footer {
     position: relative;
     padding-left: 3cm;
     padding-right: 3cm;
-    margin-bottom: 50%;
+    padding-top: 3cm;
+    padding-bottom: 5cm;
 }
 
 .section-title {
