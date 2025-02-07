@@ -9,23 +9,30 @@
                 <th>Número</th>
                 <th>Título</th>
                 <th>Status</th>
-                <th>Demandante</th>
-                <th>Atual</th>
-                <th>Atualização</th>
+                <th>Descrição</th>
                 <th>Ações</th>
             </tr>
         </thead>
         <tbody>
             {% for processo in processos %}
                 <tr>
-                    <td>{{ processo.numero }}</td>
-                    <td>{{ processo.titulo|truncatewords:30 }}</td>
-                    <td>{{ processo.get_status_display }}</td>
-                    <td>{{ processo.setor_demandante }}</td>
-                    <td>{{ processo.setor_atual }}</td>
-                    <td>{{ processo.atualizado_em }}</td>
-                    <td>
-                        <a href="{% url 'detalhes_processo' processo.id %}" class="btn btn-info btn-sm">Detalhes</a>
+                    <td style="max-width: 50px; word-wrap: break-word; white-space: normal;">{{ processo.numero }}</td>
+                    <td style="max-width: 100px; word-wrap: break-word; white-space: normal;">{{ processo.titulo|truncatewords:30 }}</td>
+                    <td style="max-width: 50px; word-wrap: break-word; white-space: normal;">
+                        <span class="badge {% if processo.ultima_movimentacao.status == 'recebida' %}bg-success{% else %}bg-warning{% endif %}">
+                            {{ processo.get_status_display }}
+                        </span>
+                    </td>
+                    <td style="max-width: 250px; word-wrap: break-word; white-space: normal;">{{ processo.descricao }}</td>
+                    <td style="width: fit-content;">
+                        {% if processo.ultima_movimentacao.status == 'em_tramitacao' and processo.ultima_movimentacao.confirmacao == 'pendente' %}
+                            <form method="post" action="{% url 'receber_processo' processo.id %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-sm btn-warning">Receber</button>
+                            </form>
+                        {% else %}
+                            <a href="{% url 'detalhes_processo' processo.id %}" class="btn btn-info btn-sm">Detalhes</a>
+                        {% endif %}
                     </td>
                 </tr>
             {% empty %}
