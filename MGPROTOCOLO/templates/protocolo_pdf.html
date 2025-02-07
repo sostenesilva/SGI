@@ -5,13 +5,102 @@
     <title>Protocolo de Movimentação</title>  
 </head>
 <body>
-    <!-- <header>
-        <img src="data:image/png;base64,{{ header_image }}" alt="Header">
-        <img class="brasao" src="data:image/png;base64,{{ brasao_image }}" alt="Brasão da Prefeitura">
-    </header> -->
     <style>
         @page {
-            background-image: url("data:image/png;base64,{{ bg_timbrado }}");
+            size: A4;
+            margin: 0;
+            padding: 3cm 2cm 5cm 2cm; /* Deixa espaço interno para o conteúdo */
+            background: url("data:image/png;base64,{{ page_background }}") no-repeat center;
+            background-size: cover;
+        }
+  
+        body {
+            font-family: Arial, sans-serif;
+            text-align: justify;
+            line-height: 1.4;
+            margin: 0;
+        }
+
+        .content{
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 24px;
+        }
+
+        header {
+            position: fixed;
+            top: 0cm;
+            left: -20cm;
+            right: 0cm;
+            height: 8cm;
+            text-align: center;
+            background-size: 100%;
+            background-repeat: no-repeat;
+            background-position: 2cm;
+        }
+
+        header .brasao {
+            position: fixed;
+            top: 1.2cm;
+            left: 1.5cm;
+            right: 0;
+            height: 2cm;
+            text-align: right;
+        }
+
+        footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 5cm;
+            text-align: bottom;
+            background-size: 100%;
+            background-repeat: no-repeat;
+            background-position: -2cm;
+        }
+
+        .section-title {
+            font-weight: bold;
+            font-size: 16px;
+            text-transform: uppercase;
+            margin-top: 0.7cm;
+            margin-bottom: 0cm;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table th, table td {
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+
+        table th {
+            background-color: #f4f4f4;
+        }
+
+        .instructions {
+            font-size: 14px;
+        }
+
+        .signature {
+            text-align: right;
+            font-size: 14px;
+        }
+
+        .dados-footer{
+            width: fit-content;
+            position:fixed;
+            top: 91%;
+            right: 7%;
+            text-align: right;
+            font-size: 14px;
         }
     </style>
     <div class="content">
@@ -26,26 +115,28 @@
         <table>
             <thead>
                 <tr>
-                    <th>Número</th>
-                    <th>Título</th>
-                    <th>Origem</th>
+                    <th style="width: 30%;">Número</th>
+                    <th style="width: 30%;">Título</th>
+                    <th style="width: 20%;">Origem</th>
                     <th style="width: 20%;">Conferência</th>
                 </tr>
             </thead>
             <tbody>
+                {% for _ in ''|center:13 %}
                 {% for movimentacao in protocolo.movimentacoes.all %}
-                    <tr>
+                    <tr style="font-size: 10pt;">
                         <td>{{ movimentacao.processo.numero }}</td>
                         <td>{{ movimentacao.processo.titulo }}</td>
                         <td>{{ movimentacao.processo.setor_demandante }}</td>
                         <td></td>
                     </tr>
                     <tr>
-                        <td style="font-size: small; text-align: left; font-style: italic;" colspan="4"><b>Descrição:</b> {{ movimentacao.processo.descricao }}</td>
+                        <td style="font-size: 9pt; text-align: left; font-style: italic;" colspan="4"><b>Descrição:</b> {{ movimentacao.processo.descricao }}</td>
                     </tr>
                     <tr>
-                        <td style="border-left: none; border-right: none; height: 2px;" colspan="4"></td>
+                        <td style="border-left: none; border-right: none; height: 0.3cm;" colspan="4"></td>
                     </tr>
+                {% endfor %}
                 {% endfor %}
             </tbody>
         </table>

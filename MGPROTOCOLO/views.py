@@ -161,34 +161,21 @@ def gerar_protocolo(request):
             # Atualizar status das movimentações
             movimentacoes.update(confirmacao='manual')
 
-            # Função para converter imagens estáticas em Base64
-            def image_to_base64(image_path):
-                abs_path = f".{static(image_path)}"
-                with open(abs_path, "rb") as img_file:
-                    return base64.b64encode(img_file.read()).decode('utf-8')
-
-            # Converter imagens para Base64
-            header_image = image_to_base64('img/header.png')
-            bg_timbrado = image_to_base64('img/bg-timbrado.png')
-            footer_image = image_to_base64('img/footer.png')
-            brasao_image = image_to_base64('img/logo_cor_horizontal.png')
+            # Função para converter imagens estáticas em Base6
+            with open("static/img/bg-timbrado-logo.png", "rb") as image_file:
+                page_background = base64.b64encode(image_file.read()).decode('utf-8')
 
             # Gerar HTML com contexto atualizado
             html_string = render_to_string('protocolo_pdf.html', {
                 'protocolo': protocolo,
-                'header_image': header_image,
-                'footer_image': footer_image,
-                'brasao_image': brasao_image,
+                'page_background': page_background,
             })
 
             # Caminho absoluto do CSS
             base_url = request.build_absolute_uri('/')
-            css_path = f".{static('css/css_protocolo_pdf.css')}"
-            css = CSS(filename=css_path)
 
             # Gerar PDF
-            pdf_file = HTML(string=html_string, base_url=base_url).write_pdf(stylesheets=[css])
-
+            pdf_file = HTML(string=html_string, base_url=base_url).write_pdf()
 
             # Retornar o PDF para download
             response = HttpResponse(pdf_file, content_type='application/pdf')

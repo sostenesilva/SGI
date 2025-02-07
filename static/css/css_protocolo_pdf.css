@@ -1,18 +1,13 @@
-@page {
-    size: A4;
-    margin: 0; /* Remove qualquer margem que afete header e footer */
-    padding-top: 2cm;
-    padding-left: 2cm;
-    padding-right: 2cm;
-    padding-bottom: 2cm;
-    background-size: contain;
-}
 
 body {
     font-family: Arial, sans-serif;
     text-align: justify;
     line-height: 1.4;
     margin: 0;
+}
+
+.content{
+    width: 100%;
 }
 
 h1 {
