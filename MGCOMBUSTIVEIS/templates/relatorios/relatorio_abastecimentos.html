@@ -9,9 +9,23 @@
         @page {
             size: A4;
             margin: 0;
-            padding: 3cm 1cm 5cm 2cm; /* Deixa espaço interno para o conteúdo */
+            padding: 4cm 1cm 5cm 2cm; /* Deixa espaço interno para o conteúdo */
             background: url("data:image/png;base64,{{ page_background }}") no-repeat center;
             background-size: cover;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        header h1 {
+            font-size: 20px;
+            margin-bottom: 0px;
+        }
+        header p {
+            font-size: 12px;
+            color: #555;
         }
 
         table {
@@ -44,12 +58,14 @@
     </style>
 
     <div class="content">
-        <h1 style="text-align: center;">Relatório de Abastecimentos</h1>
-        <p>Emitido em: <strong>{{ agora|date:"d/m/Y" }}</strong></p>
+        <header>
+            <h1 style="text-align: center;">Relatório de Abastecimentos</h1>
+            <p>Emitido por {{ usuario.get_full_name }} em {{ agora|date:"d/m/Y" }}</p>
+        </header>
 
         {% for veiculo, abastecimentos_do_veiculo in abastecimentos %}
             <div class="vehicle-section">
-                <h2>{{ veiculo.placa }} - {{ veiculo.modelo }}</h2>
+                <small>{{ veiculo.placa }} - {{ veiculo.modelo }}</small>
                 <table>
                     <thead>
                         <tr>
@@ -63,7 +79,6 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for _ in ''|center:13 %}
                         {% for abastecimento in abastecimentos_do_veiculo %}
                         <tr>
                             <td>{{ abastecimento.data|date:"d/m/Y" }}</td>
@@ -74,7 +89,6 @@
                             <td>{{ abastecimento.valorTotal|floatformat:2 }}</td>
                             <td>{{ abastecimento.status }}</td>
                         </tr>
-                        {% endfor %}
                         {% endfor %}
                     </tbody>
                 </table>

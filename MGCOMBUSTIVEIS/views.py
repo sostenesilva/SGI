@@ -229,6 +229,9 @@ def emitir_relatorio(request):
     condutores = models.condutor.objects.all()
     secretarias = models.veiculo.objects.values_list('secretaria', flat=True).distinct()
 
+    with open("static/img/bg-timbrado-logo.png", "rb") as image_file:
+                page_background = base64.b64encode(image_file.read()).decode('utf-8')
+
     if request.method == "POST":
         tipo_relatorio = request.POST.get("tipo_relatorio")
 
@@ -276,12 +279,10 @@ def emitir_relatorio(request):
             print('Abastecimentos itens:')
             print(abastecimentos_por_veiculo.items())
             # Função para converter imagens estáticas em Base6
-            with open("static/img/bg-timbrado-logo.png", "rb") as image_file:
-                page_background = base64.b64encode(image_file.read()).decode('utf-8')
 
             # Renderizar o template do relatório de abastecimentos
             html_string = render_to_string(
-                "relatorios/relatorio_abastecimentos.html", {"abastecimentos": abastecimentos_por_veiculo.items(), "agora": agora, 'page_background':page_background}
+                "relatorios/relatorio_abastecimentos.html", {"abastecimentos": abastecimentos_por_veiculo.items(), "agora": agora, 'page_background':page_background, 'usuario': request.user}
             )
             pdf_file = HTML(string=html_string).write_pdf()
 
@@ -305,7 +306,7 @@ def emitir_relatorio(request):
 
             # Renderizar o template do relatório de condutores
             html_string = render_to_string(
-                "relatorios/relatorio_condutores.html", {"condutores": condutores, "agora": agora}
+                "relatorios/relatorio_condutores.html", {"condutores": condutores, "agora": agora, 'page_background':page_background, 'usuario': request.user}
             )
             pdf_file = HTML(string=html_string).write_pdf()
 
@@ -329,7 +330,7 @@ def emitir_relatorio(request):
 
             # Renderizar o template do relatório de frota
             html_string = render_to_string(
-                "relatorios/relatorio_frota.html", {"veiculos": veiculos, "agora": agora}
+                "relatorios/relatorio_frota.html", {"veiculos": veiculos, "agora": agora, 'page_background':page_background, 'usuario': request.user}
             )
             pdf_file = HTML(string=html_string).write_pdf()
 
