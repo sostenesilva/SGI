@@ -108,7 +108,7 @@
         <ul style="margin: 0; padding: 0; list-style: none;">
             <li><strong>Setor Destino:</strong> {{ protocolo.setor_destino.nome }}</li>
             <li><strong>Data da entrega:</strong> {{ protocolo.criado_em }}</li>
-            <li><strong>Protocolo emitido por:</strong> {{ protocolo.criado_por }} - Controle Interno</li>
+            <li><strong>Protocolo emitido por:</strong> {{ protocolo.criado_por }} - {{ setor_usuario|title }}</li>
         </ul>
 
         <h2>Movimentações</h2>

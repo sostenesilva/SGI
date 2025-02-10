@@ -1,3 +1,5 @@
+import base64
+from collections import defaultdict
 from datetime import date, datetime, timedelta
 import json
 from django.http import HttpResponse
@@ -242,8 +244,10 @@ def emitir_relatorio(request):
             status = request.POST.get("status")
             tipo_combustivel = request.POST.get("tipo_combustivel")
 
-            abastecimentos = models.Abastecimentos.objects.all()
-
+            abastecimentos = models.Abastecimentos.objects.all().order_by('veiculo', 'data')
+            print('Abastecimentos:')
+            print(abastecimentos)
+        
             # Aplicar os filtros, se existirem
             if veiculo_id:
                 abastecimentos = abastecimentos.filter(veiculo__id=veiculo_id)
@@ -258,9 +262,26 @@ def emitir_relatorio(request):
             if tipo_combustivel:
                 abastecimentos = abastecimentos.filter(tipo=tipo_combustivel)
 
+            # Agrupar por veículo
+            print('Abastecimentos agrupados (vazio):')
+
+            abastecimentos_por_veiculo = defaultdict(list)
+            print(abastecimentos_por_veiculo)
+            for abastecimento in abastecimentos:
+                abastecimentos_por_veiculo[abastecimento.veiculo].append(abastecimento)
+
+            print('Abastecimentos agrupados:')
+            print(abastecimentos_por_veiculo)
+
+            print('Abastecimentos itens:')
+            print(abastecimentos_por_veiculo.items())
+            # Função para converter imagens estáticas em Base6
+            with open("static/img/bg-timbrado-logo.png", "rb") as image_file:
+                page_background = base64.b64encode(image_file.read()).decode('utf-8')
+
             # Renderizar o template do relatório de abastecimentos
             html_string = render_to_string(
-                "relatorios/relatorio_abastecimentos.html", {"abastecimentos": abastecimentos, "agora": agora}
+                "relatorios/relatorio_abastecimentos.html", {"abastecimentos": abastecimentos_por_veiculo.items(), "agora": agora, 'page_background':page_background}
             )
             pdf_file = HTML(string=html_string).write_pdf()
 

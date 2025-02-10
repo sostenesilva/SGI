@@ -3,50 +3,83 @@
 <head>
     <meta charset="UTF-8">
     <title>Relatório de Abastecimentos</title>
-    <link rel="stylesheet" href="static/css/detail_pdf_gen.css">
 </head>
 <body>
-    <header>
-        <img class="brasao" src="data:image/png;base64,{{ brasao_image }}" alt="Brasão da Prefeitura">
-    </header>
+    <style>
+        @page {
+            size: A4;
+            margin: 0;
+            padding: 3cm 1cm 5cm 2cm; /* Deixa espaço interno para o conteúdo */
+            background: url("data:image/png;base64,{{ page_background }}") no-repeat center;
+            background-size: cover;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: smaller;
+            margin-bottom: 20px;
+        }
+
+        table th, table td {
+            border: 1px solid #ddd;
+            text-align: center;
+            padding: 5px;
+        }
+
+        table th {
+            background-color: #f4f4f4;
+        }
+
+        .vehicle-section {
+            margin-bottom: 30px;
+            page-break-before: auto; /* Evita quebras bruscas de página */
+        }
+
+        h2 {
+            background-color: #ddd;
+            padding: 5px;
+            text-align: left;
+        }
+    </style>
+
     <div class="content">
         <h1 style="text-align: center;">Relatório de Abastecimentos</h1>
         <p>Emitido em: <strong>{{ agora|date:"d/m/Y" }}</strong></p>
 
-        <h2 class="section-title">Resumo dos Abastecimentos</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Data</th>
-                    <th>Veículo</th>
-                    <th>Condutor</th>
-                    <th>Tipo de Combustível</th>
-                    <th>Quantidade (L)</th>
-                    <th>Valor Total (R$)</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for abastecimento in abastecimentos %}
-                <tr>
-                    <td>{{ abastecimento.data|date:"d/m/Y" }}</td>
-                    <td>{{ abastecimento.veiculo.placa }} - {{ abastecimento.veiculo.modelo }}</td>
-                    <td>{{ abastecimento.condutor.nome }}</td>
-                    <td>{{ abastecimento.tipo }}</td>
-                    <td>{{ abastecimento.quantidade }}</td>
-                    <td>{{ abastecimento.valorTotal|floatformat:2 }}</td>
-                    <td>{{ abastecimento.status }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        {% for veiculo, abastecimentos_do_veiculo in abastecimentos %}
+            <div class="vehicle-section">
+                <h2>{{ veiculo.placa }} - {{ veiculo.modelo }}</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Condutor</th>
+                            <th>Tipo de Combustível</th>
+                            <th>Quantidade (L)</th>
+                            <th>Valor Unitário (R$)</th>
+                            <th>Valor Total (R$)</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for _ in ''|center:13 %}
+                        {% for abastecimento in abastecimentos_do_veiculo %}
+                        <tr>
+                            <td>{{ abastecimento.data|date:"d/m/Y" }}</td>
+                            <td>{{ abastecimento.condutor.nome }}</td>
+                            <td>{{ abastecimento.tipo }}</td>
+                            <td>{{ abastecimento.quantidade }}</td>
+                            <td>{{ abastecimento.valorUnitario|floatformat:2 }}</td>
+                            <td>{{ abastecimento.valorTotal|floatformat:2 }}</td>
+                            <td>{{ abastecimento.status }}</td>
+                        </tr>
+                        {% endfor %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endfor %}
     </div>
-    <footer>
-        <div class="dados-footer">
-            <p>Rua Coronel José Belarmino, nº 048, Centro, Cortês-PE</p>
-            <p>CEP 55.525-000 | CNPJ: 10.273.548/0001-69</p>
-            <p>E-mail: gabineteprefeitacortes@gmail.com</p>
-        </div>
-    </footer>
 </body>
 </html>

@@ -27,7 +27,7 @@ class Processo(models.Model):
         ('cancelado', 'Cancelado'),
     ]
 
-    numero = models.CharField(max_length=20, unique=True, db_index=True, null=True, blank=True)
+    numero = models.CharField(max_length=100, unique=True, db_index=True, null=True, blank=True)
     titulo = models.CharField(max_length=255, null=True, blank=True)
     descricao = models.TextField(blank=True, null=True)
     criado_por = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)

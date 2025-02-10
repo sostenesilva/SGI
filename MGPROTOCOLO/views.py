@@ -169,6 +169,7 @@ def gerar_protocolo(request):
             html_string = render_to_string('protocolo_pdf.html', {
                 'protocolo': protocolo,
                 'page_background': page_background,
+                'setor_usuario': request.user.setores.first()
             })
 
             # Caminho absoluto do CSS
