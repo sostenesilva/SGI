@@ -4,28 +4,35 @@
     </div>
     <div class="modal-body">
         <div class="row justify-content-center">
-            <form action="{% url 'criar_movimentacao' processo.id %}" method="post" enctype="multipart/form-data">
-            {% csrf_token %}
-            <div class="row">
-                
-                <div class="col-md-6">
+            <div class="col-md-6">
+                <form action="{% url 'criar_movimentacao' processo.id %}" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
                     <div class="mb-3">
                         Descrição:
                         {{ form.descricao }}
                     </div>
-                </div>
-                
-                <div class="col-md-6">
                     <div class="mb-3">
-                        {{ form.setor_destino.label_tag }}
+                        Setor de destino:
                         {{ form.setor_destino }}
                     </div>
-                </div>
-                <div>
-                    <button type="submit" class="btn btn-primary">Mover</button>
-                </div>
+                    <div>
+                        <button type="submit" class="btn btn-primary">Mover</button>
+                    </div>
+                </form>
             </div>
-            </form>
+            <div class="col-md-6 align-items-center p-5">
+                <div class="row"><small>Caso este processo não careça de movimentação ou adição de documentos, encaminhar a arquivo:</small></div>
+                <div class="row">
+                    {% if processo.status != "arquivado" %}
+                    <form method="post" action="{% url 'arquivar_processo' processo.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-secondary btn-sm">Arquivar Processo</button>
+                    </form>
+                    {% else %}
+                        <span class="badge bg-dark">Arquivado</span>
+                    {% endif %}
+                </div>               
+            </div>
         </div>
     </div>
     <div class="modal-footer">

@@ -25,6 +25,7 @@ class Processo(models.Model):
         ('em_analise', 'Em análise'),
         ('concluido', 'Concluído'),
         ('cancelado', 'Cancelado'),
+        ('arquivado', 'Arquivado'),
     ]
 
     numero = models.CharField(max_length=100, unique=True, db_index=True, null=True, blank=True)
@@ -99,7 +100,10 @@ class Processo(models.Model):
         setores = set()
         for movimentacao in self.movimentacoes.all():
             setores.add(movimentacao.setor_origem.nome)
-            setores.add(movimentacao.setor_destino.nome)
+            if self.setor_atual!= None:
+                setores.add(movimentacao.setor_destino.nome)
+            else:
+                setores.add('Arquivo')
         return list(setores)
 
     @classmethod
@@ -107,7 +111,7 @@ class Processo(models.Model):
         """
         Retorna os processos cuja última movimentação está no setor especificado.
         """
-        return cls.objects.filter(setor_atual=setor)
+        return cls.objects.filter(setor_atual=setor).order_by('-atualizado_em')
 
     @classmethod
     def processos_encaminhados_pelo_setor(cls, setor):
@@ -121,6 +125,12 @@ class Processo(models.Model):
         Verifica se o usuário pertence ao setor atual do processo.
         """
         return usuario in self.setor_atual.usuarios.all() if self.setor_atual else False
+    
+    def arquivar(self):
+        """ Define o processo como arquivado """
+        self.status = 'arquivado'
+        self.setor_atual = None  # Remove o setor atual, pois foi arquivado
+        self.save()
 
 class Documento(models.Model):
     TIPO_CHOICES = [
@@ -157,6 +167,7 @@ class Movimentacao(models.Model):
     STATUS_CHOICES = [
         ('em_tramitacao', 'Em tramitação'),
         ('recebida', 'Recebida'),
+        ('arquivada', 'Arquivada')
     ]
 
     RECEBIMENTO_CHOICES = [
@@ -179,7 +190,11 @@ class Movimentacao(models.Model):
     ativo = models.BooleanField(default=True)
 
     def __str__(self):
-        return f"Movimentação para {self.setor_destino.nome} em {self.processo.numero} por {self.realizado_por}"
+        if self.status != 'arquivada':
+            return f"Movimentação de {self.processo.numero} para {self.setor_destino.nome} realizada por {self.realizado_por}"
+        else:
+            return f"Movimentação para arquivo do {self.processo.numero} realizada por {self.realizado_por}"
+
 
     def clean(self):
         if self.setor_origem == self.setor_destino:

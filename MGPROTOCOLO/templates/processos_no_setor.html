@@ -1,6 +1,10 @@
 {% extends 'baseprotocolo.html' %}
 {% block titulo %}Processos no Setor{% endblock titulo %}
 {% block content %}
+    <form method="GET" class="d-flex mb-3">
+        <input type="text" name="buscar" class="form-control me-2" placeholder="Buscar processos..." value="{{ query }}">
+        <button type="submit" class="btn btn-primary">Buscar</button>
+    </form>
     <table class="table">
         <thead>
             <tr>
@@ -22,7 +26,7 @@
                         </span>
                     </td>
                     <td style="max-width: 250px; word-wrap: break-word; white-space: normal;">{{ processo.descricao }}</td>
-                    <td style="width: fit-content;">
+                    <td>
                         {% if processo.ultima_movimentacao.status == 'em_tramitacao' and processo.ultima_movimentacao.confirmacao == 'pendente' %}
                             <form method="post" action="{% url 'receber_processo' processo.id %}">
                                 {% csrf_token %}
@@ -30,7 +34,11 @@
                             </form>
                         {% else %}
                             <a href="{% url 'detalhes_processo' processo.id %}" class="btn btn-info btn-sm">Detalhes</a>
+                            <a class="btn btn-warning btn-sm" hx-get="{% url 'criar_movimentacao' processo.id %}" hx-target="#dialog" hx-trigger="click" data-bs-toggle="modal" data-bs-target="#modal">
+                                Mover
+                            </a>
                         {% endif %}
+                        
                     </td>
                 </tr>
             {% empty %}

@@ -12,7 +12,11 @@ urlpatterns = [
     
     path('movimentacoes/<int:processo_id>/criar/', views.criar_movimentacao, name='criar_movimentacao'),
     path('movimentacoes/tramitacao/', views.listar_movimentacoes_tramitacao, name='listar_movimentacoes_tramitacao'),
+
     path('processo/<int:processo_id>/receber/', views.receber_processo, name='receber_processo'),
+    path('processo/<int:processo_id>/arquivar/', views.arquivar_processo, name='arquivar_processo'),
+    path('processos-arquivados/', views.processos_arquivados, name='processos_arquivados'),
+
 
     path('protocolos/gerar/', views.gerar_protocolo, name='gerar_protocolo'),
     path('protocolos/', views.listar_protocolos, name='listar_protocolos'),

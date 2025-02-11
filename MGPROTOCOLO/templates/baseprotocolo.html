@@ -33,13 +33,16 @@
                     </a>
                     <ul id="orcamentos" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
                         <li class="sidebar-item">
+                            <a href="{% url 'criar_processo' %}" class="sidebar-link">Novo Processo</a>
+                        </li>
+                        <li class="sidebar-item">
                             <a href="{% url 'processos_no_setor' %}" class="sidebar-link">No Setor</a>
                         </li>
                         <li class="sidebar-item">
                             <a href="{% url 'processos_encaminhados_pelo_setor' %}" class="sidebar-link">Encaminhados</a>
                         </li>
                         <li class="sidebar-item">
-                            <a href="{% url 'criar_processo' %}" class="sidebar-link">Criar novo</a>
+                            <a href="{% url 'processos_arquivados' %}" class="sidebar-link">Arquivados</a>
                         </li>
                         <!-- <li class="sidebar-item">
                             <a href="#" class="sidebar-link collapsed" data-bs-toggle="collapse"
@@ -206,7 +209,7 @@
             <div class="d-flex justify-content-between">
                 <h4><b>SGI</b> - {% block titulo %}{% endblock titulo %}</h4>
                 <ul class="m-0 p-0" style="font-size:smaller;">
-                    <li class="m-0 p-0"><small ><b>Usuário:</b> {{request.user|upper}}</small></li>
+                    <li class="m-0 p-0"><small ><b>Usuário:</b> {{request.user.get_full_name|upper}}</small></li>
                     <li class="m-0 p-0"><small><b>Setor:</b> {{request.user.setores.first|upper}}</small></li>
                 </ul>
             </div>

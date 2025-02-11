@@ -7,18 +7,18 @@
             <div class="card mb-2">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
-                        <div>
+                        <div class="col-7">
                             <p class="card-title"><b>{{ processo.numero }} - {{ processo.titulo }}</b></p>
-                            <div style="margin: 0; padding: 0;">
-                                <li>{{ processo.descricao|title }}</li>
+                            <div style="margin: 0; padding: 0; font-size: small;">
+                                <li>{{ processo.descricao }}</li>
                             </div>
                         </div>
-                        <div>
+                        <div class="col-3">
                             <li><strong>Status:</strong> {{ processo.get_status_display }}</li>
                             <li><strong>Prazo:</strong> {{ processo.prazo|default:"-" }}</li>
                             <li><strong>Tempo Restante:</strong> {{ processo.tempo_restante|default:"-" }} dias</li>
                         </div>
-                        <div>
+                        <div class="col-2">
                             <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#infoProcessoModal">
                                 <i class="lni lni-info"></i> Mais Informações
                             </button>
@@ -52,13 +52,14 @@
                 <div class="card-body">
                     {% if processo.documentos.all %}
                         <div class="list-group">
-                            {% for documento in processo.documentos.all %}
+                            {% for documento in processo.documentos.all|dictsortreversed:"criado_em" %}
                                 <div class="list-group-item">
                                     <div class="d-flex justify-content-between align-items-center">
-                                        <div style="font-size: small;">
+                                        <div>
                                             <ul class="m-0 p-0" style="font-size: small;">
                                                 <li class="mb-0">{{ documento.descricao }}</li>
-                                                <li class="text-muted" style="font-size: smaller;">{{ documento.get_classificacao_display }} - {{ documento.get_tipo_display }}</li>
+                                                <li class="text-muted" style="font-size: smaller;">Incluído por {{ documento.criado_por.get_full_name }} em {{ documento.criado_em|date:"d/m/Y H:i" }}</li>
+                                                <li class="text-muted" style="font-size: smaller;">{{ documento.get_tipo_display }} - {{ documento.get_classificacao_display }}</li>
                                             </ul>
                                         </div>
                                         <div>
@@ -93,24 +94,40 @@
                 <div class="card-body">
                     {% if processo.movimentacoes.all %}
                         <div class="list-group">
-                            {% for movimentacao in processo.movimentacoes.all %}
-                                <div class="list-group-item">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <div>
-                                            <ul class="m-0 p-0" style="font-size: small;">
-                                                <li class="mb-0">De {{ movimentacao.setor_origem.nome }} para {{ movimentacao.setor_destino.nome }}</li>
-                                                <li class="text-muted" style="font-size: smaller;">{{ movimentacao.realizado_em|date:"d/m/Y H:i" }} - {{ movimentacao.get_status_display }}</li>
-                                            </ul>
+                            {% for movimentacao in processo.movimentacoes.all|dictsortreversed:"realizado_em" %}
+                        <div class="list-group-item">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="col-9 d-flex flex-column" style="font-size: small;">
+                                    <p class="m-0">
+                                        {% if movimentacao.status == 'arquivada' %}
+                                            <i class="lni lni-archive"></i> Arquivado por {{ movimentacao.realizado_por }}
+                                        {% else %}
+                                            De {{ movimentacao.setor_origem.nome }} para {{ movimentacao.setor_destino.nome }}
+                                        {% endif %}
+                                    </p>
+                                    <small class="text-muted">
+                                        Enviada por {{ movimentacao.realizado_por.get_full_name }} em {{ movimentacao.realizado_em|date:"d/m/Y H:i" }}
+                                    </small>
+                                    {% if movimentacao.status == 'recebida' %}
+                                        <small class="text-muted">
+                                            Recebida por {{ movimentacao.confirmado_por.get_full_name}} em {{ movimentacao.confirmado_em|date:"d/m/Y H:i" }}
+                                        </small>
+                                        {% if movimentacao.descricao %}
+                                        <small class="text-muted">
+                                            Anotação: {{ movimentacao.descricao}}
+                                        </small>
+                                        {% endif %}
                                             
-                                        </div>
-                                        <div>
-                                            <span class="badge bg-{% if movimentacao.status == 'recebida' %}success{% else %}info{% endif %}">
-                                                {{ movimentacao.get_status_display }}
-                                            </span>
-                                        </div>
-                                    </div>
+                                    {% endif %}
                                 </div>
-                            {% endfor %}
+                                <div class="col-3 d-flex justify-content-center">
+                                    <span class="badge bg-{% if movimentacao.status == 'recebida' %}success{% elif movimentacao.status == 'arquivada' %}dark{% else %}info{% endif %}">
+                                        {{ movimentacao.get_status_display }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
                         </div>
                     {% else %}
                         <p class="text-muted">Nenhuma movimentação encontrada.</p>

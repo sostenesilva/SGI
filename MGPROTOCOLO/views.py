@@ -6,6 +6,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.db.models import Prefetch
 from weasyprint import CSS, HTML
+from django.db.models import Q  # Adicione esta linha
 from .models import Processo, Documento, Movimentacao, ProtocoloMovimentacao, Setor
 from .forms import ProcessoForm, DocumentoForm, MovimentacaoForm, ComprovacaoForm
 from django.templatetags.static import static
@@ -17,7 +18,19 @@ def processos_no_setor(request):
     """
     setor_usuario = request.user.setores.first()  # Supondo que o usuário pertence a um setor
     processos = Processo.processos_no_setor(setor_usuario)
-    return render(request, 'processos_no_setor.html', {'processos': processos})
+
+    # Capturar o termo de busca
+    query = request.GET.get('buscar', '')
+
+    if query:
+        processos = processos.filter(
+            Q(numero__icontains=query) |
+            Q(titulo__icontains=query) |
+            Q(setor_demandante__nome__icontains=query) |
+            Q(setor_atual__nome__icontains=query) |
+            Q(descricao__icontains=query)
+        )
+    return render(request, 'processos_no_setor.html', {'processos': processos, 'query': query})
 
 @login_required
 def processos_encaminhados_pelo_setor(request):
@@ -26,7 +39,20 @@ def processos_encaminhados_pelo_setor(request):
     """
     setor_usuario = request.user.setores.first()  # Supondo que o usuário pertence a um setor
     processos = Processo.processos_encaminhados_pelo_setor(setor_usuario)
-    return render(request, 'processos_encaminhados_pelo_setor.html', {'processos': processos})
+
+    # Capturar o termo de busca
+    query = request.GET.get('buscar', '')
+
+    if query:
+        processos = processos.filter(
+            Q(numero__icontains=query) |
+            Q(titulo__icontains=query) |
+            Q(setor_demandante__nome__icontains=query) |
+            Q(setor_atual__nome__icontains=query) |
+            Q(descricao__icontains=query)
+        )
+
+    return render(request, 'processos_encaminhados_pelo_setor.html', {'processos': processos, 'query': query})
 
 @login_required
 def detalhes_processo(request, processo_id):
@@ -186,6 +212,33 @@ def gerar_protocolo(request):
     return redirect('listar_movimentacoes_tramitacao')
 
 @login_required
+def arquivar_processo(request, processo_id):
+    processo = get_object_or_404(Processo, id=processo_id)
+
+    # Verifica se o processo já está arquivado ou concluído
+    if processo.status in ['arquivado', 'concluido', 'cancelado']:
+        return redirect('processos_no_setor')
+
+    # Criar movimentação de arquivamento
+    movimentacao = Movimentacao.objects.create(
+        processo=processo,
+        descricao=f"Processo arquivado pelo setor {request.user.setores.first()}",
+        realizado_por=request.user,
+        setor_origem=processo.setor_atual,  # Último setor que estava
+        setor_destino=None,  # Não há destino real
+        status='arquivada'
+    )
+
+    # Alterar status do processo para arquivado
+    processo.status = 'arquivado'
+    processo.setor_atual = None  # Remove o setor atual, pois foi arquivado
+    processo.ultima_movimentacao = movimentacao  # Atualiza a última movimentação
+    processo.save()
+
+    return redirect('processos_no_setor')
+
+
+@login_required
 def listar_protocolos(request):
     protocolos = ProtocoloMovimentacao.objects.all()
     return render(request, 'listar_protocolos.html', {'protocolos': protocolos})
@@ -224,3 +277,21 @@ def receber_processo(request, processo_id):
         ultima_movimentacao.save()
     
     return redirect('processos_no_setor')
+
+@login_required
+def processos_arquivados(request):
+    processos = Processo.objects.filter(status='arquivado').order_by('-criado_em')
+
+    # Capturar o termo de busca
+    query = request.GET.get('buscar', '')
+
+    if query:
+        processos = processos.filter(
+            Q(numero__icontains=query) |
+            Q(titulo__icontains=query) |
+            Q(setor_demandante__nome__icontains=query) |
+            Q(setor_atual__nome__icontains=query) |
+            Q(descricao__icontains=query)
+        )
+
+    return render(request, 'processos_arquivados.html', {'processos': processos, 'query': query })
