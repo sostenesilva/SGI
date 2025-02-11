@@ -23,7 +23,7 @@
                     <td style="max-width: 50px; word-wrap: break-word; white-space: normal;">{{ processo.numero }}</td>
                     <td style="max-width: 100px; word-wrap: break-word; white-space: normal;">{{ processo.titulo|truncatewords:30 }}</td>
                     <td style="max-width: 50px; word-wrap: break-word; white-space: normal;">
-                        <span class="badge {% if processo.ultima_movimentacao.status == 'recebida' %}bg-success{% else %}bg-warning{% endif %}">
+                        <span class="badge {% if processo.status == 'concluido' %}bg-success{% else %}bg-warning{% endif %}">
                             {{ processo.get_status_display }}
                         </span>
                     </td>
