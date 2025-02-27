@@ -75,10 +75,11 @@ class DbAvaliacaoLog(models.Model):
     arquivo = models.FileField(null=True, blank=True, upload_to=diretorio_item_avaliacao, verbose_name="Anexo")
     anotacao = models.TextField(null=True, blank=True, verbose_name="Anotação")
     data_envio = models.DateTimeField(null=True, blank=True, verbose_name="Data de Envio")
-    data_limite = models.DateField(null=True, blank=True, verbose_name="Data Limite")
-    data_publicacao = models.DateField(null=True, blank=True, verbose_name="Data de Publicação")
+    data_limite = models.DateTimeField(null=True, blank=True, verbose_name="Data Limite")
+    data_publicacao = models.DateTimeField(null=True, blank=True, verbose_name="Data de Publicação")
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Pendente', verbose_name="Status")
-    usuario = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.PROTECT, verbose_name="Usuário")
+    enviado_por = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.PROTECT, related_name="Enviado_por")
+    publicado_por = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.PROTECT, related_name="Publicado_por")
 
     def save(self, *args, **kwargs):
         """Atualiza automaticamente o status conforme a presença do arquivo."""
