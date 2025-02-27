@@ -142,6 +142,7 @@ def contratos (request):
 #     }
 
 #     return render(request, 'contratos/contratos_enviarof.html',context)
+
 @login_required
 def contratos_addsaldo(request,contrato_pk):
     contrato = models.Contratos.objects.get(pk=contrato_pk) #INSTÂNCIA DO CONTRATO ATUAL
@@ -150,13 +151,12 @@ def contratos_addsaldo(request,contrato_pk):
     saldocontratosec_form = forms.SaldoContratoSec_form(request.POST or None)
     fornecedor_form = forms.Fornecedor_form(request.POST or None,instance=contrato.Fornecedor)
     
-    itensof = models.Itens.objects.filter(CodigoContratoOriginal=contrato.CodigoContrato) #FILTRAR ITENS DO CONTRATO
+    itensof = models.Itens.objects.filter(Contrato=contrato) #FILTRAR ITENS DO CONTRATO
 
-    
     if request.POST:
         quantidades = request.POST.getlist('quantidade')
         item_ids = request.POST.getlist('item_id')
-        SaldoContratoSec, ContratoSecCriado = models.SaldoContratoSec.objects.update_or_create(contrato = contrato, sec = models.Group.objects.get(pk=request.POST['sec']), fiscal = models.User.objects.get(pk=request.POST['fiscal']))
+        SaldoContratoSec = models.SaldoContratoSec.objects.create(contrato = contrato, sec = request.POST['sec'], fiscal = request.POST['fiscal'])
         
         for item_id,qtd in zip(item_ids,quantidades):
             if qtd and int(qtd) > 0:

@@ -1,0 +1,69 @@
+{% extends 'basetransparencia.html' %}
+{% block titulo %}Detalhes da Avaliação{% endblock titulo %}
+{% block content %}
+
+<div class="container">
+    <div class="card mb-2">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="col-7"> <!-- Descrição -->
+                    <p class="card-title"><b>{{ avaliacao.criterio }}</b></p>
+                    <div style="margin: 0; padding: 0; font-size: small;">
+                        <li>Secretaria Responsável: {{ avaliacao.secretaria }}</li>
+                        <li>Data Limite: {{ avaliacao.data_limite }}</li>
+                    </div>
+                </div>
+                <div class="col-2"> <!-- Botões TOPO -->
+                    <button class="btn btn-sm btn-secondary" data-bs-toggle="modal" data-bs-target="#infoProcessoModal">
+                        Mais Informações
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h5>Envios Periódicos</h5>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Limite</th>
+                <th>Data Envio</th>
+                <th>Descrição</th>
+                <th>Documento</th>
+                <th>Status</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for log in logs %}
+            <tr>
+                <td>{{ log.data_limite|date:"d/m/Y H:i" }}</td>
+                <td>{{ log.data_envio|date:"d/m/Y H:i" }}</td>
+                <td>{{ log.anotacao }}</td>
+                <td>
+                    {% if log.arquivo %}
+                    <a href="{{ log.arquivo.url }}" class="btn btn-sm btn-secondary" target="_blank">Ver Documento</a>
+                    <a href="{% url 'apagar_documento_log' log.id %}" class="btn btn-sm btn-secondary">Apagar</a>
+                    {% else %}
+                    <a class="btn btn-sm btn-secondary" hx-get="{% url 'enviar_documento_log' log.id %}" hx-target="#dialog" hx-trigger="click" data-bs-toggle="modal" data-bs-target="#modal">Enviar</a>
+                    {% endif %}
+                </td>
+                <td>
+                    <span class="badge {% if log.status == 'Pendente' %}bg-warning{% elif log.status == 'Em análise' %}bg-primary{% else %}bg-success{% endif %}">
+                        {{ log.get_status_display }}
+                    </span>
+                </td>
+                <td>
+                    <a href="{% url 'aprovar_documento' log.id %}" class="btn btn-sm btn-success">Aprovar</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" class="text-center">Nenhum documento enviado.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

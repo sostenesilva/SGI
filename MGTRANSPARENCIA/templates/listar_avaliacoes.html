@@ -1,0 +1,45 @@
+{% extends 'basetransparencia.html' %}
+{% block titulo %}Minhas Avaliações{% endblock titulo %}
+{% block content %}
+
+<div class="container">
+    <table class="table table-sm table-responsive">
+        <thead>
+            <tr>
+                <th>Secretaria Responsável</th>
+                <th>Data Limite</th>
+                <th>Status</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for avaliacao in avaliacoes %}
+            <tr><td colspan="4" style="height: 15px; background-color: #F5F5F5;"></td></tr>
+            <tr>
+                <td>{{ avaliacao.secretaria }}</td>
+                <td>Data limite da última avaliação</td>
+                <td>
+                    <span class="badge {% if avaliacao.status == 'Pendente' %}bg-warning{% elif avaliacao.status == 'Em análise' %}bg-primary{% else %}bg-success{% endif %}">
+                        {{ avaliacao.get_status_display }}
+                    </span>
+                </td>
+                <th rowspan="2" style="padding-top: 11px;">
+                    <a href="{% url 'detalhes_avaliacao' avaliacao.id %}" class="btn btn-info btn-sm">Detalhes</a>
+                </th>
+            </tr>
+            <tr>
+                <td class="" style="text-align: left; padding-left: 30px; font-size: smaller;  margin-top: -8px;" colspan="3">
+                    <b>Critério: </b>{{ avaliacao.criterio }}
+                </td>
+            </tr>
+            
+            {% empty %}
+            <tr>
+                <td colspan="5" class="text-center">Nenhuma avaliação encontrada.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

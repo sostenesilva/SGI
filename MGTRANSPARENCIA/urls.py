@@ -1,0 +1,12 @@
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    path("criterios/", views.listar_criterios, name="listar_criterios"),
+    path("", views.listar_avaliacoes, name="listar_avaliacoes"),
+    path("avaliacoes/<int:avaliacao_id>/", views.detalhes_avaliacao, name="detalhes_avaliacao"),
+    path('documento/<int:log_id>/enviar/', views.enviar_documento_log, name='enviar_documento_log'),
+    path('documento/<int:log_id>/aprovar/', views.aprovar_documento, name='aprovar_documento'),
+    path('documento/<int:log_id>/apagararquivo/', views.apagar_documento_log, name='apagar_documento_log'),
+    path('addcriterios/', views.importar_criterios, name='importar_criterios'),
+]

@@ -87,12 +87,8 @@ def emitir_declaracao(request,fornecedor_id):
     else:
         declaracao.data_validade = certidao_max
         
-
-
     # Verifica se todas as certidões foram encontradas
     faltando = [tipo for tipo, certidao in certidoes.items() if certidao is None]
-
-    print(certidoes)
 
     if faltando:
         print(f"Certidões faltando: {', '.join(faltando)}")
@@ -100,14 +96,6 @@ def emitir_declaracao(request,fornecedor_id):
     caminho = ver_declaracao(request,declaracao)
     declaracao.arquivo = caminho
     declaracao.save()
-    # return HttpResponse(
-    #             status=204,
-    #             headers={
-    #                 'HX-Trigger': json.dumps({
-    #                     "DeclaracoesListChanged": None,
-    #                     "showMessage": f"Declaração emitida!"
-    #                 })
-    #             })
 
     return redirect('dashregularidadefiscal')
 

@@ -16,9 +16,6 @@ from . import models
 #             'valor': forms.NumberInput(attrs={'class':'form-control'}),
 #         }
 
-
-
-
 class Ordem_form (forms.ModelForm):
     class Meta:
         model = models.Ordem

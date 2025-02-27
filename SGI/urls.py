@@ -11,4 +11,5 @@ urlpatterns = [
     path('combustiveis/',include('MGCOMBUSTIVEIS.urls')),
     path('regularidadefiscal/',include('MGREGULARIDADEFISCAL.urls')),
     path('protocolo/',include('MGPROTOCOLO.urls')),
+    path('transparencia/',include('MGTRANSPARENCIA.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

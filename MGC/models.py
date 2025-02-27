@@ -3,7 +3,7 @@ from django.conf import settings
 from django.contrib.auth.models import Group, User
 import json
 from django.db.models import Sum
-
+from HOME.models import Secretaria
 
 class Fornecedores (models.Model):
     NumeroDocumentoAjustado = models.CharField(max_length=100, null=True, blank=True)
@@ -20,15 +20,17 @@ class Fornecedores (models.Model):
     def __str__(self) -> str:
         return '{} - {}'.format(self.NumeroDocumentoAjustado,self.RazaoSocial)
 
+
 class Contratos (models.Model):
     Fornecedor = models.ForeignKey(Fornecedores, on_delete=models.PROTECT)
+    Situacao = models.CharField(max_length=50, null=True, blank=True)
+    Objeto = models.TextField(null=True, blank=True)
+
 
     TipoProcesso = models.CharField(max_length=100, null=True, blank=True, verbose_name='Modalidade')
     LinkEdital = models.URLField(null=True, blank=True, verbose_name='Edital')
     LinkContrato = models.URLField(null=True, blank=True, verbose_name='Contrato')
-    Situacao = models.CharField(max_length=50, null=True, blank=True)
     SiglaUG = models.CharField(max_length=10, null=True, blank=True, verbose_name='UG')
-    Objeto = models.TextField(null=True, blank=True)
     Valor = models.FloatField(null=True, blank=True)
     UnidadeOrcamentaria = models.CharField(max_length=100, null=True, blank=True, verbose_name='Unidade Orçamentária')
     CodigoUG = models.CharField(max_length=10, null=True, blank=True)
@@ -80,7 +82,7 @@ class Itens (models.Model):
 
 class SaldoContratoSec(models.Model):
     contrato = models.ForeignKey(Contratos, on_delete=models.PROTECT)
-    sec = models.ForeignKey(Group, on_delete= models.PROTECT, verbose_name='Secretaria')
+    sec = models.ForeignKey(Secretaria, on_delete= models.PROTECT, verbose_name='Secretaria')
     fiscal = models.ForeignKey(User, null=True, blank=True, on_delete=models.PROTECT)
 
     totalEntradas = models.FloatField(null=True, blank=True, default=0)
