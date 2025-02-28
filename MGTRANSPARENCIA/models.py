@@ -58,7 +58,7 @@ class DbAvaliacao(models.Model):
 
 def diretorio_item_avaliacao(instance, filename):
     """Define o diretório de upload para arquivos de avaliação."""
-    return f'criterios/{instance.avaliacao.criterio.item} - {instance.avaliacao.criterio.criterio[:30]}/{instance.avaliacao.secretaria}/{instance.avaliacao.responsavel}/{instance.data_envio} - {filename}'
+    return f'criterios/{instance.avaliacao.criterio.item}/{instance.avaliacao.secretaria}/{instance.id} - {filename}'
 
 class DbAvaliacaoLog(models.Model):
     """Histórico de envios de documentos e sua avaliação."""
@@ -72,7 +72,7 @@ class DbAvaliacaoLog(models.Model):
     ]
 
     avaliacao = models.ForeignKey(DbAvaliacao, on_delete=models.CASCADE, related_name="logs", verbose_name="Avaliação")
-    arquivo = models.FileField(null=True, blank=True, upload_to=diretorio_item_avaliacao, verbose_name="Anexo")
+    arquivo = models.FileField(null=True, blank=True, upload_to=diretorio_item_avaliacao, verbose_name="Anexo", max_length=300)
     anotacao = models.TextField(null=True, blank=True, verbose_name="Anotação")
     data_envio = models.DateTimeField(null=True, blank=True, verbose_name="Data de Envio")
     data_limite = models.DateTimeField(null=True, blank=True, verbose_name="Data Limite")

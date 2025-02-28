@@ -2,8 +2,9 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 import pandas as pd
 from .models import DbDimensao, DbCriterios, DbAvaliacao, DbAvaliacaoLog
-from .forms import AvaliacaoLogForm
+from .forms import AvaliacaoLogForm, AvaliacaoForm
 from django.core.paginator import Paginator
+from HOME.models import Secretaria
 
 @login_required
 def listar_criterios(request):
@@ -17,7 +18,11 @@ def listar_criterios(request):
 @login_required
 def listar_avaliacoes(request):
     """Lista as avaliações vinculadas ao usuário logado."""
-    avaliacoes = DbAvaliacao.objects.all()
+    print('-------------------------------------------------')
+    print(request.user.secretaria_home.all())
+
+    avaliacoes = DbAvaliacao.objects.filter(secretaria__in=request.user.secretaria_home.all())
+
     paginator = Paginator(avaliacoes, 20)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
@@ -27,7 +32,7 @@ def listar_avaliacoes(request):
 def detalhes_avaliacao(request, avaliacao_id):
     """Exibe detalhes da avaliação e permite o envio de documentos."""
     avaliacao = get_object_or_404(DbAvaliacao, id=avaliacao_id)
-    logs = DbAvaliacaoLog.objects.filter(avaliacao=avaliacao).order_by('-data_envio')
+    logs = DbAvaliacaoLog.objects.filter(avaliacao=avaliacao).order_by('-data_limite')
     
     return render(request, 'detalhes_avaliacao.html', {
         'avaliacao': avaliacao,
@@ -45,7 +50,6 @@ def enviar_documento_log(request, log_id):
         if formLog.is_valid():
             log = formLog.save(commit=False)
             log.usuario = request.user
-            # log.avaliacao = avaliacaoLog.avaliacao
             log.status = 'Em análise'
             log.save()
             return redirect('detalhes_avaliacao', avaliacao_id=avaliacaoLog.avaliacao.id)
@@ -98,3 +102,52 @@ def importar_criterios(request):
                 criterioadd.save()
 
     return render(request, 'add_criterios.html')
+
+@login_required
+def adicionar_avaliacao(request):
+
+    if request.method == 'POST':
+        formAval = AvaliacaoForm(request.POST)
+        if formAval.is_valid():
+            aval = formAval.save(commit=False)
+            # log.usuario = request.user
+            # log.avaliacao = avaliacaoLog.avaliacao
+            # log.status = 'Em análise'
+            aval.save()
+            print('aval salvo')
+            data_limite = request.POST.get('data_limite')  # Captura o valor do input
+            print(data_limite)
+            
+            if data_limite:
+                DbAvaliacaoLog.objects.create(
+                    avaliacao=aval,
+                    data_limite=data_limite,
+                    status='Pendente',
+                )
+                print('criado!')
+            return redirect('detalhes_avaliacao', avaliacao_id=aval.id)
+    else:
+        formAval = AvaliacaoForm()
+        return render(request, 'criar_avaliacao.html', {
+            'formAval': formAval,
+        })
+    
+@login_required
+def adicionar_tarefa(request, avaliacao_id):
+
+    avaliacao = get_object_or_404(DbAvaliacao, id=avaliacao_id)
+
+    if request.method == 'POST':
+        data_limite = request.POST.get('data_limite')  # Captura o valor do input
+        if data_limite:
+            DbAvaliacaoLog.objects.create(
+                avaliacao=avaliacao,
+                data_limite=data_limite,
+                status='Pendente',
+            )
+            return redirect('detalhes_avaliacao', avaliacao_id = avaliacao.id)
+
+    return render(request, 'add_tarefa.html', {
+        'avaliacao': avaliacao,
+    })
+
