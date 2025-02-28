@@ -8,6 +8,7 @@ admin.site.register(models.DbAvaliacaoLog)
 
 @admin.register(models.DbCriterios)
 class DbCriterios(admin.ModelAdmin):
-    # list_display = ('NumeroContrato','AnoContrato','TipoProcesso','NumeroProcesso','AnoProcesso','Fornecedor')
+    list_display = ('item', 'criterio','dimensao','periodicidade')
     list_editable = ('dimensao','periodicidade')
+    list_display_links =('item', 'criterio')
     # list_filter = ('AnoContrato', 'UnidadeGestora')
