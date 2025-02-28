@@ -39,8 +39,8 @@
             {% for log in logs %}
             <tr>
                 <td>{{ log.data_limite|date:"d/m/Y H:i" }}</td>
-                <td>{{ log.data_envio|date:"d/m/Y H:i" }}</td>
-                <td>{{ log.anotacao }}</td>
+                <td>{% if log.data_envio %}{{ log.data_envio|date:"d/m/Y H:i" }}{% else %} <small class="text-muted">Pendente de envio</small>{% endif %}</td>
+                <td><small class="text-muted">{% if log.anotacao %}{{ log.anotacao }}{% else %}Pendente de envio{% endif %}</small></td>
                 <td>
                     {% if log.arquivo %}
                     <a href="{{ log.arquivo.url }}" class="btn btn-sm btn-secondary" target="_blank">Ver Documento</a>

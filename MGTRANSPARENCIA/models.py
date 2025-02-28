@@ -32,7 +32,7 @@ class DbCriterios(models.Model):
     item = models.CharField(max_length=6, verbose_name="Código do Item")
     criterio = models.TextField(verbose_name="Descrição do Critério")
     dimensao = models.ForeignKey(DbDimensao, on_delete=models.PROTECT, blank=True, null=True, verbose_name="Dimensão")
-    periodicidade = models.CharField(max_length=20, choices=PERIODICIDADE_CHOICES, null=True, verbose_name="Periodicidade")
+    periodicidade = models.CharField(max_length=20, choices=PERIODICIDADE_CHOICES, null=True, blank=True, verbose_name="Periodicidade")
     classificacao = models.CharField(max_length=20, choices=CLASSIFICACAO_CHOICES, default='Obrigatório', verbose_name="Classificação")
 
     def __str__(self):
@@ -58,7 +58,7 @@ class DbAvaliacao(models.Model):
 
 def diretorio_item_avaliacao(instance, filename):
     """Define o diretório de upload para arquivos de avaliação."""
-    return f'criterios/{instance.avaliacao.criterio.item}/{instance.avaliacao.secretaria}/{instance.id} - {filename}'
+    return f'MGTRANSPARENCIA/criterios/{instance.avaliacao.criterio.item}/{instance.avaliacao.secretaria}/{instance.id} - {filename}'
 
 class DbAvaliacaoLog(models.Model):
     """Histórico de envios de documentos e sua avaliação."""
@@ -89,3 +89,28 @@ class DbAvaliacaoLog(models.Model):
 
     def __str__(self):
         return f'Log {self.id} - {self.avaliacao.criterio.item} - {self.status}'
+    
+
+def diretorio_manual_criterio(instance, filename):
+    """Define o diretório de upload para manuais dos critérios."""
+    return f'MGTRANSPARENCIA/manuais/{instance.id} - {filename}'
+
+class InformacoesCriterio (models.Model):
+    CATEGORIA_CHOICES = [
+    ('link', 'Links Úteis'),
+    ('documento', 'Documento'),
+    ('anotacao', 'Anotação'),
+    ]
+
+    STATUS_CHOICES = [
+    ('atual', 'Atual'),
+    ('desatualizado', 'Desatualizado'),
+    ]
+
+    criterio = models.ForeignKey(DbCriterios, on_delete=models.SET_NULL, null=True, blank=True)
+    categoria = models.CharField(max_length=25, choices=CATEGORIA_CHOICES, null=True, blank=True)
+    status = models.CharField(max_length=25, choices=STATUS_CHOICES, null=True, blank=True)
+    link = models.URLField(null=True, blank=True)
+    anotacao = models.TextField(null=True, blank=True)
+    documentos = models.FileField(upload_to= diretorio_manual_criterio, null=True, blank=True)
+    geral = models.BooleanField(default=False)
