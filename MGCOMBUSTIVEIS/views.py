@@ -68,8 +68,8 @@ def add_abastecimento(request):
 
         if form.is_valid():
             # print(form.cleaned_data)
-            form.instance.valorTotal = form.instance.valorUnitario * form.instance.quantidade
-            print(form.instance)
+            # form.instance.valorTotal = form.instance.valorUnitario * form.instance.quantidade
+            # print(form.instance)
             form.save()
             return HttpResponse(
                 status=204,
