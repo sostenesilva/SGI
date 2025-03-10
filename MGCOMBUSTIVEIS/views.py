@@ -58,7 +58,7 @@ def abastecimentos_list(request):
     # if buscar:
     #     abastecimentos = models.Abastecimentos.objects.filter(veiculo__placa__icontains = buscar)
     # else:
-    abastecimentos = models.Abastecimentos.objects.all()
+    abastecimentos = models.Abastecimentos.objects.all().order_by('-data')
     return render(request, 'abastecimentos/abastecimentos_list.html', {'abastecimentos': abastecimentos})
 
 def add_abastecimento(request):
