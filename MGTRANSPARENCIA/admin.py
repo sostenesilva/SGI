@@ -4,6 +4,7 @@ from . import models
 admin.site.register(models.DbDimensao)
 admin.site.register(models.DbAvaliacao)
 admin.site.register(models.DbAvaliacaoLog)
+admin.site.register(models.InformacoesCriterio)
 
 
 @admin.register(models.DbCriterios)

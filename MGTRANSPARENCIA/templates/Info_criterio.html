@@ -1,0 +1,43 @@
+<div class="modal-content" hx-debug="true">
+    <div class="modal-header justify-content-between">
+        <h5 class="modal-title">Informações do Critério</h5>
+    </div>
+    <div class="modal-body">
+        <div class="row justify-content-center">
+            <table class="table table-sm table-striped">
+                <thead>
+                    <tr>
+                        <th>Categoria</th>
+                        <th style="width: 60%;">Informação</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for informacao in informacoes %}
+                    <tr>
+                        <td>{{ informacao.get_categoria_display }}</td>
+                        <td>{% if informacao.categoria == 'link' %}
+                                <a href="{{ informacao.link }}" target="_blank">{{ informacao.anotacao }}</a>
+                            {% elif informacao.categoria == 'documento' %}
+                                <a href="{{ informacao.documento.url }}" target="_blank">{{ informacao.anotacao }}</a>
+                            {% elif informacao.categoria == 'anotacao' %}
+                                {{ informacao.anotacao }}
+                            {% endif %}
+                        </td>
+                        <td><span class="badge {% if informacao.status == 'atual' %}bg-primary{% elif informacao.status == 'desatualizado' %}bg-secondary{% endif %}">
+                            {{ informacao.get_status_display }}
+                        </span></td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center">Nenhuma Informação encontrada.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <small style="font-size: xx-small;">Informações visualizadas por <b>{{ request.user.get_full_name }}</b></small>
+    </div>
+</div>

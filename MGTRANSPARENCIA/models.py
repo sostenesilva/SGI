@@ -20,6 +20,9 @@ class DbCriterios(models.Model):
     ]
 
     PERIODICIDADE_CHOICES = [
+        ('Diário', 'Diário'),
+        ('Semanal', 'Semanal'),
+        ('Quinzenal', 'Quinzenal'),
         ('Mensal', 'Mensal'),
         ('Bimestral', 'Bimestral'),
         ('Trimestral', 'Trimestral'),
@@ -88,12 +91,12 @@ class DbAvaliacaoLog(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f'Log {self.id} - {self.avaliacao.criterio.item} - {self.status}'
+        return f'Tarefa {self.id} - {self.avaliacao} - {self.data_limite}'
     
 
 def diretorio_manual_criterio(instance, filename):
     """Define o diretório de upload para manuais dos critérios."""
-    return f'MGTRANSPARENCIA/manuais/{instance.id} - {filename}'
+    return f'MGTRANSPARENCIA/manuais/{filename}'
 
 class InformacoesCriterio (models.Model):
     CATEGORIA_CHOICES = [
@@ -112,5 +115,8 @@ class InformacoesCriterio (models.Model):
     status = models.CharField(max_length=25, choices=STATUS_CHOICES, null=True, blank=True)
     link = models.URLField(null=True, blank=True)
     anotacao = models.TextField(null=True, blank=True)
-    documentos = models.FileField(upload_to= diretorio_manual_criterio, null=True, blank=True)
+    documento = models.FileField(upload_to= diretorio_manual_criterio, null=True, blank=True)
     geral = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f'Log {self.categoria} - {self.anotacao[:50]}...'

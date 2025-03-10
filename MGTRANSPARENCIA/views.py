@@ -1,10 +1,13 @@
+from datetime import datetime
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 import pandas as pd
-from .models import DbDimensao, DbCriterios, DbAvaliacao, DbAvaliacaoLog
+from .models import DbDimensao, DbCriterios, DbAvaliacao, DbAvaliacaoLog, InformacoesCriterio
 from .forms import AvaliacaoLogForm, AvaliacaoForm
 from django.core.paginator import Paginator
 from HOME.models import Secretaria
+from django.db.models import Q
+
 
 @login_required
 def listar_criterios(request):
@@ -18,10 +21,11 @@ def listar_criterios(request):
 @login_required
 def listar_avaliacoes(request):
     """Lista as avaliações vinculadas ao usuário logado."""
-    print('-------------------------------------------------')
-    print(request.user.secretaria_home.all())
 
-    avaliacoes = DbAvaliacao.objects.filter(secretaria__in=request.user.secretaria_home.all())
+    if Secretaria.objects.get(sigla='SCI').usuarios.contains(request.user):
+        avaliacoes = DbAvaliacao.objects.all()
+    else:
+        avaliacoes = DbAvaliacao.objects.filter(secretaria__in=request.user.secretaria_home.all())
 
     paginator = Paginator(avaliacoes, 20)
     page_number = request.GET.get('page')
@@ -51,6 +55,7 @@ def enviar_documento_log(request, log_id):
             log = formLog.save(commit=False)
             log.usuario = request.user
             log.status = 'Em análise'
+            log.data_envio = datetime.now()
             log.save()
             return redirect('detalhes_avaliacao', avaliacao_id=avaliacaoLog.avaliacao.id)
     else:
@@ -75,6 +80,7 @@ def atualizar_status_log(request, log_id, status):
 def aprovar_documento(request, log_id):
     log = get_object_or_404(DbAvaliacaoLog, id=log_id)
     log.status = "Publicado"  # Atualiza o status
+    log.data_publicacao = datetime.now()
     log.save()
     return redirect('detalhes_avaliacao', avaliacao_id=log.avaliacao.id)
 
@@ -82,6 +88,7 @@ def apagar_documento_log(request, log_id):
     log = get_object_or_404(DbAvaliacaoLog, id=log_id)
     log.arquivo = None  # Atualiza o status
     log.anotacao = ''  # Atualiza o status
+    log.status = 'Pendente'  # Atualiza o status
     log.save()
     return redirect('detalhes_avaliacao', avaliacao_id=log.avaliacao.id)
 
@@ -151,3 +158,24 @@ def adicionar_tarefa(request, avaliacao_id):
         'avaliacao': avaliacao,
     })
 
+@login_required
+def editar_tarefa(request, tarefa_id):
+
+    tarefa = get_object_or_404(DbAvaliacaoLog, id=tarefa_id)
+
+    if request.method == 'POST':
+        data_limite = request.POST.get('data_limite')  # Captura o valor do input
+        if data_limite:
+            tarefa.data_limite = data_limite
+            tarefa.save()
+            return redirect('detalhes_avaliacao', avaliacao_id = tarefa.avaliacao.id)
+
+    return render(request, 'editar_tarefa.html', {
+        'tarefa': tarefa,
+    })
+
+@login_required
+def informacoes_criterios(request, criterio_id):
+    criterio = DbCriterios.objects.get(id = criterio_id)
+    informacoes = InformacoesCriterio.objects.filter(Q(criterio = criterio) | Q(geral = True))
+    return render(request, 'Info_criterio.html', {'informacoes': informacoes})

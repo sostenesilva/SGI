@@ -1,0 +1,31 @@
+<div class="modal-content" hx-debug="true">
+    <div class="modal-header justify-content-between">
+        <h5 class="modal-title">Editar Tarefa</h5>
+    </div>
+    <div class="modal-body">
+        <div class="row justify-content-center">
+
+            <form method="post" action="{% url 'editar_tarefa' tarefa.id %}" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="row mb-3">
+                    <div class="col">
+                        <div class="mb-3">
+                            Nova Data Limite:
+                            <input type="date" id="data_limite" name="data_limite" class="form-control" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Salvar</button>
+                    </div>
+                    <div class="col">
+                        <div class="alert alert-secondary" role="alert">
+                            <b>Atenção:</b> A data limite será a referência para novas tarefas de acordo com a periodicidade do critério.
+                          </div>
+                    </div>
+                </div>
+                
+            </form>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <small style="font-size: xx-small;">Informações enviadas por <b>{{ request.user }}</b></small>
+    </div>
+</div>
