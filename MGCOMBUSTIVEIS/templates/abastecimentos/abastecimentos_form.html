@@ -70,7 +70,7 @@
       const quantidade = parseFloat(quantidadeInput.value) || 0; // Valor padrão é 0 se vazio
       const valorUnitario = parseFloat(valorUnitarioInput.value) || 0; // Valor padrão é 0 se vazio
       const total = quantidade * valorUnitario; // Multiplicação
-      valorTotalInput.value = (total-0.005).toFixed(2); // Define o valor total com 2 casas decimais truncando, sem arrendondar para mais.
+      valorTotalInput.value = total.toFixed(2); // Define o valor total com 2 casas decimais truncando, sem arrendondar para mais.
     }
 
     // Adiciona os eventos de input para calcular em tempo real
