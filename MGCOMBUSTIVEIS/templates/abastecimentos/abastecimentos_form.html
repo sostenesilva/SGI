@@ -26,10 +26,10 @@
             <label for="valorUnitario" class="form-label">Valor Unitário (R$)</label>
             {{form.valorUnitario}}
         </div>
-        <div class="col-md-6">
+        <!-- <div class="col-md-6">
             <label for="valorTotal" class="form-label">Valor Total (R$)</label>
             {{form.valorTotal}}
-        </div>
+        </div> -->
         <div class="col-md-6">
             <label for="condutor" class="form-label">Condutor</label>
             <p>{{ form.condutor }}</p>
@@ -59,21 +59,21 @@
   <script>
 
     // Referências aos campos
-    const quantidadeInput = document.getElementById('id_quantidade');
-    const valorUnitarioInput = document.getElementById('id_valorUnitario');
-    const valorTotalInput = document.getElementById('id_valorTotal');
+    // const quantidadeInput = document.getElementById('id_quantidade');
+    // const valorUnitarioInput = document.getElementById('id_valorUnitario');
+    // const valorTotalInput = document.getElementById('id_valorTotal');
 
-    // Função para calcular o valor total
-    function calcularTotal() {
-      console.log(document.getElementById('quantidade')); // Verifique se não é null
+    // // Função para calcular o valor total
+    // function calcularTotal() {
+    //   console.log(document.getElementById('quantidade')); // Verifique se não é null
 
-      const quantidade = parseFloat(quantidadeInput.value) || 0; // Valor padrão é 0 se vazio
-      const valorUnitario = parseFloat(valorUnitarioInput.value) || 0; // Valor padrão é 0 se vazio
-      const total = quantidade * valorUnitario; // Multiplicação
-      valorTotalInput.value = total.toFixed(2); // Define o valor total com 2 casas decimais truncando, sem arrendondar para mais.
-    }
+    //   const quantidade = parseFloat(quantidadeInput.value) || 0; // Valor padrão é 0 se vazio
+    //   const valorUnitario = parseFloat(valorUnitarioInput.value) || 0; // Valor padrão é 0 se vazio
+    //   const total = quantidade * valorUnitario; // Multiplicação
+    //   valorTotalInput.value = (total-0.005).toFixed(2); // Define o valor total com 2 casas decimais truncando, sem arrendondar para mais.
+    // }
 
     // Adiciona os eventos de input para calcular em tempo real
-    quantidadeInput.addEventListener('input', calcularTotal);
-    valorUnitarioInput.addEventListener('input', calcularTotal);
+    // quantidadeInput.addEventListener('input', calcularTotal);
+    // valorUnitarioInput.addEventListener('input', calcularTotal);
 </script>

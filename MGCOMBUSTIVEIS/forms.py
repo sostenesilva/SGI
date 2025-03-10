@@ -35,7 +35,7 @@ class Condutores_form(forms.ModelForm):
 class Abastecimentos_form(forms.ModelForm):
     class Meta:
         model = models.Abastecimentos
-        fields = '__all__'
+        fields = ['veiculo','condutor','fiscal','data','tipo','valorUnitario','quantidade','km','status']
     
         widgets= {
             'veiculo':forms.Select(attrs={'class':'form-control'}),
@@ -45,7 +45,6 @@ class Abastecimentos_form(forms.ModelForm):
             'tipo':forms.Select(attrs={'class':'form-select', 'required':'True'}),
             'valorUnitario':forms.NumberInput(attrs={'class':'form-control', 'required':'True', 'type':'number','placeholder':'Ex.: 6,49'}),
             'quantidade':forms.NumberInput(attrs={'class':'form-control', 'required':'True', 'type':'number','placeholder':'Ex.: 50,5'}),
-            'valorTotal':forms.NumberInput(attrs={'class':'form-control', 'readonly':'True', 'type':'number','placeholder':'Ex.: 324,50'}),
             'km':forms.NumberInput(attrs={'class':'form-control', 'type':'number','placeholder':'Ex.: 15000'}),
             'status':forms.Select(attrs={'class':'form-select', 'required':'True'}),
         }

@@ -3,7 +3,7 @@ from collections import defaultdict
 from datetime import date, datetime, timedelta
 import json
 from django.http import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from weasyprint import HTML
 from . import models, forms
 from django.core.paginator import Paginator
@@ -64,9 +64,13 @@ def abastecimentos_list(request):
 def add_abastecimento(request):
     if request.method == "POST":
         form = forms.Abastecimentos_form(request.POST or None)
-        print(form.is_valid())
+        def truncate_float(value, digits_after_point=2):
+            pow_10 = 10 ** digits_after_point
+            return (float(int(value * pow_10)))/pow_10
 
         if form.is_valid():
+            form.save(commit=False)
+            form.instance.valorTotal = truncate_float(form.instance.valorUnitario * form.instance.quantidade)
             form.save()
             return HttpResponse(
                 status=204,
