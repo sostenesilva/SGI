@@ -1,4 +1,5 @@
 {% load static %}
+{% load tags %}
 
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -41,12 +42,21 @@
                     <p class="px-4 mb-0"><b>Módulos do Sistema</b></p>
                     <ul class="sidebar-nav py-0">
                         {% for modulo in modulos %}
+                            {% if request.user|has_perm_modulo:modulo %}
+                                <li class="sidebar-item">
+                                    <a href="#" class="sidebar-link" hx-get="{% url 'modulo_detalhes' modulo.id %}" hx-target="#modulo-content">
+                                        - {{ modulo.nome }}
+                                    </a>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                        {% if request.user.is_superuser %}
                         <li class="sidebar-item">
-                            <a href="#" class="sidebar-link" hx-get="{% url 'modulo_detalhes' modulo.id %}" hx-target="#modulo-content">
-                                - {{ modulo.nome }}
+                            <a href="#" class="sidebar-link" hx-get="{% url 'listar_usuarios' %}" hx-target="#modulo-content">
+                                - Usuários
                             </a>
                         </li>
-                        {% endfor %}
+                        {% endif %}
                     </ul>
                 </div>
                 <div class="sidebar-footer">

@@ -15,6 +15,7 @@ class Modulo(models.Model):
     nome = models.CharField(max_length=100)
     descricao = models.TextField()
     link_modulo = models.CharField(max_length=100)  # Link para acessar o módulo principal
+    sigla = models.CharField(max_length=100, null=True, blank=True)
 
     def __str__(self):
         return self.nome

@@ -1,0 +1,16 @@
+{% load tags %}
+
+<ul>
+    {% for permissao in permissoes %}
+        <li>
+            <label class="switch">
+                <input 
+                    type="checkbox"
+                    {% if permissao.id in permissoes_usuario %}checked{% endif %}
+                    hx-get="{% url 'atualizar_permissao_usuario' user.id grupo.id permissao.id %}"
+                    hx-trigger="change">
+                    {{ permissao.name }}
+            </label>
+        </li>
+    {% endfor %}
+</ul>
