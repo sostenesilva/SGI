@@ -75,6 +75,7 @@ class DbAvaliacaoLog(models.Model):
     ]
 
     avaliacao = models.ForeignKey(DbAvaliacao, on_delete=models.CASCADE, related_name="logs", verbose_name="Avaliação")
+    tarefa = models.TextField(null=True, blank=True, verbose_name='Tarefa')
     arquivo = models.FileField(null=True, blank=True, upload_to=diretorio_item_avaliacao, verbose_name="Anexo", max_length=300)
     anotacao = models.TextField(null=True, blank=True, verbose_name="Anotação")
     data_envio = models.DateTimeField(null=True, blank=True, verbose_name="Data de Envio")

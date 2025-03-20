@@ -10,14 +10,17 @@
                 <div class="row mb-3">
                     <div class="col">
                         <div class="mb-3">
-                            Data Limite:
+                            <label for="data_limite">Data Limite:</label>
                             <input type="date" id="data_limite" name="data_limite" class="form-control" required>
+                            <label for="tarefa">Descrição da tarefa:</label>
+                            <textarea type="text" rows="3" id="tarefa" name="tarefa" class="form-control" required></textarea>
                         </div>
-                        <button type="submit" class="btn btn-primary">Criar</button>
+                        <button type="submit" class="btn btn-primary">Salvar</button>
                     </div>
                     <div class="col">
                         <div class="alert alert-secondary" role="alert">
-                            <b>Atenção:</b> A data limite será a referência para novas tarefas de acordo com a periodicidade do critério.
+                            <p><b>Atenção:</b> A data limite deverá ser a referência para as novas tarefas de acordo com a periodicidade do critério.</p>
+                            <p>A descrição da tarefa discrimina o documento/esclarecimento que deve ser enviado.</p>
                           </div>
                     </div>
                 </div>

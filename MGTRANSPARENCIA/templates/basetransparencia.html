@@ -51,11 +51,13 @@
                                 <span>Visualizar</span>
                             </a>
                         </li>
-                        <li class="sidebar-item">
-                            <a class="sidebar-link" hx-get="{% url 'adicionar_avaliacao' %}" hx-target="#dialog" hx-trigger="click" data-bs-toggle="modal" data-bs-target="#modal">
-                                <span>Novo</span>
-                            </a>
-                        </li>
+                        {% if "auth.adicionar_Avaliacao_MGTRANSPARENCIA" in perms%}
+                            <li class="sidebar-item">
+                                <a class="sidebar-link" hx-get="{% url 'adicionar_avaliacao' %}" hx-target="#dialog" hx-trigger="click" data-bs-toggle="modal" data-bs-target="#modal">
+                                    <span>Novo</span>
+                                </a>
+                            </li>
+                        {% endif %}
                     </ul>
                 </li>
             </ul>
@@ -83,8 +85,8 @@
             <div class="d-flex justify-content-between">
                 <h4><b>SGI</b> - {% block titulo %}{% endblock titulo %}</h4>
                 <ul class="m-0 p-0" style="font-size:smaller;">
-                    <li class="m-0 p-0"><small ><b>Usuário:</b> {{request.user.get_full_name|upper}}</small></li>
-                    <li class="m-0 p-0"><small><b>Setor:</b> {{request.user.setores.first|upper}}</small></li>
+                    <li class="m-0 p-0"><small><b>Usuário:</b> {{request.user.get_full_name|upper}}</small></li>
+                    <li class="m-0 p-0"><small><b>Setor:</b>{% for setor in request.user.secretaria_home.all %}<span> {{setor|upper}} | </span>{% endfor %}</small></li>
                 </ul>
             </div>
             <hr>

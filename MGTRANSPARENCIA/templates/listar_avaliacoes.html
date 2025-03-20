@@ -14,10 +14,10 @@
         </thead>
         <tbody>
             {% for avaliacao in avaliacoes %}
-            <tr><td colspan="4" style="height: 15px; background-color: #F5F5F5;"></td></tr>
-            <tr>
+            <tr><td colspan="4" style="height: 15px;"></td></tr>
+            <tr style="border: 1px solid white;">
                 <td>{{ avaliacao.secretaria }}</td>
-                <td>Data limite da última avaliação</td>
+                <td> - </td>
                 <td>
                     <span class="badge {% if avaliacao.status == 'Pendente' %}bg-warning{% elif avaliacao.status == 'Em análise' %}bg-primary{% else %}bg-success{% endif %}">
                         {{ avaliacao.get_status_display }}
@@ -28,7 +28,7 @@
                 </th>
             </tr>
             <tr>
-                <td class="" style="text-align: left; padding-left: 30px; font-size: smaller;  margin-top: -8px;" colspan="3">
+                <td class="" style="text-align: left; padding-left: 30px; font-size: small;  margin-top: -8px;" colspan="3">
                     <b>Critério: </b>Item {{ avaliacao.criterio.item }} - {{ avaliacao.criterio.criterio }}
                 </td>
             </tr>

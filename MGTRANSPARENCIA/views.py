@@ -146,9 +146,11 @@ def adicionar_tarefa(request, avaliacao_id):
 
     if request.method == 'POST':
         data_limite = request.POST.get('data_limite')  # Captura o valor do input
+        tarefa_descricao = request.POST.get('tarefa')  # Captura o valor do input
         if data_limite:
             DbAvaliacaoLog.objects.create(
                 avaliacao=avaliacao,
+                tarefa=tarefa_descricao,
                 data_limite=data_limite,
                 status='Pendente',
             )
@@ -165,8 +167,10 @@ def editar_tarefa(request, tarefa_id):
 
     if request.method == 'POST':
         data_limite = request.POST.get('data_limite')  # Captura o valor do input
+        tarefa_descricao = request.POST.get('tarefa')  # Captura o valor do input
         if data_limite:
             tarefa.data_limite = data_limite
+            tarefa.tarefa = tarefa_descricao
             tarefa.save()
             return redirect('detalhes_avaliacao', avaliacao_id = tarefa.avaliacao.id)
 

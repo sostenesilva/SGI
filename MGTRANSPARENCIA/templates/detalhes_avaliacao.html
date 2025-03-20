@@ -9,37 +9,43 @@
                 <div class="col-10"> <!-- Descrição -->
                     <p class="card-title"><b>Item {{ avaliacao.criterio.item }} - {{ avaliacao.criterio.criterio }}</b></p>
                     <div style="margin: 0; padding: 0; font-size: small;">
+                        <li>Periodicidade do Critério: {{ avaliacao.criterio.get_periodicidade_display }}</li>
                         <li>Secretaria Responsável: {{ avaliacao.secretaria }}</li>
                     </div>
                 </div>
                 <div class="col-2"> <!-- Botões TOPO -->
                     <button class="btn btn-sm btn-secondary mb-2" hx-get="{% url 'informacoes_criterios' avaliacao.criterio.id %}" hx-target="#dialog" hx-trigger="click" data-bs-toggle="modal" data-bs-target="#modal">
-                        Mais Informações
+                        Mais informações
                     </button>
+                    {% if "auth.adicionar_Tarefa_MGTRANSPARENCIA" in perms%}
                     <a class="btn btn-sm btn-secondary mb-2" hx-get="{% url 'adicionar_tarefa' avaliacao.id %}" hx-target="#dialog" hx-trigger="click" data-bs-toggle="modal" data-bs-target="#modal">Criar Tarefa</a>
+                    {% endif %}
                 </div>
             </div>
         </div>
     </div>
 
     <h5>Envios Periódicos</h5>
-    <table class="table table-sm table-striped">
+    <table class="table table-sm table-responsive">
         <thead>
             <tr>
-                <th>Limite</th>
-                <th>Data Envio</th>
-                <th>Descrição</th>
+                <th class="col-2">Datas</th>
+                <th class="col-5">Descrição</th>
                 <th>Documento</th>
                 <th>Status</th>
-                <th>Ações</th>
+                {% if "auth.adicionar_Tarefa_MGTRANSPARENCIA" in perms%}<th>Ações</th>{% endif %}
             </tr>
         </thead>
         <tbody>
             {% for log in logs %}
+            <tr><td colspan="5" style="height: 15px; background-color: #ffffff;"></td></tr>
+            <tr style="border: 1px solid white;">
+                <td><b>Limite:</b> {{ log.data_limite|date:"d/m/Y" }}</td>
+                <td style="text-align: left;" colspan="5"><b>Tarefa:</b> {{ log.tarefa }}</td>
+            </tr>
             <tr>
-                <td>{{ log.data_limite|date:"d/m/Y H:i" }}</td>
-                <td>{% if log.data_envio %}{{ log.data_envio|date:"d/m/Y H:i" }}{% else %} <small class="text-muted">Pendente de envio</small>{% endif %}</td>
-                <td>{% if log.anotacao %}{{ log.anotacao }}{% else %}<small class="text-muted">Pendente de envio</small>{% endif %}</td>
+                <td>{% if log.data_envio %}<b>Envio:</b> {{ log.data_envio|date:"d/m/Y" }}{% else %} <small class="text-muted">Pendente de envio</small>{% endif %}</td>
+                <td style="text-align: left;">{% if log.anotacao %}<b>Descrição:</b> {{ log.anotacao }}{% else %}<small class="text-muted">Pendente de envio</small>{% endif %}</td>
                 <td>
                     {% if log.arquivo %}
                         <a href="{{ log.arquivo.url }}" class="btn btn-sm btn-secondary" target="_blank"><i class="lni lni-eye"></i></a>
@@ -59,12 +65,15 @@
                         {{ log.get_status_display }}
                     </span>
                 </td>
+
+                {% if "auth.adicionar_Tarefa_MGTRANSPARENCIA" in perms%}
                 <td>
                     {% if log.status != 'Publicado' %}
                         <a href="{% url 'aprovar_documento' log.id %}" class="btn btn-sm btn-success"><small>Aprovar</small></a>
                         <a class="btn btn-sm btn-secondary" hx-get="{% url 'editar_tarefa' log.id %}" hx-target="#dialog" hx-trigger="click" data-bs-toggle="modal" data-bs-target="#modal"><i class="lni lni-pencil-alt"></i></a>
                     {% endif %}
                 </td>
+                {% endif %}
             </tr>
             {% empty %}
             <tr>
