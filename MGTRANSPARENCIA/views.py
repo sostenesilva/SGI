@@ -16,7 +16,7 @@ def listar_criterios(request):
     paginator = Paginator(criterios, 20)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
-    return render(request, 'listar_criterios.html', {'criterios': page_obj})
+    return render(request, 'listar_criterios.html', {'criterios': criterios})
 
 @login_required
 def listar_avaliacoes(request):
@@ -30,7 +30,7 @@ def listar_avaliacoes(request):
     paginator = Paginator(avaliacoes, 20)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
-    return render(request, 'listar_avaliacoes.html', {'avaliacoes': page_obj})
+    return render(request, 'listar_avaliacoes.html', {'avaliacoes': avaliacoes})
 
 @login_required
 def detalhes_avaliacao(request, avaliacao_id):
