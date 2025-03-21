@@ -13,7 +13,7 @@ urlpatterns = [
 
     path('contratos/', views.contratos, name='contratos'), #VISUALIZAR TODOS OS CONTRATOS
     # path('contratos/adicionar/<int:processo_pk>/', views.contratos_add, name='contratos_add'),
-    path('contratos/addsaldo/<int:contrato_pk>/', views.contratos_addsaldo, name='contrato_addsaldo'),
+    path('contratos/addsaldosec/<int:contrato_pk>/', views.contratos_addsaldosec, name='contrato_addsaldo'),
     path('contratos/additens/<int:contrato_pk>/', views.contratos_additens, name='contratos_additens'),
     # path('contratos/anexarof/<int:contrato_pk>/', views.contrato_enviar, name='contrato_enviar'), #ADAPTAR PARA ORDENS/ANEXAR
     # path('contratos/editar/<int:contrato_pk>', views.contrato_edit, name='contrato_edit'),

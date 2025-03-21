@@ -22,31 +22,41 @@ class Fornecedores (models.Model):
 
 
 class Contratos (models.Model):
+    ug_choice = [
+        ('PMC','Prefeitura'),
+        ('FMS','Saúde'),
+        ('FMAS','Assistência'),
+        ('FMEC','Educação'),
+        ('CORTESPREV','CortêsPREV'),
+    ]
+
+    estagio_choice = [
+        ('Execução','Em Execução'),
+        ('Suspenso','Suspenso'),
+        ('Fim da Vigência','Concluído - Fim da Vigência'),
+        ('Anulado','Concluído - Anulado'),
+        ('Rescindido','Concluído - Rescindido'),        
+    ]
+
     Fornecedor = models.ForeignKey(Fornecedores, on_delete=models.PROTECT)
     Situacao = models.CharField(max_length=50, null=True, blank=True)
     Objeto = models.TextField(null=True, blank=True)
 
-
-    TipoProcesso = models.CharField(max_length=100, null=True, blank=True, verbose_name='Modalidade')
-    LinkEdital = models.URLField(null=True, blank=True, verbose_name='Edital')
-    LinkContrato = models.URLField(null=True, blank=True, verbose_name='Contrato')
-    SiglaUG = models.CharField(max_length=10, null=True, blank=True, verbose_name='UG')
-    Valor = models.FloatField(null=True, blank=True)
-    UnidadeOrcamentaria = models.CharField(max_length=100, null=True, blank=True, verbose_name='Unidade Orçamentária')
-    CodigoUG = models.CharField(max_length=10, null=True, blank=True)
     NumeroProcesso = models.CharField(max_length=10, null=True, blank=True, verbose_name='Processo')
-    UnidadeGestora = models.CharField(max_length=100, null=True, blank=True, verbose_name='Unidade Gestora')
-    CodigoContrato = models.CharField(max_length=10, null=True, blank=True)
-    AnoContrato = models.CharField(max_length=4, null=True, blank=True, verbose_name='Ano')
-    Vigencia = models.CharField(max_length=100, null=True, blank=True)
-    Estagio = models.CharField(max_length=100, null=True, blank=True)
-    CodigoPL = models.CharField(max_length=10, null=True, blank=True)
-    NumeroDocumento = models.CharField(max_length=50, null=True, blank=True, verbose_name='Documento')
-    Municipio = models.CharField(max_length=10, null=True, blank=True)
-    TipoDocumento = models.CharField(max_length=10, null=True, blank=True)
-    NumeroContrato = models.CharField(max_length=5, null=True, blank=True, verbose_name='Contrato')
-    Esfera = models.CharField(max_length=1, null=True, blank=True)
     AnoProcesso = models.CharField(max_length=4, null=True, blank=True, verbose_name='Ano')
+    TipoProcesso = models.CharField(max_length=100, null=True, blank=True, verbose_name='Modalidade')
+
+    NumeroContrato = models.CharField(max_length=5, null=True, blank=True, verbose_name='Contrato')
+    AnoContrato = models.CharField(max_length=4, null=True, blank=True, verbose_name='Ano')
+    Estagio = models.CharField(max_length=100, choices=estagio_choice, null=True, blank=True)
+
+    LinkContrato = models.URLField(null=True, blank=True, verbose_name='Contrato')
+    LinkEdital = models.URLField(null=True, blank=True, verbose_name='Edital')
+    data_inicio = models.DateField(null=True, blank=True)
+    data_fim = models.DateField(null=True, blank=True)
+
+    UnidadeGestora = models.CharField(max_length=100, choices=ug_choice, null=True, blank=True, verbose_name='Unidade Gestora')
+    Valor = models.FloatField(null=True, blank=True)
 
     AtualizarItens = models.BooleanField(default=True)
     AtualizarDados = models.BooleanField(default=True)
@@ -54,28 +64,25 @@ class Contratos (models.Model):
     def __str__(self) -> str:
         return '{}/{} - {} - {}'.format(self.NumeroContrato,self.AnoContrato,self.TipoProcesso,self.Fornecedor)
 
-class TermoAditivo (models.Model):
+class TermoAditivoValor (models.Model):
     Contrato = models.ForeignKey(Contratos, on_delete=models.PROTECT)
-    CodigoContrato = models.IntegerField(null=True, blank=True)
-    LinkArquivo = models.URLField(null=True, blank=True)
+
     NumeroTermoAditivo = models.CharField(max_length=20, null=True, blank=True)
-    Vigencia = models.CharField(max_length=200, null=True, blank=True)
-    JustificativaTermoAditivo = models.TextField(null=True, blank=True)
-    ValorTermoAditivo = models.FloatField(null=True,blank=True)
     AnoTermoAditivo = models.IntegerField(null=True, blank=True)
+    ValorTermoAditivo = models.FloatField(null=True,blank=True)
+    LinkArquivo = models.URLField(null=True, blank=True)
+    JustificativaTermoAditivo = models.TextField(null=True, blank=True)
+    data_inicio = models.CharField(max_length=200, null=True, blank=True)
 
     def __str__(self) -> str:
-        return f'Termo Aditivo {self.NumeroTermoAditivo}/{self.AnoTermoAditivo} - Contrato {self.Contrato}'
+        return f'Termo Aditivo de Valor {self.NumeroTermoAditivo}/{self.AnoTermoAditivo} - Contrato {self.Contrato}'
 
 class Itens (models.Model):
     Contrato = models.ForeignKey(Contratos, on_delete=models.CASCADE)
     Descricao = models.TextField(null=True, blank=True)
-    CodigoContratoOriginal = models.CharField(max_length=10)
     Unidade = models.CharField(max_length=50, null=True, blank=True)
     PrecoUnitario = models.FloatField(null=True, blank=True)
-    CodigoItem = models.CharField(max_length=10, null=True, blank=True)
     Quantidade = models.IntegerField(null=True, blank=True)
-    PrecoTotal = models.FloatField(null=True, blank=True)
 
     def __str__(self) -> str:
         return '{}'.format(self.Descricao)
@@ -85,9 +92,9 @@ class SaldoContratoSec(models.Model):
     sec = models.ForeignKey(Secretaria, on_delete= models.PROTECT, verbose_name='Secretaria')
     fiscal = models.ForeignKey(User, null=True, blank=True, on_delete=models.PROTECT)
 
-    totalEntradas = models.FloatField(null=True, blank=True, default=0)
-    totalSaidas = models.FloatField(null=True, blank=True, default=0)
-    saldoAtual = models.FloatField(null=True, blank=True, default=0)
+    totalEntradas = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True, default=0)
+    totalSaidas = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True, default=0)
+    saldoAtual = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True, default=0)
 
     def __str__(self) -> str:
         return 'Contrato {} - {}'.format(self.contrato, self.sec)

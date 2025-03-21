@@ -67,7 +67,7 @@ def contratos (request):
         'contratos': page_contratos
     }
     
-    return render(request, 'contratos/contratos.html', context)
+    return render(request, 'listar_contratos.html', context)
 
 #CONTRATO ADD
 #   
@@ -144,45 +144,39 @@ def contratos (request):
 #     return render(request, 'contratos/contratos_enviarof.html',context)
 
 @login_required
-def contratos_addsaldo(request,contrato_pk):
+def contratos_addsaldosec(request,contrato_pk):
     contrato = models.Contratos.objects.get(pk=contrato_pk) #INSTÂNCIA DO CONTRATO ATUAL
     
     #FORMULÁRIOS
     saldocontratosec_form = forms.SaldoContratoSec_form(request.POST or None)
-    fornecedor_form = forms.Fornecedor_form(request.POST or None,instance=contrato.Fornecedor)
     
-    itensof = models.Itens.objects.filter(Contrato=contrato) #FILTRAR ITENS DO CONTRATO
+    itenscontrato = models.Itens.objects.filter(Contrato=contrato) #FILTRAR ITENS DO CONTRATO
 
     if request.POST:
         quantidades = request.POST.getlist('quantidade')
         item_ids = request.POST.getlist('item_id')
-        SaldoContratoSec = models.SaldoContratoSec.objects.create(contrato = contrato, sec = request.POST['sec'], fiscal = request.POST['fiscal'])
+        saldocontratosec = saldocontratosec_form.save(commit=False)
+        saldocontratosec.contrato = contrato
+        saldocontratosec.save()
         
         for item_id,qtd in zip(item_ids,quantidades):
             if qtd and int(qtd) > 0:
                 entradasec = models.EntradaSec.objects.create(
-                    saldocontratosec = SaldoContratoSec,
+                    saldocontratosec = saldocontratosec,
                     item = models.Itens.objects.get(pk = item_id),
                     quantidade = int(qtd),
                     usuario = request.user
                 )
-
                 entradasec.save()
-
-        SaldoContratoSec.save()
-
-        fornecedor_form.save()
-
         return redirect('contratos')
     
     context = {
         'saldocontratosec_form': saldocontratosec_form,
         'contrato': contrato,
-        'itensof': itensof,
-        'fornecedor_form': fornecedor_form,
+        'itenscontrato': itenscontrato,
     }
 
-    return render(request, 'ordens/ordens_add.html',context)
+    return render(request, 'add_saldosec.html',context)
 
 
 @login_required
@@ -197,10 +191,9 @@ def contratos_additens(request,contrato_pk):
                 Descricao = row[0],
                 Unidade = row[1],
                 Contrato = contrato,
-                CodigoContratoOriginal = contrato.CodigoContrato,
                 PrecoUnitario = float(str(row[3])),
                 Quantidade = str(str(row[2])),
-                PrecoTotal = float(str(row[4])),
+                # PrecoTotal = float(str(row[4])),
             )
             
             itemadd.save()
