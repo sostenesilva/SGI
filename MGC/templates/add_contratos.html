@@ -1,0 +1,33 @@
+<div class="modal-content" hx-debug="true">
+    <div class="modal-header justify-content-between">
+            <h5 class="modal-title">Adicionar Contratos</h5>
+    </div>
+    <div class="modal-body">
+        <div class="d-flex justify-content-center">
+            <small style="text-align: center;">Para importar contratos do sistema REMESSA TCE/PE, avaliar sua similaridade com os já cadastrados no sistema e selecionar os que deseja salvar, selecione o ano e clique em "Importar do Remessa TCE/PE"</small>
+        </div>
+        <div class="d-flex justify-content-center">
+            <div class="p-2">
+                <select class="form-control" name="ano" id="ano">
+                    <option value="2025">2025</option>
+                    <option value="2024">2024</option>
+                    <option value="2023">2023</option>
+                    <option value="2022">2022</option>
+                    <option value="2021">2021</option>
+                </select>
+            </div>
+            <div class="p-2">
+                <a type="button" class="btn btn-success" hx-get="{% url 'contratos_request' %}" hx-target="#dialog" hx-vals="js:{ano: document.getElementById('ano').value}">Importar do Remessa TCE/PE</a>                
+            </div>                
+        </div>
+        <div class="d-flex justify-content-center my-3 ">
+            <small style="text-align: center;">Para adicionar contratos avulsos, provenientes de outros meios de contratação, click em "Contrato Avulso"</small>
+        </div>
+        <div class="d-flex justify-content-center">
+            <a type="button" class="btn btn-success" hx-get="#" hx-target="#dialog">Contrato Avulso</a>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <small style="font-size: xx-small;">Módulo MGC - Gestão de Contratos (SGI - Sistema de Gestão da Informação)</small>
+    </div>
+</div>

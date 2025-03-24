@@ -1,17 +1,23 @@
+import base64
 from functools import reduce
-from operator import or_
+from operator import or_, itemgetter
+from django.http import JsonResponse
 from django.shortcuts import render,redirect, HttpResponse
+from weasyprint import HTML
 from . import forms, models
 from django.contrib.auth.models import Group, User
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
-from datetime import date
+from datetime import date, datetime
 import requests, json
 from docx import Document, document, table
 from python_docx_replace import docx_replace
 import pandas as pd
 import uuid
 from django.db.models import Sum
+from django.contrib import messages
+from django.template.loader import render_to_string
+
 
 
 #------------------- PÁGINAS DE DASHBOARD -------------------#
@@ -193,6 +199,7 @@ def contratos_additens(request,contrato_pk):
                 Contrato = contrato,
                 PrecoUnitario = float(str(row[3])),
                 Quantidade = str(str(row[2])),
+                Quantidade_disp = str(str(row[2])),
                 # PrecoTotal = float(str(row[4])),
             )
             
@@ -207,84 +214,162 @@ def contratos_additens(request,contrato_pk):
 
     return render(request, 'contratos/contratos_additens.html',context)
 
+def contratos_request2(request):
+    return render(request, 'contratos_request.html')
+
+
+#PÁGINA ADD_CONTRATOS
+@login_required
+def add_contratos(request):
+    return render(request, 'add_contratos.html')
+
 #CONTRATOS LICON
 @login_required
 def contratos_request(request):
-    contratos_licon = requests.get('https://sistemas.tcepe.tc.br/DadosAbertos/Contratos!json?UnidadeOrcamentaria=Prefeitura&Esfera=M&Municipio=Cortes&AnoContrato=2025').json()['resposta']['conteudo']
-    processos_licon = requests.get('https://sistemas.tcepe.tc.br/DadosAbertos/LicitacaoUG!json?UG=CORTES').json()['resposta']['conteudo']
-    
+    ano = request.GET.get('ano', '2025')  # Padrão para 2025 se não for informado
+     # Buscar contratos e processos na API do TCE-PE
+    contratos_licon = requests.get(
+        f'https://sistemas.tcepe.tc.br/DadosAbertos/Contratos!json?UnidadeOrcamentaria=Prefeitura&Esfera=M&Municipio=Cortes&AnoContrato={ano}'
+    ).json()['resposta']['conteudo']
+
+    processos_licon = requests.get(
+        f'https://sistemas.tcepe.tc.br/DadosAbertos/LicitacoesDetalhes!json?CODIGOUG=211&UG=CORTES&ANOMODALIDADE={ano}&CODIGOMUNICIPIO=P050'
+    ).json()['resposta']['conteudo']
+
+    # Criar um dicionário associando os códigos PL aos objetos dos processos
+    processos_dict = {proc['CODIGOPL']: proc for proc in processos_licon}
+
+    # Adicionar detalhes do processo ao contrato
     for contrato in contratos_licon:
+        codigo_pl = contrato.get('CodigoPL')
+        if codigo_pl and codigo_pl in processos_dict:
+            contrato['Objeto'] = processos_dict[codigo_pl].get('OBJETOCONFORMEEDITAL', '')
+            contrato['LinkEdital'] = processos_dict[codigo_pl].get('LinkArquivo', '')
+    # 🔹 Passo 2: Buscar contratos já cadastrados no banco de dados
+    contratos_existentes = models.Contratos.objects.all()
 
-        fornecedor, forn_criado = models.Fornecedores.objects.update_or_create(
-                RazaoSocial = contrato['RazaoSocial'],
-                CPF_CNPJ = contrato['CPF_CNPJ'],
-        )
-        fornecedor.NumeroDocumentoAjustado = contrato['NumeroDocumento']
-        fornecedor.save()
+    # 🔹 Lista para armazenar contratos com grau de similaridade
+    contratos_comparados = []
 
+    for contrato in contratos_licon:
+        # Pegar os dados do contrato da API
+        numero_contrato_api = contrato.get('NumeroContrato')
+        ano_contrato_api = contrato.get('AnoContrato')
+        fornecedor_api = contrato.get('RazaoSocial')
+        objeto_api = contrato.get('Objeto', '').strip()
+        valor_api = float(contrato.get('Valor', 0))
+        
+        # Inicializar grau de similaridade
+        grau_similaridade = 0
+
+        # Verificar se existe um contrato semelhante no banco
+        contrato_existente = contratos_existentes.filter(NumeroContrato=numero_contrato_api, AnoContrato=ano_contrato_api).all()
+
+        if contrato_existente:
+            for contrato_x in contrato_existente:
+                # Comparação de cada critério e soma de pontos
+                if contrato_x.Fornecedor.RazaoSocial == fornecedor_api:
+                    # print(f'{contrato_existente.Fornecedor.RazaoSocial} == {fornecedor_api}')
+                    grau_similaridade += 25  # Fornecedor igual → 25%
+
+                if contrato_x.Objeto and contrato_x.Objeto.strip().lower() == objeto_api.lower():
+                    # print(f'{contrato_existente.Objeto and contrato_existente.Objeto.strip().lower()} == {objeto_api.lower()}')
+                    grau_similaridade += 25  # Objeto igual → 25%
+
+                if contrato_x.Valor == valor_api:
+                    # print(f'{contrato_existente.Valor} == {valor_api}')
+
+                    grau_similaridade += 25  # Valor igual → 25%
+
+                if contrato_x.NumeroContrato == numero_contrato_api:
+                    # print(f'{contrato_existente.NumeroContrato} == {numero_contrato_api}')
+
+                    grau_similaridade += 25  # Número do contrato igual → 25%
+
+        # Definir um nível de similaridade baseado na pontuação
+        if grau_similaridade >= 100:
+            grau_similaridade = 100
+            badge = "bg-success text-white"  # Muito semelhante (100%)
+        elif grau_similaridade >= 50:
+            badge = "bg-warning text-dark"  # Parcialmente semelhante (50-75%)
+        else:
+            badge = "bg-danger text-white"  # Pouco semelhante (0-25%)
+
+        # Adicionar contrato à lista com grau de similaridade
+        contratos_comparados.append({
+            'contrato': contrato,
+            'grau_similaridade': grau_similaridade,
+            'badge': badge,
+        })
+        contratos_comparados = sorted(contratos_comparados, key=lambda x: x['grau_similaridade'])
+        # contratos_comparados = sorted(contratos_comparados, key=contratos_comparados[1], reverse=True)
+
+    # Renderizar a página com os contratos para seleção
+    return render(request, 'contratos_request.html', {'contratos': contratos_comparados})
+
+
+
+def processar_contratos_selecionados(request):
+    if request.method == "POST":
+        contratos_json = request.POST.getlist("selecionados")  # Pegando os contratos selecionados
+
+        if not contratos_json:
+            messages.error(request, "Nenhum contrato selecionado.")
+            return redirect("contratos")  # Redireciona para a lista
+
+        contratos_lista = []
         try:
-            cont, cont_criado = models.Contratos.objects.update_or_create(
-                NumeroContrato = contrato['NumeroContrato'],
-                AnoContrato = contrato['AnoContrato'],
-                TipoProcesso = contrato['TipoProcesso'], 
-                NumeroProcesso = contrato['NumeroProcesso'], 
-                AnoProcesso = contrato['AnoProcesso'], 
-                Valor = float(contrato['Valor']),
-                Fornecedor = fornecedor,
-                )
-
-        except:
-            cont, cont_criado = models.Contratos.objects.update_or_create(
-                NumeroContrato = contrato['NumeroContrato'],
-                AnoContrato = contrato['AnoContrato'], 
-                Valor = float(contrato['Valor']),
-                Fornecedor = fornecedor,
-                )
-        
-        cont.save()
-        if cont.AtualizarDados == True:
-            cont.UnidadeGestora = contrato['UnidadeGestora']
-            cont.LinkContrato = contrato['LinkArquivo']
-            cont.Situacao = contrato['Situacao']
-            cont.SiglaUG = contrato['SiglaUG']
-            cont.UnidadeOrcamentaria = contrato['UnidadeOrcamentaria']
-            cont.CodigoUG = contrato['CodigoUG']
-            cont.CodigoContrato = contrato['CodigoContrato']
-            cont.Vigencia = contrato['Vigencia']
-            cont.Estagio = contrato['Estagio']
-
-            try:
-                cont.CodigoPL = contrato['CodigoPL']
-            except:
-                cont.CodigoPL = ''
-        
-            cont.NumeroDocumento = contrato['NumeroDocumento']
-            cont.Municipio = contrato['Municipio']
-            cont.TipoDocumento = contrato['TipoDocumento']
-            cont.Esfera = contrato['Esfera']
-
-            for processo in processos_licon:
-                if cont.CodigoPL == processo['CODIGOPL']:
-                    cont.Objeto = processo['OBJETOCONFORMEEDITAL']
-                    cont.LinkEdital = processo['LinkArquivo']
-        cont.save()
-
-        if cont.AtualizarItens:
-            itens_licon = requests.get('https://sistemas.tcepe.tc.br/DadosAbertos/ContratoItemObjeto!json?CodigoContratoOriginal={}'.format(cont.CodigoContrato)).json()['resposta']['conteudo']
+            for contratos in contratos_json:
+                json_acceptable_string = contratos.replace("'", "\"")
+                contratos_lista.append(json.loads(json_acceptable_string))  # Converte a string JSON para lista de dicionários
             
-            for item in itens_licon:
-                itemcontrato, itemcontrato_criado = models.Itens.objects.update_or_create(
-                    CodigoContratoOriginal = item['CodigoContratoOriginal'],
-                    Descricao = item['Descricao'],
-                    Contrato = models.Contratos.objects.get(CodigoContrato= item['CodigoContratoOriginal'])
-                )
-                itemcontrato.Unidade = item['Unidade']
-                itemcontrato.CodigoItem = item['CodigoItem']
-                itemcontrato.PrecoUnitario = float(item['PrecoUnitario'])
-                itemcontrato.Quantidade = float(item['Quantidade'])
-                itemcontrato.PrecoTotal = float(item['PrecoTotal'])
-                itemcontrato.save()
-    return redirect(request.META.get('HTTP_REFERER'))
+        except json.JSONDecodeError:
+            print('json decode error')
+            messages.error(request, "Erro ao processar os contratos selecionados.")
+            return redirect("contratos")
+
+        contratos_cadastrados = []
+
+        for contrato_data in contratos_lista:
+            # Primeiro, garantir que o fornecedor existe
+            fornecedor, created = models.Fornecedores.objects.get_or_create(
+                RazaoSocial=contrato_data["RazaoSocial"],
+                CPF_CNPJ=contrato_data["CPF_CNPJ"]
+            )
+            fornecedor.NumeroDocumentoAjustado = contrato_data["NumeroDocumento"]
+            fornecedor.save()
+
+            # Criar ou atualizar contrato
+            contrato = models.Contratos.objects.create(
+                NumeroContrato=contrato_data["NumeroContrato"],
+                AnoContrato=contrato_data["AnoContrato"],
+                Fornecedor = fornecedor,
+                TipoProcesso = contrato_data.get("TipoProcesso", ""),
+                NumeroProcesso = contrato_data.get("NumeroProcesso", ""),
+                AnoProcesso = contrato_data.get("AnoProcesso", ""),
+                Valor = float(contrato_data.get("Valor", 0)),
+                LinkContrato = contrato_data.get("LinkArquivo", ""),
+                Objeto = contrato_data.get("Objeto", ""),
+                LinkEdital = contrato_data.get("LinkEdital", ""),
+            )
+
+            vigencia = contrato_data.get("Vigencia","").split(" a ")
+            contrato.data_inicio = datetime.strptime(vigencia[0], "%d/%m/%Y").date()
+            contrato.data_fim = datetime.strptime(vigencia[1], "%d/%m/%Y").date()
+            contrato.save()
+
+            contratos_cadastrados.append(f"{contrato.NumeroContrato}/{contrato.AnoContrato}")
+
+        if contratos_cadastrados:
+            messages.success(request, f"Contratos cadastrados: {', '.join(contratos_cadastrados)}")
+        else:
+            messages.info(request, "Nenhum novo contrato foi cadastrado.")
+
+        return redirect("contratos")  # Altere para a URL correta
+    else:
+        return redirect("contratos")
+
+
 
 
 #------------------- PÁGINAS DE ORDEM DE FORNECIMENTO -------------------#
@@ -361,22 +446,17 @@ def of_emitir (request,saldodetalhes_pk):
     itensof = models.Itens.objects.filter(Contrato=ContratoSec)
     entradasSec = models.EntradaSec.objects.filter(saldocontratosec=SaldoContratoSec)
 
-    fornecedor_form = forms.Fornecedor_form(request.POST or None,instance=ContratoSec.Fornecedor)
-
     ordem_form = forms.Ordem_form(request.POST or None)
 
     if request.POST:
         item_ids = request.POST.getlist('item_id')
-        print(item_ids)
         quantidades = request.POST.getlist('quantidade')
-        print(quantidades)
 
         ordem = models.Ordem.objects.create(saldoContratosec = SaldoContratoSec,usuario = request.user, valor = 0)
         valordaordem = 0
         listaitens = []
-        print('CHEGUEI AQUI ANTES DO LAÇO!!!')
         for item_id,qtd in zip(item_ids,quantidades):
-            print(f'Item: {item_id} - {qtd}')
+            # print(f'Item: {item_id} - {qtd}')
             if qtd and int(qtd) > 0:
                 saidasec = models.SaidaSec()
 
@@ -386,13 +466,12 @@ def of_emitir (request,saldodetalhes_pk):
                 saidasec.usuario = request.user
 
                 valordaordem += (saidasec.item.PrecoUnitario * saidasec.quantidade)
-                print(f'Preço unitário: {saidasec.item.PrecoUnitario} - Quantidade: {saidasec.quantidade} - Total: {saidasec.item.PrecoUnitario * saidasec.quantidade} - Acumulado: {valordaordem} - Tipo: {type(valordaordem)}')
+                # print(f'Preço unitário: {saidasec.item.PrecoUnitario} - Quantidade: {saidasec.quantidade} - Total: {saidasec.item.PrecoUnitario * saidasec.quantidade} - Acumulado: {valordaordem} - Tipo: {type(valordaordem)}')
                 listaitens.append(saidasec)
                 saidasec.save()
 
         ordem.descricao = request.POST.get('descricao')
         ordem.valor = valordaordem
-        fornecedor_form.save()
         ordem.codigo = uuid.uuid4()
         ordem.arquivo = emitirDocOf(request, ordem ,listaitens)
         ordem.save()
@@ -403,10 +482,31 @@ def of_emitir (request,saldodetalhes_pk):
         'contrato': ContratoSec,
         'SaldoContratoSec': SaldoContratoSec,
         'entradasSec': entradasSec,
-        'fornecedor_form': fornecedor_form,
     }
 
-    return render(request, 'ordens/ordens_emitir.html',context)
+    return render(request, 'ordens_emitir.html',context)
+
+def emitirOF (request, ordem, listadeitens):
+    with open("static/img/bg-timbrado-logo.png", "rb") as image_file:
+        page_background = base64.b64encode(image_file.read()).decode('utf-8')
+
+    # Gerar HTML com contexto atualizado
+    html_string = render_to_string('ordem_pdf.html', {
+        'page_background': page_background,
+        'ordem': ordem,
+        'listadeitens':listadeitens
+    })
+
+    # Caminho absoluto do CSS
+    base_url = request.build_absolute_uri('/')
+
+    # Gerar PDF
+    pdf_file = HTML(string=html_string, base_url=base_url).write_pdf()
+
+    # Retornar o PDF para download
+    response = HttpResponse(pdf_file, content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="ordem_1.pdf"'
+    return response
 
 def emitirDocOf (request, ordem, listadeitens):
     document = Document("media/ordem de fornecimento/MODELO ORDEM DE FORNECIMENTO.docx")

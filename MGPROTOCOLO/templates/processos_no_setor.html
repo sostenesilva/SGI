@@ -33,12 +33,11 @@
                                 <button type="submit" class="btn btn-sm btn-warning">Receber</button>
                             </form>
                         {% else %}
-                            <a href="{% url 'detalhes_processo' processo.id %}" class="btn btn-info btn-sm">Detalhes</a>
                             <a class="btn btn-warning btn-sm" hx-get="{% url 'criar_movimentacao' processo.id %}" hx-target="#dialog" hx-trigger="click" data-bs-toggle="modal" data-bs-target="#modal">
                                 Mover
                             </a>
                         {% endif %}
-                        
+                        <a href="{% url 'detalhes_processo' processo.id %}" class="btn btn-info btn-sm">Detalhes</a>
                     </td>
                 </tr>
             {% empty %}

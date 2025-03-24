@@ -30,8 +30,12 @@ urlpatterns = [
 
     path('contratos/fiscal/', views.painelfiscal, name='painelfiscal'),
 
-
+    path('contratos/adicionar', views.add_contratos, name='add_contratos'),
     path('contratos/request', views.contratos_request, name='contratos_request'),
+    path('contratos/resquest/processar', views.processar_contratos_selecionados, name='processar_contratos_selecionados'),
+
+    path('emitirof', views.emitirOF, name='emitirof'),
+
 
 
     # path('criterios/', views.criterios, name='criterios'),

@@ -5,7 +5,7 @@
 {% block contentdash %}
     <div class="d-flex justify-content-between">
             <h4><b>SGI</b> - Contratos</h4>
-            <a type="button" class="btn btn-success" href="{% url 'contratos_request'%} "><i class="lni lni-plus"></i> Atualizar Base</a>   
+            <a type="button" class="btn btn-success" hx-get="{% url 'add_contratos' %}" hx-target="#dialog">Adicionar Contratos</a>
     </div>
     <hr>
     <form class="form-inline" action="." method="get">
@@ -23,38 +23,30 @@
         <table class="table table-sm table-striped">
             <thead>
                 <tr>
-                    <th scope="col">Processo</th>
-                    <th scope="col">Contrato</th>
-                    <th scope="col">UG</th>
-                    <th scope="col">Vigência</th>
-                    <th scope="col">Contratada</th>
-                    <th scope="col">Valor</th>
-                    <th scope="col">Anexos</th>
+                    <th class="col-1">Processo</th>
+                    <th class="col-1">Contrato</th>
+                    <th class="col-1">UG</th>
+                    <th class="col-2">Vigência</th>
+                    <th class="col">Contratada</th>
+                    <th class="col-1">Valor</th>
+                    <th class="col-1">Anexos</th>
                     {% if perms.auth.Controle %}
-                        <th scope="col">Ações</th>
+                        <th class="col-1">Ações</th>
                     {% endif %}
                 </tr>
             </thead>
             <tbody>
                 {% for contrato in contratos %}
                     <tr>
-                        <td>{{ contrato.NumeroProcesso }}/{{ contrato.AnoProcesso }}</td>
+                        {% if contrato.NumeroProcesso %}
+                            <td>{{ contrato.NumeroProcesso }}/{{ contrato.AnoProcesso }}</td>
+                        {%else%}
+                            <td>-</td>
+                        {%endif%}
                         <td>{{ contrato.NumeroContrato }}/{{ contrato.AnoContrato }}</td>
-                        <td>
-                            {% if contrato.UnidadeGestora == 'Prefeitura Municipal de Cortês' %}
-                                PMC
-                            {% elif contrato.UnidadeGestora == 'Fundo Municipal de Assistência Social de Cortês' %}
-                                FMAS
-                            {% elif contrato.UnidadeGestora == 'Fundo Municipal de Saúde de Cortês' %}
-                                FMS
-                            {% elif contrato.UnidadeGestora == 'Fundo Municipal de Educação' %}
-                                FMEDUC
-                            {% else %}
-                                {{ contrato.UnidadeGestora }}
-                            {% endif %}
-                        </td>
-                        <td>{{ contrato.Vigencia }}</td>
-                        <td style="width: 30%;">{{ contrato.Fornecedor.RazaoSocial }}</td>
+                        <td>{% if contrato.UnidadeGestora %}{{ contrato.UnidadeGestora }}{% else %}-{%endif%}</td>
+                        <td>{{ contrato.data_inicio|date:"d/m/Y" }} à {{ contrato.data_fim|date:"d/m/Y" }}</td>
+                        <td>{{ contrato.Fornecedor.RazaoSocial }}</td>
                         <td>R$ {{ contrato.Valor }}</td>
                         <td>
                             <div class='btn-group btn-group-sm' role='group'>
@@ -65,10 +57,13 @@
                         {% if perms.auth.Controle %}
                             <td>
                                 <div class='btn-group btn-group-sm' role='group'>
-                                    <a href="{% url 'contrato_addsaldo' contrato.id %}" class="btn btn-secondary" target="_blank"><i class="lni lni-consulting"></i></a>
+                                    <a href="{% url 'contrato_addsaldo' contrato.id %}" class="btn btn-secondary"><i class="lni lni-consulting"></i></a>
                                 </div>
                             </td>
                         {% endif %}
+                    </tr>
+                    <tr>
+                        <td colspan="8" style="font-size: smaller; text-align: justify;"><b>Objeto: </b>{{ contrato.Objeto }}</td>
                     </tr>
                 {% endfor %}
             </tbody>

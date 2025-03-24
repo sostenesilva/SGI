@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Ordem de Fornecimento</title>  
+</head>
+<body>
+    <style>
+        @page {
+            size: A4;
+            margin: 0;
+            padding: 3cm 2cm 5cm 2cm; /* Deixa espaço interno para o conteúdo */
+            background: url("data:image/png;base64,{{ page_background }}") no-repeat center;
+            background-size: cover;
+        }
+  
+        body {
+            font-family: Arial, sans-serif;
+            text-align: justify;
+            line-height: 1.4;
+            margin: 0;
+        }
+
+        .content{
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 24px;
+        }
+
+        header {
+            position: fixed;
+            top: 0cm;
+            left: -20cm;
+            right: 0cm;
+            height: 8cm;
+            text-align: center;
+            background-size: 100%;
+            background-repeat: no-repeat;
+            background-position: 2cm;
+        }
+
+        header .brasao {
+            position: fixed;
+            top: 1.2cm;
+            left: 1.5cm;
+            right: 0;
+            height: 2cm;
+            text-align: right;
+        }
+
+        footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 5cm;
+            text-align: bottom;
+            background-size: 100%;
+            background-repeat: no-repeat;
+            background-position: -2cm;
+        }
+
+        .section-title {
+            font-weight: bold;
+            font-size: 16px;
+            text-transform: uppercase;
+            margin-top: 0.7cm;
+            margin-bottom: 0cm;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table th, table td {
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+
+        table th {
+            background-color: #f4f4f4;
+        }
+
+        .instructions {
+            font-size: 14px;
+        }
+
+        .signature {
+            text-align: right;
+            font-size: 14px;
+        }
+
+        .dados-footer{
+            width: fit-content;
+            position:fixed;
+            top: 91%;
+            right: 7%;
+            text-align: right;
+            font-size: 14px;
+        }
+    </style>
+    <div class="content">
+        <h1>Ordem de Fornecimento/Serviço</h1>
+        <ul style="margin: 0; padding: 0; list-style: none;">
+            <li><b>Processo:</b> x/x | <b>Contrato:</b> x/x</li>
+            <div style="font-size: 10pt;">
+                <li><b>Objeto do contrato:</b> x</li>
+                <li><b>Descrição da Solicitação:</b> x</li>
+                <li><b>Código de Autenticidade:</b> x</li>
+            </div>
+            
+        </ul>
+
+        <h3 style="margin-bottom: 0;">Solicitações</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th></th>
+                    <th style="width: 30%;">Descrição</th>
+                    <th>Quantidade</th>
+                    <th>Und</th>
+                    <th>Valor Unitário</th>
+                    <th>Valor Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in listadeitens%}
+                    <tr style="font-size: 10pt;">
+                        <td>{{ forloop.counter0 }}</td>
+                        <td>{{ item.item.Descricao }}</td>
+                        <td>{{ item.quantidade }}</td>
+                        <td>{{ item.item.Unidade }}</td>
+                        <td>R$ {{ item.item.PrecoUnitario}}</td>
+                        <td></td>
+                    </tr>
+            </tbody>
+        </table>
+
+        <p style="font-size: smaller;">
+            Esta ordem tem um valor total de R$ X e deve ser entregue no prazo máximo de 10 (dez) dias úteis. 
+            A nota fiscal deve ser emitida conforme esta solicitação e deve ser acompanhada das certidões de regularidade fiscal exigidas no processo de contratação.
+        </p>
+        <p style="text-align: center; font-size: smaller;">Cortês/PE, x.</p>
+        <div style="margin-top: 10%; text-align: center; font-size: smaller;">
+            
+            <p>_________________________________________</p>
+            <p>Ordenador de Despesas</p>
+        </div>
+    </div>
+
+    <!-- <footer>
+        <img src="data:image/png;base64,{{ footer_image }}" alt="Footer">
+        <div class="dados-footer">
+            <p style="margin:0px">Rua Coronel José Belarmino, nº 048, Centro, Cortês-PE</p>                    
+            <p style="margin:0px">CEP 55.525-000 | CNPJ: 10.273.548/0001-69</p>
+            <p style="margin:0px">E-mail: gabineteprefeitacortes@gmail.com</p>
+        </div>
+    </footer> -->
+</body>
+</html>

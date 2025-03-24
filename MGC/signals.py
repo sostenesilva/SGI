@@ -10,6 +10,12 @@ def atualizar_totalEntradas(sender, instance, **kwargs):
     saidas = saldocontratosec.saidas.all()  # Todas as saídas relacionadas
     total_saidas = sum([saida.valor for saida in saidas])  # Soma as saídas
 
+    item = instance.item
+    entradas_item = models.EntradaSec.objects.filter(item = item)
+    quantidade_entradas_item = sum([entrada.quantidade for entrada in entradas_item])  # Soma a quantidade de entradas de um item
+    item.Quantidade_disp = item.Quantidade - quantidade_entradas_item
+    item.save()
+
     saldocontratosec.totalEntradas = total_entradas  # Recalcula o saldo
     saldocontratosec.totalSaidas = total_saidas  # Recalcula o saldo
     saldocontratosec.saldoAtual = total_entradas - total_saidas  # Recalcula o saldo

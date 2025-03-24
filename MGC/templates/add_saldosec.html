@@ -55,12 +55,13 @@
                             <td scope="col">{{ item.Descricao }}</td>
                             <td scope="col" style="width: 7%;">
                                 <input type="hidden" name="item_id" value="{{ item.id }}">
-                                <input class="form-control form-control-sm" style="text-align: center;" type="number" name="quantidade" value="0">
+                                <input class="form-control form-control-sm" style="text-align: center;" 
+                                type="number" name="quantidade" value="0" min="0" max="{{ item.Quantidade_disp }}">
                             </td>
                             <td scope="col">{{ item.Unidade }}</td>
                             <td scope="col">R${{ item.PrecoUnitario }}</td>
                             <td scope="col">{{ item.Quantidade }}</td>
-                            <td scope="col">{{ item|totalPorItem:'dif_total' }}</td>
+                            <td scope="col">{{ item.Quantidade_disp }}</td>
                         </tr>
                     {% endfor %}
                 </tbody>

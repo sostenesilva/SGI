@@ -39,7 +39,6 @@ class Contratos (models.Model):
     ]
 
     Fornecedor = models.ForeignKey(Fornecedores, on_delete=models.PROTECT)
-    Situacao = models.CharField(max_length=50, null=True, blank=True)
     Objeto = models.TextField(null=True, blank=True)
 
     NumeroProcesso = models.CharField(max_length=10, null=True, blank=True, verbose_name='Processo')
@@ -83,6 +82,7 @@ class Itens (models.Model):
     Unidade = models.CharField(max_length=50, null=True, blank=True)
     PrecoUnitario = models.FloatField(null=True, blank=True)
     Quantidade = models.IntegerField(null=True, blank=True)
+    Quantidade_disp = models.IntegerField(null=True, blank=True)
 
     def __str__(self) -> str:
         return '{}'.format(self.Descricao)
@@ -108,6 +108,7 @@ class EntradaSec (models.Model):
 
     def __str__(self) -> str:
         return '{}'.format(self.item)
+
     
 def diretorioOF (instance, filename):
     return 'ordem de fornecimento/{}'.format(filename)

@@ -15,7 +15,6 @@ register = template.Library()
 def totalPorItem(modelitem,param):
     entradaitens = models.EntradaSec.objects.values('item').annotate(SomaQTD = Sum('quantidade', default = 0))
     saidaitens = models.SaidaSec.objects.values('item').annotate(SomaQTD = Sum('quantidade', default = 0))
-    
     if param == 'dif_total':
         for entrada in entradaitens:
             if entrada['item'] == modelitem.id:

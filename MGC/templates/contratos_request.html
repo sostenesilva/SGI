@@ -1,0 +1,68 @@
+{% load to_json %}
+
+<script>
+    function selecionarTodos(source) {
+        document.querySelectorAll('input[name="selecionados"]').forEach(cb => cb.checked = source.checked);
+    }
+</script>
+
+<div class="modal-content" hx-debug="true">
+    <div class="modal-header justify-content-between">
+            <h5 class="modal-title">Importar Contratos do Remessa TCE/PE</h5>
+            <div class="btn-group">
+                <!-- <a type="button" class="btn btn-sm btn-light" hx-get="{% url 'add_contratos' %}" hx-target="this">Retornar</a> -->
+            </div>
+    </div>
+    <div class="modal-body">
+        <div class="row justify-content-center">
+
+            <form method="post" action="{% url 'processar_contratos_selecionados' %}">
+                    <div class="d-flex justify-content-center">
+                        <button class="btn btn-sm btn-primary" type="submit">Cadastrar Selecionados</button>
+                    </div>
+                    {% csrf_token %}
+                    <div class="table-overflow" style="max-height: 400px;">
+                        <table class="table table-sm table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Contrato</th>
+                                    <th class="col-6">Fornecedor</th>
+                                    <th class="col-3">Valor</th>
+                                    <th>Grau de Similaridade</th>
+                                    <th><input type="checkbox" onclick="selecionarTodos(this)"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in contratos %}
+                                <tr>
+                                    <td>{{ item.contrato.NumeroContrato }}/{{ item.contrato.AnoContrato }}</td>
+                                    <td>{{ item.contrato.RazaoSocial }}</td>
+                                    <td>R$ {{ item.contrato.Valor }}</td>
+                                    <td>
+                                        <span class="badge {{ item.badge }}">
+                                            {{ item.grau_similaridade }}%
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <input type="checkbox" name="selecionados" value='{{ item.contrato }}'>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="5" style="font-size: smaller; text-align: justify;"><b>Objeto: </b>{{ item.contrato.Objeto }}</td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="6" class="text-center">Nenhum contrato encontrado.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </form>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <small style="font-size: xx-small;">Módulo MGC - Gestão de Contratos (SGI - Sistema de Gestão da Informação)</small>
+    </div>
+</div>
+    
