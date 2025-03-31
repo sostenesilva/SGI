@@ -1,3 +1,4 @@
+import decimal
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 from . import models
@@ -18,7 +19,7 @@ def atualizar_totalEntradas(sender, instance, **kwargs):
 
     saldocontratosec.totalEntradas = total_entradas  # Recalcula o saldo
     saldocontratosec.totalSaidas = total_saidas  # Recalcula o saldo
-    saldocontratosec.saldoAtual = total_entradas - total_saidas  # Recalcula o saldo
+    saldocontratosec.saldoAtual = decimal.Decimal(total_entradas) - decimal.Decimal(total_saidas)  # Recalcula o saldo
     saldocontratosec.save()  # Salva a instância
 
 @receiver([post_save, post_delete], sender=models.Ordem)
@@ -31,5 +32,5 @@ def atualizar_totalSaidas(sender, instance, **kwargs):
 
     saldocontratosec.totalEntradas = total_entradas  # Recalcula o saldo
     saldocontratosec.totalSaidas = total_saidas  # Recalcula o saldo
-    saldocontratosec.saldoAtual = total_entradas - total_saidas  # Recalcula o saldo
+    saldocontratosec.saldoAtual = decimal.Decimal(total_entradas) - decimal.Decimal(total_saidas)  # Recalcula o saldo
     saldocontratosec.save()  # Salva a instância

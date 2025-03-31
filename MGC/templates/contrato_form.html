@@ -1,0 +1,74 @@
+<form hx-post="{{ request.path }}" hx-headers='{"X-CSRFToken":"{{ csrf_token }}"}' class="modal-content">
+    <div class="modal-header">
+      <h5 class="modal-title">Informações do Contrato</h5>
+      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    </div>
+    <div class="modal-body">
+      <div class="row g-3">
+        <div class="col-md-6">
+            <label for="id_Fornecedor" class="form-label">Fornecedor</label>
+            {{form.Fornecedor}}
+        </div>
+        <div class="col-md-6">
+            <label for="id_Objeto" class="form-label">Objeto</label>
+            <p>{{form.Objeto}}</p>
+        </div>
+        <div class="col-md-6">
+            <label for="id_NumeroProcesso" class="form-label">Numero do Processo</label>
+            {{form.NumeroProcesso}}
+            </select>
+        </div>
+        <div class="col-md-6">
+            <label for="id_AnoProcesso" class="form-label">Ano do Processo</label>
+            {{form.AnoProcesso}}
+        </div>
+        <div class="col-md-6">
+            <label for="id_TipoProcesso" class="form-label">Tipo do Processo</label>
+            {{form.TipoProcesso}}
+        </div>
+        <div class="col-md-6">
+            <label for="id_NumeroContrato" class="form-label">Numero do Contrato</label>
+            <p>{{ form.NumeroContrato }}</p>
+        </div>
+        <div class="col-md-6">
+            <label for="id_AnoContrato" class="form-label">Ano do Contrato</label>
+            <p>{{ form.AnoContrato }}</p>
+        </div>
+        <div class="col-md-6">
+            <label for="id_Estagio" class="form-label">Estágio</label>
+            {{form.Estagio}}
+        </div>
+        <div class="col-md-6">
+            <label for="id_LinkContrato" class="form-label">Link do Contrato</label>
+            {{form.LinkContrato}}
+        </div>
+        <div class="col-md-6">
+            <label for="id_LinkEdital" class="form-label">Link do Edital</label>
+            {{form.LinkEdital}}
+        </div>
+        <div class="col-md-6">
+          <label for="id_data_inicio" class="form-label">Início da Vigência</label>
+          {{form.data_inicio}}
+        </div>
+        <div class="col-md-6">
+          <label for="id_data_fim" class="form-label">Fim da Vigência</label>
+          {{form.data_fim}}
+        </div>
+        <div class="col-md-6">
+          <label for="id_UnidadeGestora" class="form-label">Unidade Gestora</label>
+          {{form.UnidadeGestora}}
+        </div>
+        <div class="col-md-6">
+          <label for="id_Valor" class="form-label">Valor do Contrato</label>
+          {{form.Valor}}
+        </div>        
+      
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+        Cancelar
+      </button>
+      <button type="submit" class="btn btn-primary">Salvar</button>
+    </div>
+  </form>

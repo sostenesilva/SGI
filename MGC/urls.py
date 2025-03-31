@@ -22,7 +22,6 @@ urlpatterns = [
     path('contratos/ordens/', views.ordens, name='ordens'),
     path('contratos/ordens/detalhes/<int:saldodetalhes_pk>/', views.saldo_detalhes, name='saldo_detalhes'),
     path('contratos/ordens/detalhes/<int:saldodetalhes_pk>/emitir', views.of_emitir, name='of_emitir'),
-    path('contratos/ordens/detalhes/<int:saldoof_pk>/emitirdoc', views.emitirDocOf, name='emitirDocOf'),
 
     path('contratos/ordens/detalhes/<int:saldoof_pk>/<int:of_log_pk>', views.of_log_delet, name='of_log_delet'),
     path('contratos/ordens/editar/<int:saldoof_pk>', views.of_edit, name='of_edit'),
@@ -31,6 +30,7 @@ urlpatterns = [
     path('contratos/fiscal/', views.painelfiscal, name='painelfiscal'),
 
     path('contratos/adicionar', views.add_contratos, name='add_contratos'),
+    path('contratos/editar/<int:contrato_id>', views.edit_contrato, name='edit_contrato'),
     path('contratos/request', views.contratos_request, name='contratos_request'),
     path('contratos/resquest/processar', views.processar_contratos_selecionados, name='processar_contratos_selecionados'),
 

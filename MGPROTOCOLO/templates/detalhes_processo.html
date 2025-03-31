@@ -85,9 +85,16 @@
                     <div class="d-flex justify-content-between">
                         <h5 class="card-title mb-0">Movimentações</h5> 
                         {% if pode_modificar %}
-                            <button class="btn btn-sm btn-warning py-0" hx-get="{% url 'criar_movimentacao' processo.id %}" hx-target="#dialog" hx-trigger="click" data-bs-toggle="modal" data-bs-target="#modal">
-                                + Criar Movimentação
-                            </button>
+                            {% if processo.ultima_movimentacao.status == 'em_tramitacao' and processo.ultima_movimentacao.confirmacao == 'pendente' %}
+                                <form method="post" action="{% url 'receber_processo' processo.id %}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-warning">Receber</button>
+                                </form>
+                            {% else %}
+                                <button class="btn btn-sm btn-warning py-0" hx-get="{% url 'criar_movimentacao' processo.id %}" hx-target="#dialog" hx-trigger="click" data-bs-toggle="modal" data-bs-target="#modal">
+                                    + Criar Movimentação
+                                </button>
+                            {% endif %}
                         {% endif %}
                     </div>
                 </div>

@@ -42,8 +42,3 @@ def totalPorItem(modelitem,param):
         for entrada in entradaitens:
             if entrada['item'] == modelitem.id:
                 return saida['SomaQTD']
-
-
-@register.filter
-def valorTotal(item):
-    return '{:.2f}'.format(item.item.PrecoUnitario * item.quantidade)

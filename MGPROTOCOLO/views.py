@@ -17,7 +17,7 @@ def processos_no_setor(request):
     Exibe os processos cuja última movimentação está no setor do usuário.
     """
     setor_usuario = request.user.setores.first()  # Supondo que o usuário pertence a um setor
-    processos = Processo.processos_no_setor(setor_usuario)
+    processos = Processo.processos_no_setor(setor_usuario).order_by('-atualizado_em')
 
     # Capturar o termo de busca
     query = request.GET.get('buscar', '')
@@ -38,7 +38,7 @@ def processos_encaminhados_pelo_setor(request):
     Exibe os processos que foram encaminhados pelo setor do usuário para outros setores.
     """
     setor_usuario = request.user.setores.first()  # Supondo que o usuário pertence a um setor
-    processos = Processo.processos_encaminhados_pelo_setor(setor_usuario)
+    processos = Processo.processos_encaminhados_pelo_setor(setor_usuario).order_by('-atualizado_em')
 
     # Capturar o termo de busca
     query = request.GET.get('buscar', '')

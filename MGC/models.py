@@ -57,9 +57,6 @@ class Contratos (models.Model):
     UnidadeGestora = models.CharField(max_length=100, choices=ug_choice, null=True, blank=True, verbose_name='Unidade Gestora')
     Valor = models.FloatField(null=True, blank=True)
 
-    AtualizarItens = models.BooleanField(default=True)
-    AtualizarDados = models.BooleanField(default=True)
-
     def __str__(self) -> str:
         return '{}/{} - {} - {}'.format(self.NumeroContrato,self.AnoContrato,self.TipoProcesso,self.Fornecedor)
 
@@ -114,7 +111,7 @@ def diretorioOF (instance, filename):
     return 'ordem de fornecimento/{}'.format(filename)
 
 class Ordem (models.Model):
-    valor = models.FloatField(null=True, blank=True)
+    valor = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
     arquivo = models.FileField(null=True, blank=True)
     dataehora = models.DateTimeField(auto_now=True)
     usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
@@ -131,6 +128,9 @@ class SaidaSec (models.Model):
     quantidade = models.IntegerField(null=True)
     dataehora = models.DateTimeField(auto_now=True)
     usuario = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.PROTECT)
+
+    def valorTotal(self):
+        return self.item.PrecoUnitario * self.quantidade
 
     def __str__(self) -> str:
         return '{} - {}'.format(self.ordem.codigo, self.item)

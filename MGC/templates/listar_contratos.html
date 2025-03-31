@@ -59,6 +59,9 @@
                                 <div class='btn-group btn-group-sm' role='group'>
                                     <a href="{% url 'contrato_addsaldo' contrato.id %}" class="btn btn-secondary"><i class="lni lni-consulting"></i></a>
                                 </div>
+                                <div class='btn-group btn-group-sm' role='group'>
+                                    <a hx-get="{% url 'edit_contrato' contrato.id %}" hx-target="#dialog" class="btn btn-secondary"><i class="lni lni-pencil-alt"></i></a>
+                                </div>
                             </td>
                         {% endif %}
                     </tr>

@@ -1,20 +1,28 @@
 from django import forms
 from . import models
 
-# class Contratos_form (forms.ModelForm):
-#     class Meta:
-#         model = models.Contratos
-#         fields = ('n_contrato','ano_contrato','inicio_vigencia','fim_vigencia','razao_social', 'num_documento','valor')
+class Contrato_form (forms.ModelForm):
+    class Meta:
+        model = models.Contratos
+        fields = '__all__'
 
-#         widgets = {
-#             'n_contrato': forms.NumberInput(attrs={'class':'form-control'}),
-#             'ano_contrato': forms.NumberInput(attrs={'class':'form-control'}),
-#             'inicio_vigencia': forms.DateInput(attrs={'class':'form-control'}),
-#             'fim_vigencia': forms.DateInput(attrs={'class':'form-control'}),
-#             'razao_social': forms.TextInput(attrs={'class':'form-control'}),
-#             'num_documento': forms.TextInput(attrs={'class':'form-control'}),
-#             'valor': forms.NumberInput(attrs={'class':'form-control'}),
-#         }
+        widgets = {
+            'Fornecedor': forms.Select(attrs={'class':'form-control'}),
+            'Objeto': forms.Textarea(attrs={'class':'form-control', 'rows':'2'}),
+            'NumeroProcesso': forms.TextInput(attrs={'class':'form-control'}),
+            'AnoProcesso': forms.TextInput(attrs={'class':'form-control'}),
+            'TipoProcesso': forms.TextInput(attrs={'class':'form-control'}),
+            'NumeroContrato': forms.TextInput(attrs={'class':'form-control'}),
+            'AnoContrato': forms.TextInput(attrs={'class':'form-control'}),
+            'Estagio': forms.Select(attrs={'class':'form-control'}),
+            'LinkContrato': forms.URLInput(attrs={'class':'form-control'}),
+            'LinkEdital': forms.URLInput(attrs={'class':'form-control'}),
+            'data_inicio': forms.DateInput(attrs={'class':'form-control'}),
+            'data_fim': forms.DateInput(attrs={'class':'form-control'}),
+            'UnidadeGestora': forms.Select(attrs={'class':'form-control'}),
+            'num_documento': forms.TextInput(attrs={'class':'form-control'}),
+            'Valor': forms.NumberInput(attrs={'class':'form-control'}),
+        }
 
 class Ordem_form (forms.ModelForm):
     class Meta:

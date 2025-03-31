@@ -1,7 +1,9 @@
 import base64
 from functools import reduce
 from operator import or_, itemgetter
-from django.http import JsonResponse
+import os
+from django.conf import settings
+from django.http import FileResponse, JsonResponse
 from django.shortcuts import render,redirect, HttpResponse
 from weasyprint import HTML
 from . import forms, models
@@ -74,6 +76,27 @@ def contratos (request):
     }
     
     return render(request, 'listar_contratos.html', context)
+
+def edit_contrato(request, contrato_id):
+    contrato = models.Contratos.objects.get(id = contrato_id)
+    contrato_form = forms.Contrato_form(request.POST or None, instance=contrato)
+
+    if request.POST:
+        if contrato_form.is_valid:
+            contrato_form.save()
+            return HttpResponse(
+                status=204,
+                headers={
+                    'HX-Trigger': json.dumps({
+                        "ContratosListChanged": None,
+                        "showMessage": f"Contrato editado com sucesso!"
+                    })
+                })
+    else:
+        return render(request, 'contrato_form.html', {
+            'form': contrato_form,
+        })
+
 
 #CONTRATO ADD
 #   
@@ -473,9 +496,13 @@ def of_emitir (request,saldodetalhes_pk):
         ordem.descricao = request.POST.get('descricao')
         ordem.valor = valordaordem
         ordem.codigo = uuid.uuid4()
-        ordem.arquivo = emitirDocOf(request, ordem ,listaitens)
+        caminho_absoluto = emitirOF(request, ordem, listaitens)
+        ordem.arquivo.name = os.path.relpath(caminho_absoluto, settings.MEDIA_ROOT)
         ordem.save()
         return redirect('saldo_detalhes', SaldoContratoSec.id)
+        
+        # 🔹 Retorna diretamente o PDF para download
+        # return FileResponse(open(ordem.arquivo.path, 'rb'), content_type='application/pdf', as_attachment=True)
 
     context = {
         'ordem_form': ordem_form,
@@ -500,52 +527,19 @@ def emitirOF (request, ordem, listadeitens):
     # Caminho absoluto do CSS
     base_url = request.build_absolute_uri('/')
 
+
+    # Definir caminho do diretório e garantir que ele exista
+    caminho_pdf = os.path.join(settings.MEDIA_ROOT, f'MGC/SaldoSec {ordem.saldoContratosec.id}/Ordens/{ordem.id}.pdf')
+    os.makedirs(os.path.dirname(caminho_pdf), exist_ok=True)  # Cria a pasta se não existir
+
     # Gerar PDF
-    pdf_file = HTML(string=html_string, base_url=base_url).write_pdf()
+    pdf_file = HTML(string=html_string, base_url=base_url).write_pdf(caminho_pdf)
 
     # Retornar o PDF para download
     response = HttpResponse(pdf_file, content_type='application/pdf')
     response['Content-Disposition'] = f'attachment; filename="ordem_1.pdf"'
-    return response
+    return caminho_pdf
 
-def emitirDocOf (request, ordem, listadeitens):
-    document = Document("media/ordem de fornecimento/MODELO ORDEM DE FORNECIMENTO.docx")
-    
-    tabela = document.tables[0]
-    nItem = 1
-    for itemlista in listadeitens:
-        row = tabela.add_row().cells
-        row[0].text = str(nItem)
-        row[1].text = itemlista.item.Descricao
-        row[2].text = str(itemlista.quantidade)
-        row[3].text = itemlista.item.Unidade
-        row[4].text = 'R$ '+ f'{itemlista.item.PrecoUnitario:.2f}'.replace('.',',')
-        totalporitem = itemlista.quantidade*itemlista.item.PrecoUnitario
-        row[5].text = 'R$ '+ f'{totalporitem:.2f}'.replace('.',',')
-        nItem += 1
-    mes = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro']
-    mydict = {
-        'idOrdem': f'{ordem.codigo}',
-        'descricaoDaOF': ordem.descricao,
-        'valorTotalOF': f'{ordem.valor:.2f}'.replace('.',','),
-        'contratada': ordem.saldoContratosec.contrato.Fornecedor.RazaoSocial,
-        'cnpj': ordem.saldoContratosec.contrato.Fornecedor.NumeroDocumentoAjustado,
-        'data': f'{ordem.dataehora.day} de {mes[ordem.dataehora.month-1]} de {ordem.dataehora.year}',
-        'contrato': f'{ordem.saldoContratosec.contrato.NumeroContrato}/{ordem.saldoContratosec.contrato.AnoContrato}',
-        'processo': f'{ordem.saldoContratosec.contrato.NumeroProcesso}/{ordem.saldoContratosec.contrato.AnoProcesso}',
-        'ug': f'{ordem.saldoContratosec.contrato.UnidadeOrcamentaria.upper()}',
-        'endereco': f'{ordem.saldoContratosec.contrato.Fornecedor.Endereco}',
-        'representante': f'{ordem.saldoContratosec.contrato.Fornecedor.Representante}',
-        'fone': f'{ordem.saldoContratosec.contrato.Fornecedor.Contato}',
-        'email': f'{ordem.saldoContratosec.contrato.Fornecedor.Email}',
-        'objeto': f'{ordem.saldoContratosec.contrato.Objeto}',
-    }
-
-    docx_replace(document, **mydict )
-    diretorio = f'media/ordem de fornecimento/2025/{ordem}.docx'
-    document.save(diretorio)
-
-    return diretorio
 
 # def emitirDocPagamento (request, ordem, listadeitens):
 #     document = Document("media/solicitação de pagamento/SOLICITAÇÃO DE PAGAMENTO - MODELO.docx")

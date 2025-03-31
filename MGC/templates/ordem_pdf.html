@@ -1,3 +1,5 @@
+{% load somaitens %}
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -85,6 +87,10 @@
             background-color: #f4f4f4;
         }
 
+        tr {
+            break-inside: avoid;
+        }
+
         .instructions {
             font-size: 14px;
         }
@@ -106,42 +112,43 @@
     <div class="content">
         <h1>Ordem de Fornecimento/Serviço</h1>
         <ul style="margin: 0; padding: 0; list-style: none;">
-            <li><b>Processo:</b> x/x | <b>Contrato:</b> x/x</li>
+            <li><b>Processo:</b> {{ ordem.saldoContratosec.contrato.NumeroProcesso }}/{{ ordem.saldoContratosec.contrato.AnoProcesso }} | <b>Contrato:</b> {{ ordem.saldoContratosec.contrato.NumeroContrato }}/{{ ordem.saldoContratosec.contrato.AnoContrato }}</li>
             <div style="font-size: 10pt;">
-                <li><b>Objeto do contrato:</b> x</li>
-                <li><b>Descrição da Solicitação:</b> x</li>
-                <li><b>Código de Autenticidade:</b> x</li>
+                <li><b>Objeto do contrato:</b> {{ ordem.saldoContratosec.contrato.Objeto }}</li>
+                <li><b>Descrição da Solicitação:</b> {{ ordem.descricao }}</li>
+                <li><b>Código de Autenticidade:</b> {{ ordem.codigo }}</li>
             </div>
             
         </ul>
 
         <h3 style="margin-bottom: 0;">Solicitações</h3>
-        <table>
+        <table style="font-size: 9pt;">
             <thead>
                 <tr>
                     <th></th>
-                    <th style="width: 30%;">Descrição</th>
-                    <th>Quantidade</th>
+                    <th style="width: 60%;">Descrição</th>
+                    <th>Qtd</th>
                     <th>Und</th>
                     <th>Valor Unitário</th>
                     <th>Valor Total</th>
                 </tr>
             </thead>
             <tbody>
-                {% for item in listadeitens%}
-                    <tr style="font-size: 10pt;">
+                {% for item in listadeitens %}
+                    <tr>
                         <td>{{ forloop.counter0 }}</td>
                         <td>{{ item.item.Descricao }}</td>
                         <td>{{ item.quantidade }}</td>
                         <td>{{ item.item.Unidade }}</td>
-                        <td>R$ {{ item.item.PrecoUnitario}}</td>
-                        <td></td>
+                        <td>R${{ item.item.PrecoUnitario}}</td>
+                        <td>R${{ item|valorTotal }}</td>
                     </tr>
+                {% endfor %}
             </tbody>
         </table>
 
         <p style="font-size: smaller;">
-            Esta ordem tem um valor total de R$ X e deve ser entregue no prazo máximo de 10 (dez) dias úteis. 
+            Esta ordem tem um valor total de <b>R${{ ordem.valor }}</b> e deve ser entregue no prazo máximo de 10 (dez) dias úteis. 
             A nota fiscal deve ser emitida conforme esta solicitação e deve ser acompanhada das certidões de regularidade fiscal exigidas no processo de contratação.
         </p>
         <p style="text-align: center; font-size: smaller;">Cortês/PE, x.</p>
