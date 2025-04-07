@@ -484,6 +484,7 @@ def of_emitir (request,saldodetalhes_pk):
                 saidasec = models.SaidaSec()
 
                 saidasec.ordem = ordem
+                saidasec.saldocontratosec = SaldoContratoSec
                 saidasec.item = itensof.get(pk = item_id)
                 saidasec.quantidade = int(qtd)
                 saidasec.usuario = request.user
