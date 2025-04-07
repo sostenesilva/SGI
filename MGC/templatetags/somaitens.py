@@ -27,7 +27,7 @@ def totalPorItem(modelitem,param):
         for entrada in entradaitens:
             if entrada['item'] == modelitem.item.id:
                 for saida in saidaitens:
-                    if saida['item'] == modelitem.id:
+                    if saida['item'] == modelitem.item.id:
                         return entrada['SomaQTD']-saida['SomaQTD']
                 return entrada['SomaQTD']
         return 0 #CASO NENHUMA ENTRADA OU SAÍDA SEJA ENCONTRADO
