@@ -1,4 +1,5 @@
 from datetime import datetime
+from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 import pandas as pd
@@ -183,3 +184,22 @@ def informacoes_criterios(request, criterio_id):
     criterio = DbCriterios.objects.get(id = criterio_id)
     informacoes = InformacoesCriterio.objects.filter(Q(criterio = criterio) | Q(geral = True))
     return render(request, 'Info_criterio.html', {'informacoes': informacoes})
+
+
+def atualizar_criterios():
+    criterios = DbCriterios.objects.all()
+    dataframe = pd.read_excel('MGTRANSPARENCIA\matriz.xlsx')
+    iguais = 0
+    dif = 0
+    crit = 0
+    for index, row in dataframe.iterrows():
+        crit += 1
+        for criterio in criterios:
+            if row[3] == criterio.criterio:
+                # print(row[3])
+                iguais += 1
+                break
+        # print(row[3])
+        dif += 1
+    print(f'Critérios: {crit} | Iguais: {iguais} | Diferentes: {dif}')
+    return print('fim')

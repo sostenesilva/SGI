@@ -57,7 +57,7 @@
                         <tr>
                             <td scope="col">{{ entrada.item.Descricao }}</th>
                             <td scope="col">{{ entrada.item.Unidade }}</th>
-                            <td scope="col">{{ entrada.item|totalPorItem:'dif_sec' }}</th>
+                            <td scope="col">{{ entrada|totalPorItem:'dif_sec' }}/{{ entrada.quantidade }}</th>
                             <td scope="col">R${{ entrada.item.PrecoUnitario|floatformat:2 }}</th>
                         </tr>
                         {% endfor %}

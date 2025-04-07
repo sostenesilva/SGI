@@ -124,6 +124,7 @@ class Ordem (models.Model):
 
 class SaidaSec (models.Model):
     ordem = models.ForeignKey(Ordem, on_delete=models.CASCADE)
+    saldocontratosec = models.ForeignKey(SaldoContratoSec, on_delete=models.CASCADE, null=True, blank=True)
     item = models.ForeignKey(Itens, on_delete=models.CASCADE)
     quantidade = models.IntegerField(null=True)
     dataehora = models.DateTimeField(auto_now=True)

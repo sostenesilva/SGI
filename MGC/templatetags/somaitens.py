@@ -13,8 +13,9 @@ register = template.Library()
 
 @register.filter
 def totalPorItem(modelitem,param):
-    entradaitens = models.EntradaSec.objects.values('item').annotate(SomaQTD = Sum('quantidade', default = 0))
-    saidaitens = models.SaidaSec.objects.values('item').annotate(SomaQTD = Sum('quantidade', default = 0))
+    entradaitens = models.EntradaSec.objects.filter(saldocontratosec = modelitem.saldocontratosec).values('item').annotate(SomaQTD = Sum('quantidade', default = 0))
+    saidaitens = models.SaidaSec.objects.filter(saldocontratosec = modelitem.saldocontratosec).values('item').annotate(SomaQTD = Sum('quantidade', default = 0))
+
     if param == 'dif_total':
         for entrada in entradaitens:
             if entrada['item'] == modelitem.id:
@@ -24,10 +25,8 @@ def totalPorItem(modelitem,param):
             
     elif param == 'dif_sec':
         for entrada in entradaitens:
-            if entrada['item'] == modelitem.id:
-                # print('entrei no item {}'.format(entrada['item']))
+            if entrada['item'] == modelitem.item.id:
                 for saida in saidaitens:
-                    # print('entrei no saída')
                     if saida['item'] == modelitem.id:
                         return entrada['SomaQTD']-saida['SomaQTD']
                 return entrada['SomaQTD']
