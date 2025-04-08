@@ -3,27 +3,28 @@
 {% block head_title %} Ordens de Fornecimento {% endblock head_title %}
 
 {% block contentdash %}
-    <div class="d-flex justify-content-between">
-        <h4><b>SGI</b> - Ordens de Fornecimento</h4>
-        <!-- { if user|has_role:'controle' %}
-           <a type="button" class="btn btn-success" href=" url 'contratos_add' "><i class="lni lni-plus"></i></a>
-        { endif %} -->
-    </div>
+    <form action="." method="get" class="d-flex justify-content-between">
+        <h4><b>SGI</b> - Painel do Gestor</h4>
+        <div class="d-flex">
+            <input type="text" id="buscar" name="buscar" class="form-group form-control" style="width:300px; margin-right:5px" placeholder="Contrato, Processo, Ano ou Fornecedor...">
+            <input type="submit" class="btn btn-primary form-group" value="Buscar">
+        </div>
+        <!-- <a type="button" class="btn btn-success" hx-get="{% url 'add_contratos' %}" hx-target="#dialog">Adicionar Contratos</a> -->
+    </form>
     <hr>
-    <div class="table-responsive">
+    <div class="table-responsive" style="max-height: 520px;">
         <table class="table table-sm table-striped">
             <thead>
                 <tr>
-                    <th scope="col">Processo</th>
-                    <th scope="col">Contrato</th>
-                    <th scope="col">UG</th>
-                    <th scope="col">Vigência</th>
-                    <th scope="col">Contratada</th>
-                    <th scope="col">Fiscal</th>
-                    <th scope="col">Valor</th>
-                    {% if perms.auth.GESTOR %}
-                        <th scope="col">Ações</th>
-                    {% endif %}
+                    <th class="col-1">Processo</th>
+                    <th class="col-1">Contrato</th>
+                    <th class="col-1">UG</th>
+                    <th class="col-1">Secretaria</th>
+                    <th class="col-1">Fiscal</th>
+                    <th class="col-2">Vigência</th>
+                    <th class="col">Contratada</th>
+                    <th class="col-1">Saldo</th>
+                    <th class="col-1">Ações</th>
                 </tr>
             </thead>
             <tbody>
@@ -31,33 +32,23 @@
                 <tr>
                     <td>{{ ordem.contrato.NumeroProcesso }}/{{ ordem.contrato.AnoProcesso }}</td>
                     <td>{{ ordem.contrato.NumeroContrato }}/{{ ordem.contrato.AnoContrato }}</td>
-                    <td>
-                        {% if ordem.contrato.UnidadeGestora == 'Prefeitura Municipal de Cortês' %}
-                            PMC
-                        {% elif ordem.contrato.UnidadeGestora == 'Fundo Municipal de Assistência Social de Cortês' %}
-                            FMAS
-                        {% elif ordem.contrato.UnidadeGestora == 'Fundo Municipal de Saúde de Cortês' %}
-                            FMS
-                        {% elif ordem.contrato.UnidadeGestora == 'Fundo Municipal de Educação' %}
-                            FMEDUC
-                        {% else %}
-                            {{ ordem.contrato.UnidadeGestora }}
-                        {% endif %}
-                    </td>
-                    <td>{{ ordem.contrato.Vigencia }}</td>
-                    <td style="width: 30%;">{{ ordem.contrato.Fornecedor.RazaoSocial }}</td>
+                    <td>{% if contrato.UnidadeGestora %}{{ contrato.UnidadeGestora }}{% else %}-{%endif%}</td>
+                    <td>{{ ordem.sec }}</td>
                     <td>{{ ordem.fiscal }}</td>
-                    <td>R$ {{ ordem.saldo|floatformat:2 }}</td>
-                    {% if perms.auth.GESTOR %}
-                        <td>
-                            <div class='btn-group btn-group-sm' role='group'>
-                                <a href="{{ ordem.contrato.LinkContrato }}" class="btn btn-secondary" target="_blank"><i class="lni lni-add-files"></i></a>
-                            </div>
-                            <div class='btn-group btn-group-sm' role='group'>
-                                <a href="{% url 'saldo_detalhes' ordem.id %}" class="btn btn-primary"><i class="lni lni-upload"></i></a>
-                            </div>
-                        </td>
-                    {% endif %}
+                    <td>{{ contrato.data_inicio|date:"d/m/Y" }} à {{ contrato.data_fim|date:"d/m/Y" }}</td>
+                    <td>{{ ordem.contrato.Fornecedor.RazaoSocial }}</td>
+                    <td>R$ {{ ordem.saldoAtual|floatformat:2 }}</td>
+                    <td>
+                        <div class='btn-group btn-group-sm' role='group'>
+                            <a href="{{ ordem.contrato.LinkContrato }}" class="btn btn-secondary" target="_blank"><i class="lni lni-add-files"></i></a>
+                        </div>
+                        <div class='btn-group btn-group-sm' role='group'>
+                            <a href="{% url 'saldo_detalhes' ordem.id %}" class="btn btn-primary"><i class="lni lni-upload"></i></a>
+                        </div>
+                    </td>
+                    </tr>
+                    <tr>
+                        <td colspan="9" style="font-size: smaller; text-align: justify;"><b>Objeto: </b>{{ ordem.contrato.Objeto }}</td>
                     </tr>
                 {% endfor %}
             </tbody>

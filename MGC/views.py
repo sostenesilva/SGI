@@ -399,7 +399,12 @@ def processar_contratos_selecionados(request):
 @login_required
 def ordens (request):
     
-    SaldoContratoSec = models.SaldoContratoSec.objects.all()
+    buscar = request.GET.get('buscar')
+    if buscar:
+        SaldoContratoSec = models.SaldoContratoSec.objects.filter(contrato__Fornecedor__RazaoSocial__icontains = buscar) | models.SaldoContratoSec.objects.filter(contrato__NumeroContrato__icontains = buscar) | models.SaldoContratoSec.objects.filter(contrato__NumeroProcesso__icontains = buscar) | models.SaldoContratoSec.objects.filter(contrato__AnoContrato__icontains = buscar) | models.SaldoContratoSec.objects.filter(contrato__AnoProcesso__icontains = buscar)
+    else:
+        SaldoContratoSec = models.SaldoContratoSec.objects.all()
+
     # if has_role(request.user,'controle'):
     #    SaldoContratoSec = models.SaldoContratoSec.objects.all()
     # else: 
@@ -411,7 +416,6 @@ def ordens (request):
  
     context = {
         'ordens': page_ordens,
-        'contrato': contratos,
     }
     
     return render(request, 'ordens/ordens.html', context)

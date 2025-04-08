@@ -3,23 +3,16 @@
 {% block head_title %} Contratos {% endblock head_title %}
 
 {% block contentdash %}
-    <div class="d-flex justify-content-between">
+    <form action="." method="get" class="d-flex justify-content-between">
             <h4><b>SGI</b> - Contratos</h4>
-            <a type="button" class="btn btn-success" hx-get="{% url 'add_contratos' %}" hx-target="#dialog">Adicionar Contratos</a>
-    </div>
-    <hr>
-    <form class="form-inline" action="." method="get">
-        <div class="row container-fluid ">
-            <div class="col-sm-4">
-                <input type="text" id="buscar" name="buscar" class="form-group form-control" placeholder="Contrato, Processo, Ano ou Fornecedor...">
-            </div>
-            <div class="col">
+            <div class="d-flex">
+                <input type="text" id="buscar" name="buscar" class="form-group form-control" style="width:300px; margin-right:5px" placeholder="Contrato, Processo, Ano ou Fornecedor...">
                 <input type="submit" class="btn btn-primary form-group" value="Buscar">
             </div>
-        </div>
+            <a type="button" class="btn btn-success" hx-get="{% url 'add_contratos' %}" hx-target="#dialog">Adicionar Contratos</a>
     </form>
-    <br>
-    <div class="table-responsive">
+    <hr>
+    <div class="table-responsive" style="max-height: 520px;">
         <table class="table table-sm table-striped">
             <thead>
                 <tr>
