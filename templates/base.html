@@ -32,14 +32,12 @@
                         <span>Dashboard</span>
                     </a>
                 </li>
-                {% if perms.auth.GESTOR %}
-                    <li class="sidebar-item">
-                        <a href="{% url 'contratos' %}" class="sidebar-link">
-                            <i class="lni lni-wallet"></i>
-                            <span>Contratos</span>
-                        </a>
-                    </li>
-                {% endif %}
+                <li class="sidebar-item">
+                    <a href="{% url 'contratos' %}" class="sidebar-link">
+                        <i class="lni lni-wallet"></i>
+                        <span>Contratos</span>
+                    </a>
+                </li>
                 <li class="sidebar-item">
                     <a href="{% url 'ordens' %}" class="sidebar-link">
                         <i class="lni lni-briefcase-alt"></i>
