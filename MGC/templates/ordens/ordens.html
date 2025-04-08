@@ -32,10 +32,10 @@
                 <tr>
                     <td>{{ ordem.contrato.NumeroProcesso }}/{{ ordem.contrato.AnoProcesso }}</td>
                     <td>{{ ordem.contrato.NumeroContrato }}/{{ ordem.contrato.AnoContrato }}</td>
-                    <td>{% if contrato.UnidadeGestora %}{{ contrato.UnidadeGestora }}{% else %}-{%endif%}</td>
+                    <td>{% if ordem.contrato.UnidadeGestora %}{{ ordem.contrato.UnidadeGestora }}{% else %}-{%endif%}</td>
                     <td>{{ ordem.sec }}</td>
                     <td>{{ ordem.fiscal }}</td>
-                    <td>{{ contrato.data_inicio|date:"d/m/Y" }} à {{ contrato.data_fim|date:"d/m/Y" }}</td>
+                    <td>{{ ordem.contrato.data_inicio|date:"d/m/Y" }} à {{ ordem.contrato.data_fim|date:"d/m/Y" }}</td>
                     <td>{{ ordem.contrato.Fornecedor.RazaoSocial }}</td>
                     <td>R$ {{ ordem.saldoAtual|floatformat:2 }}</td>
                     <td>
