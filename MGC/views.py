@@ -400,10 +400,11 @@ def processar_contratos_selecionados(request):
 def ordens (request):
     
     buscar = request.GET.get('buscar')
+    SaldoContratoSec = models.SaldoContratoSec.objects.filter(sec__in=request.user.secretaria_home.all())
     if buscar:
-        SaldoContratoSec = models.SaldoContratoSec.objects.filter(contrato__Fornecedor__RazaoSocial__icontains = buscar) | models.SaldoContratoSec.objects.filter(contrato__NumeroContrato__icontains = buscar) | models.SaldoContratoSec.objects.filter(contrato__NumeroProcesso__icontains = buscar) | models.SaldoContratoSec.objects.filter(contrato__AnoContrato__icontains = buscar) | models.SaldoContratoSec.objects.filter(contrato__AnoProcesso__icontains = buscar)
+        SaldoContratoSec = SaldoContratoSec.filter(contrato__Fornecedor__RazaoSocial__icontains = buscar) | models.SaldoContratoSec.objects.filter(contrato__NumeroContrato__icontains = buscar) | models.SaldoContratoSec.objects.filter(contrato__NumeroProcesso__icontains = buscar) | models.SaldoContratoSec.objects.filter(contrato__AnoContrato__icontains = buscar) | models.SaldoContratoSec.objects.filter(contrato__AnoProcesso__icontains = buscar)
     else:
-        SaldoContratoSec = models.SaldoContratoSec.objects.all()
+        SaldoContratoSec = SaldoContratoSec.all()
 
     # if has_role(request.user,'controle'):
     #    SaldoContratoSec = models.SaldoContratoSec.objects.all()

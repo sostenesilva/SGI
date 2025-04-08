@@ -40,22 +40,18 @@
                         </a>
                     </li>
                 {% endif %}
-                {% if perms.auth.GESTOR %}
-                    <li class="sidebar-item">
-                        <a href="{% url 'ordens' %}" class="sidebar-link">
-                            <i class="lni lni-briefcase-alt"></i>
-                            <span>Painel do Gestor</span>
-                        </a>
-                    </li>
-                {% endif %}
-                {% if perms.auth.GESTOR %}
-                    <li class="sidebar-item">
-                        <a href="{% url 'dashregularidadefiscal' %}" class="sidebar-link">
-                            <i class="lni lni-briefcase-alt"></i>
-                            <span>Regularidade Fiscal</span>
-                        </a>
-                    </li>
-                {% endif %}
+                <li class="sidebar-item">
+                    <a href="{% url 'ordens' %}" class="sidebar-link">
+                        <i class="lni lni-briefcase-alt"></i>
+                        <span>Painel do Gestor</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="{% url 'dashregularidadefiscal' %}" class="sidebar-link">
+                        <i class="lni lni-briefcase-alt"></i>
+                        <span>Regularidade Fiscal</span>
+                    </a>
+                </li>
                 <!-- {% if perms.auth.FISCAL or perms.auth.GESTOR %}
                     <li class="sidebar-item">
                         <a href="{% url 'painelfiscal' %}" class="sidebar-link">
