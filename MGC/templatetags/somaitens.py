@@ -46,3 +46,7 @@ def totalPorItem(modelitem,param):
 @register.filter
 def valorTotal(item):
     return '{:.2f}'.format(item.item.PrecoUnitario * item.quantidade)
+
+@register.filter
+def contador(n):
+    return n+1

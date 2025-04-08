@@ -136,7 +136,7 @@
             <tbody>
                 {% for item in listadeitens %}
                     <tr>
-                        <td>{{ forloop.counter0 }}</td>
+                        <td>{{ forloop.counter0|contador }}</td>
                         <td>{{ item.item.Descricao }}</td>
                         <td>{{ item.quantidade }}</td>
                         <td>{{ item.item.Unidade }}</td>
