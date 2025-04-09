@@ -102,9 +102,31 @@ class EntradaSec (models.Model):
     quantidade = models.IntegerField(null=True)
     dataehora = models.DateTimeField(auto_now=True)
     usuario = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.PROTECT)
-
+    
     def __str__(self) -> str:
         return '{}'.format(self.item)
+
+    def total_por_item(self, tipo='dif_sec'):
+        item = self.item
+        saldo_sec = self.saldocontratosec
+
+        entradas = EntradaSec.objects.filter(
+            item=item,
+            saldocontratosec=saldo_sec
+        ).aggregate(SomaQTD=Sum('quantidade'))['SomaQTD'] or 0
+
+        saidas = SaidaSec.objects.filter(
+            item=item,
+            ordem__saldoContratosec=saldo_sec
+        ).aggregate(SomaQTD=Sum('quantidade'))['SomaQTD'] or 0
+
+        if tipo == 'dif_sec':
+            return entradas - saidas
+        elif tipo == 'entrada_sec':
+            return entradas
+        elif tipo == 'saida_sec':
+            return saidas
+        return None
 
     
 def diretorioOF (instance, filename):

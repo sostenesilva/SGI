@@ -3,7 +3,7 @@ from functools import reduce
 from operator import or_, itemgetter
 import os
 from django.conf import settings
-from django.http import FileResponse, JsonResponse
+from django.http import FileResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render,redirect, HttpResponse
 from weasyprint import HTML
 from . import forms, models
@@ -95,6 +95,21 @@ def edit_contrato(request, contrato_id):
     else:
         return render(request, 'contrato_form.html', {
             'form': contrato_form,
+        })
+
+def confirmar_fornecedor(request, saldocontratosec_id):
+    saldocontratosec = models.SaldoContratoSec.objects.get(id = saldocontratosec_id)
+    fornecedor = saldocontratosec.contrato.Fornecedor
+    fornecedor_form = forms.Fornecedor_form(request.POST or None, instance=fornecedor)
+
+    if request.POST:
+        if fornecedor_form.is_valid:
+            fornecedor_form.save()
+            return redirect('of_emitir', saldodetalhes_pk=saldocontratosec_id)
+    else:
+        return render(request, 'fornecedor_form.html', {
+            'fornecedor_form': fornecedor_form,
+            'saldocontratosec':saldocontratosec,
         })
 
 
@@ -551,41 +566,6 @@ def emitirOF (request, ordem, listadeitens):
     return caminho_pdf
 
 
-# def emitirDocPagamento (request, ordem, listadeitens):
-#     document = Document("media/solicitação de pagamento/SOLICITAÇÃO DE PAGAMENTO - MODELO.docx")
-
-#     # for itemlista in listadeitens:
-#     #     row = tabela.add_row().cells
-#     #     row[0].text = str(nItem)
-#     #     row[1].text = itemlista.item.Descricao
-#     #     row[2].text = str(itemlista.quantidade)
-#     #     row[3].text = itemlista.item.Unidade
-#     #     row[4].text = 'R$ '+ f'{itemlista.item.PrecoUnitario:.2f}'.replace('.',',')
-#     #     row[5].text = 'R$ '+ f'{itemlista.totalporitem:.2f}'.replace('.',',')
-#     #     nItem += 1
-#     mes = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro']
-#     mydict = {
-#         'idOrdem': ordem.id,
-#         'descricaoDaOF': ordem.descricao,
-#         'valorTotalOF': f'{ordem.valor:.2f}'.replace('.',','),
-#         'contratada': ordem.SaldoContratoSec.contrato.Fornecedor.RazaoSocial,
-#         'cnpj': ordem.SaldoContratoSec.contrato.Fornecedor.NumeroDocumentoAjustado,
-#         'data': f'{ordem.dataehora.day} de {mes[ordem.dataehora.month-1]} de {ordem.dataehora.year}',
-#         'contrato': f'{ordem.SaldoContratoSec.contrato.NumeroContrato}/{ordem.SaldoContratoSec.contrato.AnoContrato}',
-#         'processo': f'{ordem.SaldoContratoSec.contrato.NumeroProcesso}/{ordem.SaldoContratoSec.contrato.AnoProcesso}',
-#         'ug': f'{ordem.SaldoContratoSec.contrato.UnidadeOrcamentaria.upper()}',
-#         'endereco': f'{ordem.SaldoContratoSec.contrato.Fornecedor.Endereco}',
-#         'representante': f'{ordem.SaldoContratoSec.contrato.Fornecedor.Representante}',
-#         'fone': f'{ordem.SaldoContratoSec.contrato.Fornecedor.Contato}',
-#         'email': f'{ordem.SaldoContratoSec.contrato.Fornecedor.Email}',
-#         'objeto': f'{ordem.SaldoContratoSec.contrato.Objeto}',
-#     }
-
-#     docx_replace(document, **mydict )
-#     diretorio = f'media/ordem de fornecimento/2024/{ordem.id}.docx'
-#     document.save(diretorio)
-#     return diretorio
-
 def of_edit (request, saldoof_pk):
     pass
  
@@ -596,86 +576,29 @@ def of_log_delet(request, saldoof_pk, of_log_pk):
     return redirect (request.META.get('HTTP_REFERER'))
 
 
+def exportar_excel_saldo(request, saldocontratosec_id):
+    saldo = models.SaldoContratoSec.objects.get(id=saldocontratosec_id)
+    entradas = models.EntradaSec.objects.filter(saldocontratosec=saldo).select_related('item')
 
+    dados = []
+    for entrada in entradas:
+        dados.append({
+            "Item": entrada.item.Descricao,
+            "Und": entrada.item.Unidade,
+            "Disponível": entrada.total_por_item('dif_sec'),
+            "Consumido": entrada.total_por_item('saida_sec'),
+            "Cota": entrada.quantidade,
+            "Preço unitário": entrada.item.PrecoUnitario,
+            # "Total": round(entrada.item.PrecoUnitario * entrada.total_por_item('dif_sec'), 2),
+        })
 
+    df = pd.DataFrame(dados)
 
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    nome_arquivo = f"Relatorio_Saldo_Sec_{saldo.id}.xlsx"
+    response['Content-Disposition'] = f'attachment; filename={nome_arquivo}'
 
+    with pd.ExcelWriter(response, engine='openpyxl') as writer:
+        df.to_excel(writer, index=False, sheet_name='Saldo')
 
-
-
-# #------------------- PÁGINAS DE AVALIAÇÃO -------------------#
-# @login_required
-# def avaliacao (request):
-
-#     if has_role(request.user, Controle):
-#         avaliacao = models.Db_Avaliacao.objects.all()
-#     else:
-#         avaliacao = models.Db_Avaliacao.objects.filter(responsavel__in = request.user.groups.all())
-
-#     avaliacao_paginator = Paginator(avaliacao,10)
-#     page_num_avaliacao = request.GET.get('page')
-#     page_avaliacao = avaliacao_paginator.get_page(page_num_avaliacao)
-
-#     context = {
-#         'avaliacao': page_avaliacao
-#     }
-    
-#     return render(request, 'avaliacao/avaliacao.html', context)
-
-# #AVALIAÇÃO ADD
-# @login_required
-# def avaliacao_add (request):
-#     avaliacao_form = forms.Avaliacao_form(request.POST or None)
-
-#     if request.POST:
-#         if avaliacao_form.is_valid():
-#             avaliacao_form.save()
-#             return redirect ('avaliacao')
-
-#     context = {
-#         'avaliacao_form': avaliacao_form
-#     }
-#     return render(request, 'avaliacao/avaliacao_add.html',context)
-
-# #AVALIAÇÃO EDIT
-# @login_required
-# def avaliacao_edit(request, avaliacao_pk):
-#     avaliacao = models.Db_Avaliacao.objects.get(pk=avaliacao_pk)
-
-#     avaliacao_form = forms.Avaliacao_form(request.POST or None, instance = avaliacao)
-
-#     if request.POST:
-#         if avaliacao_form.is_valid():
-#             avaliacao.arquivo = request.FILES.get('arquivo')
-#             avaliacao_form.save()
-#             return redirect ('avaliacao')
-    
-#     context = {
-#         'avaliacao_form': avaliacao_form
-#     }
-
-#     return render(request, 'avaliacao/avaliacao_edit.html',context)
-
-# #AVALIAÇÃO DELET
-# @login_required
-# def avaliacao_delet(request, avaliacao_pk):
-#     avaliacao = models.Db_Avaliacao.objects.get(pk=avaliacao_pk)
-#     avaliacao.delete()
-#     return redirect('avaliacao')
-
-
-#AVALIAÇÃO DELETE
-@login_required
-def avaliacao_log_delet(request, avaliacao_pk, avaliacao_log_pk):
-    avaliacao_log = models.Db_Avaliacao_log.objects.get(pk=avaliacao_log_pk)
-    avaliacao_log.delete()
-    return redirect (request.META.get('HTTP_REFERER'))
-
-
-# def controle(request):
-#     assign_role(request.user, 'controle')
-#     return HttpResponse('CONTROLE INTERNO ADICIONADO!')
-
-# def secadm(request):
-#     assign_role(request.user, 'sec_adm')
-#     return HttpResponse('SECRETARIA DE ADMINISTRAÇÃO ADICIONADA!')
+    return response

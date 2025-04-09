@@ -34,6 +34,10 @@ urlpatterns = [
     path('contratos/request', views.contratos_request, name='contratos_request'),
     path('contratos/resquest/processar', views.processar_contratos_selecionados, name='processar_contratos_selecionados'),
 
+    path('fornecedor/editar/<int:saldocontratosec_id>', views.confirmar_fornecedor, name='confirmar_fornecedor'),
+
+    path('saldosec/<int:saldocontratosec_id>/exportar_excel/', views.exportar_excel_saldo, name='exportar_excel_saldo'),
+
     path('emitirof', views.emitirOF, name='emitirof'),
 
 

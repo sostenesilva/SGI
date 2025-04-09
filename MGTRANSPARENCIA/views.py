@@ -8,6 +8,7 @@ from .forms import AvaliacaoLogForm, AvaliacaoForm
 from django.core.paginator import Paginator
 from HOME.models import Secretaria
 from django.db.models import Q
+from HOME.utils import notificar
 
 
 @login_required
@@ -49,6 +50,7 @@ def detalhes_avaliacao(request, avaliacao_id):
 def enviar_documento_log(request, log_id):
 
     avaliacaoLog = get_object_or_404(DbAvaliacaoLog, id=log_id)
+    controle = get_object_or_404(Secretaria, sigla='SCI')
 
     if request.method == 'POST':
         formLog = AvaliacaoLogForm(request.POST, request.FILES, instance=avaliacaoLog)
@@ -58,6 +60,10 @@ def enviar_documento_log(request, log_id):
             log.status = 'Em análise'
             log.data_envio = datetime.now()
             log.save()
+            
+            for usuarioControle in controle.usuarios.all():
+                notificar(usuarioControle,f'Novo documento enviado por {request.user}',f'O usuário {request.user} enviou em um documento sobre "{avaliacaoLog.tarefa}" no critério {avaliacaoLog.avaliacao.criterio.item}')
+            
             return redirect('detalhes_avaliacao', avaliacao_id=avaliacaoLog.avaliacao.id)
     else:
         formLog = AvaliacaoLogForm()

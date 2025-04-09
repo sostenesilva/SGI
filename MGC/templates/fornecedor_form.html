@@ -1,12 +1,27 @@
-<div class="row">
-    <div class="col-6">
-        <p>Nome:{{ fornecedor_form.RazaoSocial }}</p>
-        <p>CNPJ/CPF:{{ fornecedor_form.NumeroDocumentoAjustado }}</p>
-        <p>Representante:{{ fornecedor_form.Representante }}</p>
+<form action="{% url 'confirmar_fornecedor' saldocontratosec.id %}" method="post" class="modal-content">
+    {% csrf_token %}
+    <div class="modal-header">
+      <h5 class="modal-title">Confirme as informações do fornecedor</h5>
+      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
     </div>
-    <div class="col-6">
-        <p>Endereço:{{ fornecedor_form.Endereco }}</p>
-        <p>Contato:{{ fornecedor_form.Contato }}</p>
-        <p>Email:{{ fornecedor_form.Email }}</p>
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-6">
+                <p>Nome:{{ fornecedor_form.RazaoSocial }}</p>
+                <p>CNPJ/CPF:{{ fornecedor_form.NumeroDocumentoAjustado }}</p>
+                <p>Representante:{{ fornecedor_form.Representante }}</p>
+            </div>
+            <div class="col-6">
+                <p>Endereço:{{ fornecedor_form.Endereco }}</p>
+                <p>Contato:{{ fornecedor_form.Contato }}</p>
+                <p>Email:{{ fornecedor_form.Email }}</p>
+            </div>
+        </div>
     </div>
-</div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+            Cancelar
+        </button>
+        <button type="submit" class="btn btn-primary">Confirmar</button>
+    </div>
+</form>

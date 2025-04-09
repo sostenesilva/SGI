@@ -14,34 +14,36 @@
     <hr>
     
     <div class="row">
-        <div class="col-3">
-            <div class="row justify-content-center">
-                <div class="card m-1 text-dark bg-white" style="width: inherit;">
-                    
-                    <div class="card-header bg-white m-0"><b>Vigência</b></div>
-                    <div class="card-body p-1">
-                        <small>{{contrato.Vigencia}}</small>
-                    </div>
+        <div class="col-2 p-0">
+            <div class="card p-2 m-0 text-dark bg-white">
+                
+                <div class="card-header bg-white" style="font-size: medium;"><b>Vigência</b></div>
+                <div class="card-body p-1" style="font-size: medium;">
+                    <small>{{contrato.data_inicio|date:"d/m/Y"}} à {{contrato.data_fim|date:"d/m/Y"}}</small>
+                </div>
 
-                    <div class="card-header bg-white"><b>Valor contratado</b></div>
-                    <div class="card-body p-1">
-                        <small>R$ {{ SaldoContratoSec.totalEntradas|floatformat:2 }}</small>
-                    </div>
+                <div class="card-header bg-white" style="font-size: medium;"><b>Valor contratado</b></div>
+                <div class="card-body p-1">
+                    <small>R$ {{ SaldoContratoSec.totalEntradas|floatformat:2 }}</small>
+                </div>
 
-                    <div class="card-header bg-white"><b>Saldo consumido</b></div>
-                    <div class="card-body p-1">
-                        <small>R$ {{ SaldoContratoSec.totalSaidas|floatformat:2 }}</small>
-                    </div>
+                <div class="card-header bg-white" style="font-size: medium;"><b>Saldo consumido</b></div>
+                <div class="card-body p-1">
+                    <small>R$ {{ SaldoContratoSec.totalSaidas|floatformat:2 }}</small>
+                </div>
 
-                    <div class="card-header bg-white"><b>Saldo disponível</b></div>
-                    <div class="card-body p-1">
-                        <small>R$ {{ SaldoContratoSec.saldoAtual|floatformat:2 }}</small>
-                    </div>
-                    <a href="{% url 'of_emitir' SaldoContratoSec.id %}" class="btn btn-sm btn-primary my-3">Emitir nova ordem</a>
-                </div> 
+                <div class="card-header bg-white" style="font-size: medium;"><b>Saldo disponível</b></div>
+                <div class="card-body p-1">
+                    <small>R$ {{ SaldoContratoSec.saldoAtual|floatformat:2 }}</small>
+                </div>
+                <!-- <a href="{% url 'of_emitir' SaldoContratoSec.id %}" class="btn btn-sm btn-primary my-3">Emitir nova ordem</a> -->
+                <a hx-get="{% url 'confirmar_fornecedor' SaldoContratoSec.id %}" hx-target="#dialog" class="btn btn-sm btn-primary my-1">Emitir nova ordem</a>
+                <a href="{% url 'exportar_excel_saldo' SaldoContratoSec.id %}" class="btn btn-outline-success btn-sm">
+                    <i class="lni lni-download"></i> Exportar Saldo
+                </a>
             </div>
         </div>
-        <div class="col-9">
+        <div class="col-10">
             <div class="table-overflow" style="max-height: 400px;">
                 <table class="table table-sm table-striped">
                     <thead>
@@ -57,7 +59,7 @@
                         <tr>
                             <td scope="col">{{ entrada.item.Descricao }}</th>
                             <td scope="col">{{ entrada.item.Unidade }}</th>
-                            <td scope="col">{{ entrada|totalPorItem:'dif_sec' }}/{{ entrada.quantidade }}</th>
+                            <td scope="col">{{ entrada.total_por_item }}/{{ entrada.quantidade }}</th>
                             <td scope="col">R${{ entrada.item.PrecoUnitario|floatformat:2 }}</th>
                         </tr>
                         {% endfor %}
