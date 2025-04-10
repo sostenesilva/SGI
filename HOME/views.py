@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404
-from .models import Modulo
+from .models import Modulo, Notificacao
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.contrib.auth.models import Group, Permission, User
@@ -47,6 +47,14 @@ def atualizar_permissao_usuario(request, user_id, grupo_id, permissao_id):
         status = "adicionada"
 
     return JsonResponse({"status": status, "permissao": permissao.codename})
+
+
+def listar_notificacoes(request, user_id):
+    usuario = User.objects.get(pk = user_id)
+    notificacoes = Notificacao.objects.filter(usuario=usuario)
+
+    return render(request, 'listar_notificacoes.html',{'notificacoes':notificacoes})
+
 
 
 ########### AJUSTAR GRUPOS E PERMISSÕES #####################

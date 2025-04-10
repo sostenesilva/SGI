@@ -11,4 +11,5 @@ urlpatterns = [
     path("privilegios/<int:user_id>/<int:grupo_id>/", views.carregar_permissoes, name="carregar_permissoes"),
     path("privilegios/<int:user_id>/<int:grupo_id>/<int:permissao_id>/", views.atualizar_permissao_usuario, name="atualizar_permissao_usuario"),
 
+    path("notificacoes/listar_todas/<int:user_id>", views.listar_notificacoes, name="listar_notificacoes"),
 ]

@@ -1,0 +1,31 @@
+<div class="modal-content" hx-debug="true">
+    <div class="modal-header justify-content-between">
+        <h5 class="modal-title">Notificações</h5>
+    </div>
+    <div class="modal-body">
+        <div class="row justify-content-center">
+
+            <table class="table table-sm table-responsive">
+                <tbody>
+                    {% for notificacao in notificacoes %}
+                    <tr style="border: 1px solid white;">
+                        <td class="col-10">{{ notificacao.titulo }}</td>
+                        <td class="col-2">{{ notificacao.criada_em|date:"d/m/Y" }}</td>
+                    </tr>
+                    <tr style="border: 1px solid white;">
+                        <td colspan="2">{{ notificacao.mensagem }}</td>
+                    </tr>                    
+                    {% empty %}
+                    <tr>
+                        <td colspan="2" class="text-center">Nenhuma notificação encontrada.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+    <div class="modal-footer">
+        <small style="font-size: xx-small;">Sistema de Notificações</b></small>
+    </div>
+</div>
