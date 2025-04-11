@@ -5,10 +5,7 @@
             <div>
                 <div class="btn-group">
                     <a type="button" class="btn btn-sm btn-light" hx-get="{% url 'certidoes_add' fornecedor.id %}" hx-target="#dialog">Incluir Certidão</a>
-                    <a type="button" id="emitirdeclaracao" class="btn btn-sm btn-light" href="{% url 'emitir_declaracao' fornecedor.id %}" hx-trigger="click"
-                    hx-target="this"
-                    hx-swap="none"
-                    hx-headers='{"HX-Trigger": "DeclaracoesListChanged"}'>Emitir Declaração</a>
+                    <a type="button" id="emitirdeclaracao" class="btn btn-sm btn-light" href="{% url 'emitir_declaracao' fornecedor.id %}">Emitir Declaração</a>
                 </div>
             </div>
     </div>

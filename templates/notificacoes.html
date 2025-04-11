@@ -1,0 +1,23 @@
+<div id="notificacao-conteudo">
+    {% for notificacao in notificacoes %}
+        <li>
+        <a class="d-flex flex-row dropdown-item small align-items-center" style="width: 100%;" href="{{ notificacao.link|default:'#' }}">
+            <div class="notificacao-img" style="margin-right: 10px;">
+            <i class="fa-solid fa-street-view fs-3"></i>
+            </div>
+            <div class="notificacao-conteudo d-flex flex-column">
+            <div class="d-flex flex-row justify-content-between">
+                <small class="notification-title"><strong>{{ notificacao.titulo }}</strong></small>
+                <small class="notification-time">{{ notificacao.criada_em|date:"d/m/Y" }}</small>
+            </div>
+            <small class="notification-text" style="width: 100%; white-space: normal; word-wrap: break-word;">
+                {{ notificacao.mensagem }}
+            </small>
+            </div>
+        </a>
+        </li>
+    {% empty %}
+        <li><span class="dropdown-item text-muted small">Sem notificações</span></li>
+    {% endfor %}
+
+</div>

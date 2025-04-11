@@ -3,6 +3,7 @@ from . import views
 
 urlpatterns = [
     path('', views.portal_inicial, name='portal_inicial'),
+    path('novoportal/', views.novoportal, name='novoportal'),
     path('modulo/<int:modulo_id>/', views.modulo_detalhes, name='modulo_detalhes'),
     path('modulo/<int:modulo_id>/', views.modulo_detalhes, name='modulo_detalhes'),
     path('grupos/', views.grupos_permissoes, name='grupos_permissoes'),
@@ -12,4 +13,8 @@ urlpatterns = [
     path("privilegios/<int:user_id>/<int:grupo_id>/<int:permissao_id>/", views.atualizar_permissao_usuario, name="atualizar_permissao_usuario"),
 
     path("notificacoes/listar_todas/<int:user_id>", views.listar_notificacoes, name="listar_notificacoes"),
+
+    path("notificacoes/quantidade/", views.notificacoes_quantidade, name="notificacoes_quantidade"),
+    path("notificacoes/conteudo/", views.notificacoes_conteudo, name="notificacoes_conteudo"),
+
 ]

@@ -1,0 +1,17 @@
+<form action="." method="get" class="d-flex justify-content-between">
+        <h4><b>SGI</b> - Contratos</h4>
+        <div class="d-flex">
+            <input type="text" id="buscar" name="buscar" class="form-group form-control" style="width:300px; margin-right:5px" placeholder="Contrato, Processo, Ano ou Fornecedor...">
+            <input type="submit" class="btn btn-primary form-group" value="Buscar">
+        </div>
+        <a type="button" class="btn btn-success" hx-get="{% url 'add_contratos' %}"
+        hx-target="#htmxModalContent"        hx-trigger="click"
+        hx-swap="innerHTML"        data-bs-toggle="modal"
+        data-bs-target="#htmxModal-lg">Adicionar Contratos</a>
+
+</form>
+<hr>
+<div hx-get="{% url 'contratos' %}" hx-target="this" hx-swap="innerHTML" hx-trigger="load">
+    <p>Carregando...</p>
+</div>
+

@@ -1,4 +1,4 @@
-{% extends "baseregularidadefiscal.html" %}
+{% extends "base2.html" %}
 
 {% block head_title %} Dashboard {% endblock head_title %}
 
@@ -13,7 +13,7 @@
                 <h5>FORNECEDORES</h5>
                 <input type="text" class="form-group form-control" placeholder="Pesquisar..." name="buscar" hx-trigger="keyup changed delay:500ms" hx-get="{% url 'fornecedores_list' %}" hx-target="#fornecedor_list" style="width: fit-content;">
             </div>
-            <div class="table-overflow" style="max-height: 500px;">
+            <div class="table-responsive" style="max-height: 480px;">
                 <table class="table table-sm table-striped">
                     <thead>
                         <tr>

@@ -1,9 +1,12 @@
-{% extends 'basetransparencia.html' %}
+{% extends 'base2.html' %}
 {% block titulo %}Minhas Avaliações{% endblock titulo %}
-{% block content %}
-
-<div class="container">
-    <table class="table table-sm table-responsive">
+{% block contentdash %}
+<form method="GET" action="{% url 'listar_avaliacoes' %}" class="d-flex mb-3">
+    <input type="text" name="buscar" class="form-control me-2" placeholder="Buscar avaliação..." value="{{ query }}">
+    <button type="submit" class="btn btn-primary">Buscar</button>
+</form>
+<div class="table-responsive">
+    <table class="table table-sm">
         <thead>
             <tr>
                 <th>Secretaria Responsável</th>
@@ -14,7 +17,7 @@
         </thead>
         <tbody>
             {% for avaliacao in avaliacoes %}
-            <tr><td colspan="4" style="height: 15px;"></td></tr>
+            <tr><td colspan="4" style="height: 5px; background-color: transparent;"></td></tr>
             <tr style="border: 1px solid white;">
                 <td>{{ avaliacao.secretaria }}</td>
                 <td> - </td>

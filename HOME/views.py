@@ -1,8 +1,13 @@
 from django.shortcuts import render, get_object_or_404
 from .models import Modulo, Notificacao
 from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse
+from django.http import HttpResponse, JsonResponse
 from django.contrib.auth.models import Group, Permission, User
+from django.template.loader import render_to_string
+
+@login_required
+def novoportal(request):
+    return render(request, 'base2.html', {})
 
 
 @login_required
@@ -54,6 +59,22 @@ def listar_notificacoes(request, user_id):
     notificacoes = Notificacao.objects.filter(usuario=usuario)
 
     return render(request, 'listar_notificacoes.html',{'notificacoes':notificacoes})
+
+@login_required
+def notificacoes_quantidade(request):
+    notificacoes_nao_lidas = Notificacao.objects.filter(usuario=request.user, lida=False)
+    html = render_to_string("notificacao_badge.html", {
+        "notificacoes_nao_lidas": notificacoes_nao_lidas
+    })
+    return HttpResponse(html)
+
+
+@login_required
+def notificacoes_conteudo(request):
+    notificacoes = Notificacao.objects.filter(usuario=request.user).order_by('-criada_em')[:5]
+    return render(request, "notificacoes.html", {
+        "notificacoes": notificacoes
+    })
 
 
 

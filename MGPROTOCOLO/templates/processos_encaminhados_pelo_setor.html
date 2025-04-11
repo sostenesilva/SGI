@@ -1,42 +1,48 @@
-{% extends "baseprotocolo.html" %}
+{% extends "base2.html" %}
 {% load custom_filters %}
 {% block titulo %}Processos Encaminhados pelo Setor{% endblock titulo %}
 
-{% block content %}
-    <form method="GET" class="d-flex mb-3">
+{% block contentdash %}
+    <div class="d-flex justify-content-between">
+        <h4><b>SGI</b> - Protocolos Encaminhados por este setor</h4>
+    </div>
+    <hr>
+    <form method="GET" action="{% url 'processos_encaminhados_pelo_setor' %}" class="d-flex mb-3">
         <input type="text" name="buscar" class="form-control me-2" placeholder="Buscar processos..." value="{{ query }}">
         <button type="submit" class="btn btn-primary">Buscar</button>
     </form>
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Número</th>
-                <th>Título</th>
-                <th>Status</th>
-                <th>Descrição</th>
-                <th>Ações</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for processo in processos %}
+    <div class="table-responsive" style="max-height: 70vh;">
+        <table class="table">
+            <thead>
                 <tr>
-                    <td style="max-width: 50px; word-wrap: break-word; white-space: normal;">{{ processo.numero }}</td>
-                    <td style="max-width: 100px; word-wrap: break-word; white-space: normal;">{{ processo.titulo|truncatewords:30 }}</td>
-                    <td style="max-width: 50px; word-wrap: break-word; white-space: normal;">
-                        <span class="badge {% if processo.status == 'concluido' %}bg-success{% else %}bg-warning{% endif %}">
-                            {{ processo.get_status_display }}
-                        </span>
-                    </td>
-                    <td style="max-width: 250px; word-wrap: break-word; white-space: normal;">{{ processo.descricao }}</td>
-                    <td style="width: fit-content;">
-                        <a href="{% url 'detalhes_processo' processo.id %}" class="btn btn-info btn-sm">Detalhes</a>
-                    </td>
+                    <th>Número</th>
+                    <th>Título</th>
+                    <th>Status</th>
+                    <th>Descrição</th>
+                    <th>Ações</th>
                 </tr>
-            {% empty %}
-                <tr>
-                    <td colspan="7">Nenhum processo encontrado.</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                {% for processo in processos %}
+                    <tr>
+                        <td style="max-width: 50px; word-wrap: break-word; white-space: normal;">{{ processo.numero }}</td>
+                        <td style="max-width: 100px; word-wrap: break-word; white-space: normal;">{{ processo.titulo|truncatewords:30 }}</td>
+                        <td style="max-width: 50px; word-wrap: break-word; white-space: normal;">
+                            <span class="badge {% if processo.status == 'concluido' %}bg-success{% else %}bg-warning{% endif %}">
+                                {{ processo.get_status_display }}
+                            </span>
+                        </td>
+                        <td style="max-width: 250px; word-wrap: break-word; white-space: normal;">{{ processo.descricao }}</td>
+                        <td style="width: fit-content;">
+                            <a href="{% url 'detalhes_processo' processo.id %}" class="btn btn-info btn-sm">Detalhes</a>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="7">Nenhum processo encontrado.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 {% endblock %}

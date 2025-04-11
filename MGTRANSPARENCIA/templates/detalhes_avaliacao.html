@@ -1,6 +1,6 @@
-{% extends 'basetransparencia.html' %}
+{% extends 'base2.html' %}
 {% block titulo %}Detalhes da Avaliação{% endblock titulo %}
-{% block content %}
+{% block contentdash %}
 
 <div class="container">
     <div class="card mb-2">
@@ -38,7 +38,7 @@
         </thead>
         <tbody>
             {% for log in logs %}
-            <tr><td colspan="5" style="height: 15px; background-color: #ffffff;"></td></tr>
+            <tr><td colspan="5" style="height: 10px; background-color: transparent;"></td></tr>
             <tr style="border: 1px solid white;">
                 <td><b>Limite:</b> {{ log.data_limite|date:"d/m/Y" }}</td>
                 <td style="text-align: left;" colspan="5"><b>Tarefa:</b> {{ log.tarefa }}</td>

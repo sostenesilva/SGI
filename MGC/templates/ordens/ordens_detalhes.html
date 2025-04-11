@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "base2.html" %}
 {% load somaitens %}
 
 {% block head_title %} Ordem de Fornecimento {% endblock head_title %}
@@ -44,7 +44,7 @@
             </div>
         </div>
         <div class="col-10">
-            <div class="table-overflow" style="max-height: 400px;">
+            <div class="table-responsive" style="max-height: 400px;">
                 <table class="table table-sm table-striped">
                     <thead>
                         <tr>
@@ -100,13 +100,13 @@
                         <td>{{ log.usuario }}</td>
                         <td>
                             <div class='btn-group btn-group-sm' role='group'></div>
-                                <a href="{{ log.arquivo.url }}" target="_blank" class="btn btn-success btn-sm"><i class="lni lni-eye"></i></a>
+                                <a href="{{ log.arquivo.url }}" target="_blank" class="btn btn-success btn-sm"><i class="fa-solid fa-eye"></i></a>
                                 <!-- <a href="#" class="btn btn-primary btn-sm"><i class="lni lni-dollar"></i></a> -->
                             </div>
                         </td>
                         {% if perms.auth.Controle %}
                             <td>
-                                <a href="{% url 'of_log_delet' log.saldoContratosec.id log.id %}" class="btn btn-success btn-sm"><i class="lni lni-trash-can"></i></a>
+                                <a href="{% url 'of_log_delet' log.saldoContratosec.id log.id %}" class="btn btn-success btn-sm"><i class="fa-solid fa-trash"></i></a>
                             </td>
                         {% endif %}
                     </tr>

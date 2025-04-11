@@ -29,10 +29,25 @@ def listar_avaliacoes(request):
     else:
         avaliacoes = DbAvaliacao.objects.filter(secretaria__in=request.user.secretaria_home.all())
 
+    # Capturar o termo de busca
+    query = request.GET.get('buscar', '')
+
+    if query:
+        avaliacoes = avaliacoes.filter(
+            Q(criterio__item__icontains=query) |
+            Q(criterio__criterio__icontains=query) |
+            Q(criterio__dimensao__dimensao__icontains=query) |
+            Q(criterio__periodicidade__icontains=query) |
+            Q(criterio__classificacao__icontains=query) |
+            Q(secretaria__nome__icontains=query) |
+            Q(secretaria__sigla__icontains=query) |
+            Q(status__icontains=query)
+        )
+
     paginator = Paginator(avaliacoes, 20)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
-    return render(request, 'listar_avaliacoes.html', {'avaliacoes': avaliacoes})
+    return render(request, 'listar_avaliacoes.html', {'avaliacoes': avaliacoes, 'query': query})
 
 @login_required
 def detalhes_avaliacao(request, avaliacao_id):

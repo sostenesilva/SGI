@@ -77,6 +77,10 @@ def contratos (request):
     
     return render(request, 'listar_contratos.html', context)
 
+@login_required
+def contratos_base (request):
+    return render(request, 'contratos/contratos_base.html')
+
 def edit_contrato(request, contrato_id):
     contrato = models.Contratos.objects.get(id = contrato_id)
     contrato_form = forms.Contrato_form(request.POST or None, instance=contrato)

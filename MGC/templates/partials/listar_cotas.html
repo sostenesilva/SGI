@@ -1,18 +1,12 @@
-{% extends "base2.html" %}
-
-{% block head_title %} Ordens de Fornecimento {% endblock head_title %}
-
-{% block contentdash %}
-    <form action="." method="get" class="d-flex justify-content-between">
+    <!-- <form action="." method="get" class="d-flex justify-content-between">
         <h4><b>SGI</b> - Painel do Gestor</h4>
         <div class="d-flex">
             <input type="text" id="buscar" name="buscar" class="form-group form-control" style="width:300px; margin-right:5px" placeholder="Contrato, Processo, Ano ou Fornecedor...">
             <input type="submit" class="btn btn-primary form-group" value="Buscar">
         </div>
-        <!-- <a type="button" class="btn btn-success" hx-get="{% url 'add_contratos' %}" hx-target="#dialog">Adicionar Contratos</a> -->
     </form>
-    <hr>
-    <div class="table-responsive" style="max-height: 520px;">
+    <hr> -->
+    <div class="table-responsive">
         <table class="table table-sm table-striped">
             <thead>
                 <tr>
@@ -40,10 +34,10 @@
                     <td>R$ {{ ordem.saldoAtual|floatformat:2 }}</td>
                     <td>
                         <div class='btn-group btn-group-sm' role='group'>
-                            <a href="{{ ordem.contrato.LinkContrato }}" class="btn btn-secondary" target="_blank"><i class="fa-solid fa-file-pdf"></i></a>
+                            <a href="{{ ordem.contrato.LinkContrato }}" class="btn btn-secondary" target="_blank"><i class="lni lni-add-files"></i></a>
                         </div>
                         <div class='btn-group btn-group-sm' role='group'>
-                            <a href="{% url 'saldo_detalhes' ordem.id %}" class="btn btn-primary"><i class="fa-solid fa-upload"></i></a>
+                            <a href="{% url 'saldo_detalhes' ordem.id %}" class="btn btn-primary"><i class="lni lni-upload"></i></a>
                         </div>
                     </td>
                     </tr>
@@ -88,4 +82,3 @@
             </ul>
         </nav>
     </div>    
-{% endblock contentdash %}

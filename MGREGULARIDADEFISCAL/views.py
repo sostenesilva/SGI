@@ -64,6 +64,7 @@ def regularidade_resumo(request, fornecedor_id):
     return render(request, 'regularidade_resumo.html', {'fornecedor':fornecedor})
 
 def emitir_declaracao(request,fornecedor_id):
+    print('fui chamado')
     fornecedor = Fornecedores.objects.get(pk = fornecedor_id)
     declaracao = models.Declaracao.objects.create(fornecedor=fornecedor)
     certidoes = declaracao.get_certidoes()

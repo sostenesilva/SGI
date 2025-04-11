@@ -40,14 +40,10 @@ urlpatterns = [
 
     path('emitirof', views.emitirOF, name='emitirof'),
 
+    #### HTMX ###########
 
+    path('contratosbase/', views.contratos_base, name='contratos_base'),
 
-    # path('criterios/', views.criterios, name='criterios'),
-    # path('criterios/adicionar/', views.criterios_add, name='criterios_add'),
-    # path('criterios/editar/<int:criterio_pk>', views.criterios_edit, name='criterios_edit'),
-    # path('criterios/deletar/<int:criterio_pk>', views.criterios_delet, name='criterios_delet'),
-
-    # path('controle/', views.controle, name='controle'),
-    # path('secadm/', views.secadm, name='secadm'),
+    
     
 ]

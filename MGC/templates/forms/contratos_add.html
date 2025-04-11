@@ -1,0 +1,23 @@
+<div class="d-flex justify-content-between">
+    <h4><b>CONTRATOS - </b>Adicionar</h4>
+</div>
+<hr>
+<div class="row">
+    <div class="col">
+        <form action="{% url 'contratos_add' processo.id %}" method="post">
+            {% csrf_token %}
+            {{ contratos_form }}
+    </div>
+    <div class="col">
+        <h1>PROCESSO Nº {{ processo.n_processo }}/{{ processo.ano_processo }}</h1>
+        <small>Valor adjudicado: R${{ processo.valor_adjudicado }}</small><br>
+        <small>Edital: {{ processo.link_edital|urlizetrunc:50 }}</small><br>
+        <textarea class="form-control form-control-sm" rows="15" disabled>{{ processo.objeto }}</textarea>
+    </div>
+        <div>
+            <br>
+            <button type="submit" class="btn btn-sm btn-success">Adicionar</button>
+            <a href="{% url 'contratos' %}" class="btn btn-sm btn-danger">Cancelar</a>
+        </div>
+    </form>
+</div>
