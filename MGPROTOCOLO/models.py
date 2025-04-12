@@ -3,13 +3,15 @@ import os
 from django.db import models
 from django.contrib.auth.models import User
 from django.forms import ValidationError
+from HOME.models import Setor as SetorHome
+from HOME.models import Secretaria as SecretariaHome
 
 def diretorioDocumento (instance, filename):
-    return f'MGPROTOCOLO/documentos/{instance.processo.criado_em.year}/{instance.processo.setor_demandante.nome}/{instance.processo.numero}/{filename}'
+    return f'MGPROTOCOLO/documentos/{instance.processo.criado_em.year}/{instance.processo.demandante.nome}/{instance.processo.numero}/{filename}'
 
 def diretorioProtocolo (instance, filename):
     extensao = os.path.splitext(filename)[1]
-    return f'MGPROTOCOLO/protocolos/{instance.criado_em.year}/{instance.setor_destino.nome}/{instance.criado_em} por {instance.criado_por.username} - id {instance.id}{extensao}'
+    return f'MGPROTOCOLO/protocolos/{instance.criado_em.year}/{instance.destinatario.nome}/{instance.criado_em} por {instance.criado_por.username} - id {instance.id}{extensao}'
 
 class Setor(models.Model):
     nome = models.CharField(max_length=255, unique=True, null=True, blank=True)
@@ -33,8 +35,11 @@ class Processo(models.Model):
     descricao = models.TextField(blank=True, null=True)
     criado_por = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     setor_demandante = models.ForeignKey(Setor, on_delete=models.SET_NULL, null=True, blank=True, related_name='processos_demandantes')
+    demandante = models.ForeignKey(SetorHome, on_delete=models.SET_NULL, null=True, blank=True, related_name='SetorDemandante')
     setor_fim = models.ForeignKey(Setor, on_delete=models.SET_NULL, null=True, blank=True, related_name='processos_setorfim')
+    fim = models.ForeignKey(SetorHome, on_delete=models.SET_NULL, null=True, blank=True, related_name='SetorFim')
     setor_atual = models.ForeignKey(Setor, on_delete=models.SET_NULL, null=True, blank=True, related_name='processos_setoratual')
+    atual = models.ForeignKey(SetorHome, on_delete=models.SET_NULL, null=True, blank=True, related_name='SetorAtual')
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='em_analise', null=True, blank=True)
     prazo = models.DateField(blank=True, null=True)
     criado_em = models.DateTimeField(auto_now_add=True, null=True, blank=True)
@@ -46,7 +51,7 @@ class Processo(models.Model):
         return f"{self.numero} - {self.titulo}"
 
     def clean(self):
-        if self.setor_demandante == self.setor_fim:
+        if self.demandante == self.fim:
             raise ValidationError("O setor demandante não pode ser o mesmo que o setor responsável.")
 
     def esta_ativo(self):
@@ -73,8 +78,8 @@ class Processo(models.Model):
         for movimentacao in self.movimentacoes.all():
             resumo.append({
                 'data': movimentacao.realizado_em.strftime('%d/%m/%Y %H:%M'),
-                'setor_origem': movimentacao.setor_origem.nome,
-                'setor_destino': movimentacao.setor_destino.nome,
+                'remetente': movimentacao.remetente.nome,
+                'destinatario': movimentacao.destinatario.nome,
                 'status': movimentacao.get_status_display(),
             })
         return resumo
@@ -99,9 +104,9 @@ class Processo(models.Model):
         """
         setores = set()
         for movimentacao in self.movimentacoes.all():
-            setores.add(movimentacao.setor_origem.nome)
-            if self.setor_atual!= None:
-                setores.add(movimentacao.setor_destino.nome)
+            setores.add(movimentacao.remetente.nome)
+            if self.atual!= None:
+                setores.add(movimentacao.destinatario.nome)
             else:
                 setores.add('Arquivo')
         return list(setores)
@@ -111,25 +116,25 @@ class Processo(models.Model):
         """
         Retorna os processos cuja última movimentação está no setor especificado.
         """
-        return cls.objects.filter(setor_atual=setor).order_by('-atualizado_em')
+        return cls.objects.filter(atuaç=setor).order_by('-atualizado_em')
 
     @classmethod
     def processos_encaminhados_pelo_setor(cls, setor):
         """
         Retorna os processos que foram encaminhados pelo setor especificado para outros setores.
         """
-        return cls.objects.filter(movimentacoes__setor_origem=setor).distinct()
+        return cls.objects.filter(movimentacoes__remetente=setor).distinct()
     
     def usuario_pode_modificar(self, usuario):
         """
         Verifica se o usuário pertence ao setor atual do processo.
         """
-        return usuario in self.setor_atual.usuarios.all() if self.setor_atual else False
+        return usuario in self.atual.usuarios.all() if self.atual else False
     
     def arquivar(self):
         """ Define o processo como arquivado """
         self.status = 'arquivado'
-        self.setor_atual = None  # Remove o setor atual, pois foi arquivado
+        self.atual = None  # Remove o setor atual, pois foi arquivado
         self.save()
 
 class Documento(models.Model):
@@ -181,7 +186,9 @@ class Movimentacao(models.Model):
     realizado_por = models.ForeignKey(User, on_delete=models.PROTECT, null=True, blank=True)
     realizado_em = models.DateTimeField(auto_now_add=True, db_index=True, null=True, blank=True)
     setor_origem = models.ForeignKey(Setor, on_delete=models.PROTECT, related_name='movimentacoes_origem', null=True, blank=True)
+    remetente = models.ForeignKey(SetorHome, on_delete=models.PROTECT, related_name='SetorRemetente', null=True, blank=True)
     setor_destino = models.ForeignKey(Setor, on_delete=models.PROTECT, related_name='movimentacoes_destino', null=True, blank=True)
+    destinario = models.ForeignKey(SetorHome, on_delete=models.PROTECT, related_name='SetorDestinatario', null=True, blank=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='em_tramitacao', null=True, blank=True)
     confirmacao = models.CharField(max_length=20, choices=RECEBIMENTO_CHOICES, default='pendente', null=True, blank=True)
     confirmado_em = models.DateTimeField(null=True, blank=True)
@@ -191,13 +198,13 @@ class Movimentacao(models.Model):
 
     def __str__(self):
         if self.status != 'arquivada':
-            return f"Movimentação de {self.processo.numero} para {self.setor_destino.nome} realizada por {self.realizado_por}"
+            return f"Movimentação de {self.processo.numero} para {self.destinatario.nome} realizada por {self.realizado_por}"
         else:
             return f"Movimentação para arquivo do {self.processo.numero} realizada por {self.realizado_por}"
 
 
     def clean(self):
-        if self.setor_origem == self.setor_destino:
+        if self.remetente == self.destinario:
             raise ValidationError("O setor de origem não pode ser o mesmo que o setor de destino.")
 
     def save(self, *args, **kwargs):
@@ -206,7 +213,7 @@ class Movimentacao(models.Model):
         """
         super().save(*args, **kwargs)
         self.processo.ultima_movimentacao = self
-        self.processo.setor_atual = self.setor_destino
+        self.processo.atual = self.destinario
         self.processo.save()
 
 class ProtocoloMovimentacao(models.Model):
@@ -217,13 +224,14 @@ class ProtocoloMovimentacao(models.Model):
 
     movimentacoes = models.ManyToManyField(Movimentacao, related_name='protocolos')
     setor_destino = models.ForeignKey(Setor, on_delete=models.PROTECT, related_name='protocolos_recebidos')
+    destinatario = models.ForeignKey(SetorHome, on_delete=models.PROTECT, null=True, blank=True, related_name='SetoresDestinatarios')
     criado_por = models.ForeignKey(User, on_delete=models.PROTECT)
     criado_em = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pendente')
     comprovacao = models.FileField(upload_to=diretorioProtocolo, blank=True, null=True)
 
     def __str__(self):
-        return f"Protocolo {self.id} - {self.setor_destino.nome}"
+        return f"Protocolo {self.id} - {self.destinatario.nome}"
 
     def confirmar(self):
         """
