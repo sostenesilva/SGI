@@ -11,11 +11,10 @@ class Secretaria(models.Model):
     def __str__(self):
         return self.nome
 
-
 class Setor(models.Model):
     nome = models.CharField(max_length=255, unique=True, null=True, blank=True)
     secretaria = models.ForeignKey(Secretaria, on_delete=models.SET_NULL, null=True, blank=True)
-    usuarios = models.ManyToManyField(User, null=True)
+    usuarios = models.ManyToManyField(User, null=True, blank=True)
     sigla = models.CharField(max_length=10, blank=True, null=True)
     ativo = models.BooleanField(default=True)
 
