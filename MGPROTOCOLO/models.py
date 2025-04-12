@@ -187,8 +187,6 @@ class Movimentacao(models.Model):
     realizado_em = models.DateTimeField(auto_now_add=True, db_index=True, null=True, blank=True)
     setor_origem = models.ForeignKey(Setor, on_delete=models.PROTECT, related_name='movimentacoes_origem', null=True, blank=True)
     setor_destino = models.ForeignKey(Setor, on_delete=models.PROTECT, related_name='movimentacoes_destino', null=True, blank=True)
-    remetente = models.ForeignKey(SetorHome, on_delete=models.PROTECT, related_name='SetorRemetente', null=True, blank=True)
-    destinario = models.ForeignKey(SetorHome, on_delete=models.PROTECT, related_name='SetorDestinatario', null=True, blank=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='em_tramitacao', null=True, blank=True)
     confirmacao = models.CharField(max_length=20, choices=RECEBIMENTO_CHOICES, default='pendente', null=True, blank=True)
     confirmado_em = models.DateTimeField(null=True, blank=True)
