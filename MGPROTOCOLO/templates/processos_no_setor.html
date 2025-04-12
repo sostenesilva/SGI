@@ -9,45 +9,68 @@
         <input type="text" name="buscar" class="form-control me-2" placeholder="Buscar processos..." value="{{ query }}">
         <button type="submit" class="btn btn-primary">Buscar</button>
     </form>
-    <div class="table-responsive" style="max-height: 70vh;">
+    <div class="table-responsive" style="min-height: 50vh; max-height: 70vh;">
         <table class="table">
             <thead>
                 <tr>
                     <th>Número</th>
                     <th>Título</th>
                     <th>Status</th>
-                    <th>Descrição</th>
+                    <th>Movimentação</th>
                     <th>Ações</th>
                 </tr>
             </thead>
             <tbody>
                 {% for processo in processos %}
-                    <tr>
-                        <td style="max-width: 50px; word-wrap: break-word; white-space: normal;">{{ processo.numero }}</td>
-                        <td style="max-width: 100px; word-wrap: break-word; white-space: normal;">{{ processo.titulo|truncatewords:30 }}</td>
-                        <td style="max-width: 50px; word-wrap: break-word; white-space: normal;">
+                    <tr style="height: 4px; background-color: transparent;"></tr>
+                    <tr style="font-size: small;">
+                        <td class="col-2" style="word-wrap: break-word; white-space: normal;">{{ processo.numero }}</td>
+                        <td class="col-3" style="word-wrap: break-word; white-space: normal;">{{ processo.titulo|truncatewords:30 }}</td>
+                        <td class="col-1" style="word-wrap: break-word; white-space: normal;">
                             <span class="badge {% if processo.status == 'concluido' %}bg-success{% else %}bg-warning{% endif %}">
                                 {{ processo.get_status_display }}
                             </span>
                         </td>
-                        <td style="max-width: 250px; word-wrap: break-word; white-space: normal;">{{ processo.descricao }}</td>
-                        <td>
-                            {% if processo.ultima_movimentacao.status == 'em_tramitacao' and processo.ultima_movimentacao.confirmacao == 'pendente' %}
-                                <form method="post" action="{% url 'receber_processo' processo.id %}">
-                                    {% csrf_token %}
-                                    <button type="submit" class="btn btn-sm btn-warning">Receber</button>
-                                </form>
-                            {% else %}
-                                <a class="btn btn-warning btn-sm" hx-get="{% url 'criar_movimentacao' processo.id %}" hx-target="#dialog" hx-trigger="click" data-bs-toggle="modal" data-bs-target="#modal">
-                                    Mover
-                                </a>
+                        <td class="" style="font-size: smaller;">
+                            {% if processo.ultima_movimentacao %}
+                                <div class="d-flex flex-column">
+                                    <span>Remetente: {{ processo.ultima_movimentacao.remetente }} ({{ processo.ultima_movimentacao.realizado_por.get_full_name }} em {{ processo.ultima_movimentacao.realizado_em|date:"d/m/Y H:m" }})</span>
+                                    <span>Destinatário: {{ processo.ultima_movimentacao.destinatario }} ({% if processo.ultima_movimentacao.confirmacao == 'pendente' %}Pendente de recebimento{% else %}{{ processo.ultima_movimentacao.confirmado_por.get_full_name }} em {{ processo.ultima_movimentacao.confirmado_em|date:"d/m/Y H:m" }}{% endif %})</span>
+                                </div>
                             {% endif %}
-                            <a href="{% url 'detalhes_processo' processo.id %}" class="btn btn-info btn-sm">Detalhes</a>
+                        </td>
+                        <td class="col-1" rowspan="2">
+                            <div class="btn-group" role="group">
+                                <button id="btnGroupDrop1" type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                  Ações
+                                </button>
+                                <ul class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+                                    <div class="dropdown-item">
+                                        {% if processo.ultima_movimentacao.status == 'em_tramitacao' and processo.ultima_movimentacao.confirmacao == 'pendente' %}
+                                            <a type="button" href="{% url 'receber_processo' processo.id %}" class="btn btn-sm btn-warning">
+                                                Receber
+                                            </a>
+                                        {% else %}
+                                            <a class="btn btn-warning btn-sm" hx-get="{% url 'criar_movimentacao' processo.id %}" hx-target="#dialog" hx-trigger="click" data-bs-toggle="modal" data-bs-target="#modal">
+                                                Mover
+                                            </a>
+                                        {% endif %}
+                                        <a href="{% url 'detalhes_processo' processo.id %}" class="btn btn-info btn-sm">
+                                            Detalhes
+                                        </a>
+                                    </div>
+                                </ul>
+                              </div>
+                            
                         </td>
                     </tr>
+                    <tr>
+                        <td colspan="4" style="word-wrap: break-word; white-space: normal; font-size: smaller; text-align: left;"><b>Descrição: </b>{{ processo.descricao }}</td>
+                    </tr>
+                    
                 {% empty %}
                     <tr>
-                        <td colspan="7">Nenhum processo encontrado.</td>
+                        <td colspan="5">Nenhum processo encontrado.</td>
                     </tr>
                 {% endfor %}
             </tbody>

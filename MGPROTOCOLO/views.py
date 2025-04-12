@@ -225,7 +225,7 @@ def arquivar_processo(request, processo_id):
     # Criar movimentação de arquivamento
     movimentacao = Movimentacao.objects.create(
         processo=processo,
-        descricao=f"Processo arquivado pelo setor {request.user.setores_home.first()}",
+        descricao=f"Processo arquivado pelo setor {processo.atual}",
         realizado_por=request.user,
         remetente=processo.atual,  # Último setor que estava
         destino=None,  # Não há destino real
