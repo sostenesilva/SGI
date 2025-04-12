@@ -198,7 +198,7 @@ class Movimentacao(models.Model):
 
     def __str__(self):
         if self.status != 'arquivada':
-            return f"Movimentação de {self.processo.numero} para {self.destinatario.nome} realizada por {self.realizado_por}"
+            return f"Movimentação de {self.processo.numero} para {self.destinario.nome} realizada por {self.realizado_por}"
         else:
             return f"Movimentação para arquivo do {self.processo.numero} realizada por {self.realizado_por}"
 
