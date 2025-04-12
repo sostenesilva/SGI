@@ -224,7 +224,6 @@ class ProtocoloMovimentacao(models.Model):
 
     movimentacoes = models.ManyToManyField(Movimentacao, related_name='protocolos')
     setor_destino = models.ForeignKey(Setor, on_delete=models.PROTECT, related_name='protocolos_recebidos')
-    destinatario = models.ForeignKey(SetorHome, on_delete=models.PROTECT, default=1, related_name='SetoresDestinatarios')
     criado_por = models.ForeignKey(User, on_delete=models.PROTECT)
     criado_em = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pendente')
