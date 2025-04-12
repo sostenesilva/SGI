@@ -7,7 +7,8 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Prefetch
 from weasyprint import CSS, HTML
 from django.db.models import Q  # Adicione esta linha
-from .models import Processo, Documento, Movimentacao, ProtocoloMovimentacao, Setor
+from .models import Processo, Documento, Movimentacao, ProtocoloMovimentacao
+from HOME.models import Setor
 from .forms import ProcessoForm, DocumentoForm, MovimentacaoForm, ComprovacaoForm
 from django.templatetags.static import static
 
@@ -16,7 +17,7 @@ def processos_no_setor(request):
     """
     Exibe os processos cuja última movimentação está no setor do usuário.
     """
-    setor_usuario = request.user.setores.first()  # Supondo que o usuário pertence a um setor
+    setor_usuario = request.user.setor_home.all()  # Supondo que o usuário pertence a um setor
     processos = Processo.processos_no_setor(setor_usuario).order_by('-atualizado_em')
 
     # Capturar o termo de busca
@@ -26,8 +27,8 @@ def processos_no_setor(request):
         processos = processos.filter(
             Q(numero__icontains=query) |
             Q(titulo__icontains=query) |
-            Q(setor_demandante__nome__icontains=query) |
-            Q(setor_atual__nome__icontains=query) |
+            Q(demandante__nome__icontains=query) |
+            Q(atual__nome__icontains=query) |
             Q(descricao__icontains=query)
         )
     return render(request, 'processos_no_setor.html', {'processos': processos, 'query': query})
@@ -37,7 +38,7 @@ def processos_encaminhados_pelo_setor(request):
     """
     Exibe os processos que foram encaminhados pelo setor do usuário para outros setores.
     """
-    setor_usuario = request.user.setores.first()  # Supondo que o usuário pertence a um setor
+    setor_usuario = request.user.setor_home.all()  # Supondo que o usuário pertence a um setor
     processos = Processo.processos_encaminhados_pelo_setor(setor_usuario).order_by('-atualizado_em')
 
     # Capturar o termo de busca
@@ -47,8 +48,8 @@ def processos_encaminhados_pelo_setor(request):
         processos = processos.filter(
             Q(numero__icontains=query) |
             Q(titulo__icontains=query) |
-            Q(setor_demandante__nome__icontains=query) |
-            Q(setor_atual__nome__icontains=query) |
+            Q(demandante__nome__icontains=query) |
+            Q(atual__nome__icontains=query) |
             Q(descricao__icontains=query)
         )
 
@@ -71,8 +72,8 @@ def criar_processo(request):
         if form.is_valid():
             processo = form.save(commit=False)
             processo.criado_por = request.user
-            processo.setor_demandante = request.user.setores.first()
-            processo.setor_atual = request.user.setores.first()
+            processo.demandante = request.user.setor_home.first()
+            processo.atual = request.user.setor_home.first()
             processo.save()
 
             # Salvar documentos iniciais
@@ -128,7 +129,7 @@ def criar_movimentacao(request, processo_id):
         if form.is_valid():
             movimentacao = form.save(commit=False)
             movimentacao.processo = processo
-            movimentacao.setor_origem = processo.setor_atual
+            movimentacao.remetente = processo.atual
             movimentacao.status = 'em_tramitacao'
             movimentacao.confirmacao = 'pendente'
             movimentacao.realizado_por = request.user
@@ -137,27 +138,29 @@ def criar_movimentacao(request, processo_id):
     else:
         form = MovimentacaoForm(initial={
             'processo': processo,
-            'setor_origem': processo.setor_atual
+            'remetente': processo.atual
         })
     return render(request, 'criar_movimentacao.html', {'form': form, 'processo': processo})
 
 @login_required
 def listar_movimentacoes_tramitacao(request):
     usuario = request.user
-    setor_usuario = usuario.setores.first()  # Supondo que o usuário pertence a apenas um setor
+    setores_usuario = usuario.setor_home.all()
 
-    if not setor_usuario:
+    if not setores_usuario.exists():
         return render(request, 'listar_movimentacoes_tramitacao.html', {'setores': []})
 
-    # Filtrar apenas movimentações enviadas pelo setor do usuário logado
+    # Pega todos os IDs dos setores do usuário
+    setores_ids = setores_usuario.values_list('id', flat=True)
+
     setores = Setor.objects.prefetch_related(
         Prefetch(
-            'movimentacoes_destino',
+            'SetorRemetente',
             queryset=Movimentacao.objects.filter(
-                setor_origem=setor_usuario,  # Movimentações enviadas pelo setor do usuário
+                remetente__in=setores_ids,
                 status='em_tramitacao',
                 confirmacao='pendente'
-            )
+            ).select_related('remetente', 'destinatario')
         )
     ).distinct()
 
@@ -173,13 +176,13 @@ def gerar_protocolo(request):
 
         if movimentacoes.exists():
             # Verificar se todas as movimentações são do mesmo setor de destino
-            setor_destino = movimentacoes.first().setor_destino
+            setor_destino = movimentacoes.first().destinatario
             if not all(m.setor_destino == setor_destino for m in movimentacoes):
                 return HttpResponse("Todas as movimentações devem ser do mesmo setor de destino.", status=400)
 
             # Criar o protocolo
             protocolo = ProtocoloMovimentacao.objects.create(
-                setor_destino=setor_destino,
+                destino=setor_destino,
                 criado_por=request.user
             )
             protocolo.movimentacoes.set(movimentacoes)
@@ -222,16 +225,16 @@ def arquivar_processo(request, processo_id):
     # Criar movimentação de arquivamento
     movimentacao = Movimentacao.objects.create(
         processo=processo,
-        descricao=f"Processo arquivado pelo setor {request.user.setores.first()}",
+        descricao=f"Processo arquivado pelo setor {request.user.setores_home.first()}",
         realizado_por=request.user,
-        setor_origem=processo.setor_atual,  # Último setor que estava
-        setor_destino=None,  # Não há destino real
+        remetente=processo.atual,  # Último setor que estava
+        destino=None,  # Não há destino real
         status='arquivada'
     )
 
     # Alterar status do processo para arquivado
     processo.status = 'arquivado'
-    processo.setor_atual = None  # Remove o setor atual, pois foi arquivado
+    processo.atual = None  # Remove o setor atual, pois foi arquivado
     processo.ultima_movimentacao = movimentacao  # Atualiza a última movimentação
     processo.save()
 
@@ -240,7 +243,8 @@ def arquivar_processo(request, processo_id):
 
 @login_required
 def listar_protocolos(request):
-    protocolos = ProtocoloMovimentacao.objects.all()
+    setores_usuario = request.user.setor_home.all()
+    protocolos = ProtocoloMovimentacao.objects.filter(criado_por = request.user).order_by('-criado_em')
     return render(request, 'listar_protocolos.html', {'protocolos': protocolos})
 
 @login_required
@@ -266,10 +270,10 @@ def receber_processo(request, processo_id):
     processo = get_object_or_404(Processo, id=processo_id)
     
     # Verifica se o usuário pertence ao setor atual
-    setor_usuario = request.user.setores.first()
+    setor_usuario = request.user.setor_home.all()
     ultima_movimentacao = processo.ultima_movimentacao
 
-    if ultima_movimentacao and ultima_movimentacao.setor_destino == setor_usuario:
+    if ultima_movimentacao and ultima_movimentacao.destinatario in setor_usuario:
         ultima_movimentacao.status = 'recebida'
         ultima_movimentacao.confirmacao = 'sistema'
         ultima_movimentacao.confirmado_por = request.user
@@ -289,9 +293,14 @@ def processos_arquivados(request):
         processos = processos.filter(
             Q(numero__icontains=query) |
             Q(titulo__icontains=query) |
-            Q(setor_demandante__nome__icontains=query) |
-            Q(setor_atual__nome__icontains=query) |
+            Q(demandante__nome__icontains=query) |
+            Q(atual__nome__icontains=query) |
             Q(descricao__icontains=query)
         )
 
     return render(request, 'processos_arquivados.html', {'processos': processos, 'query': query })
+
+@login_required
+def mais_informacoes(request, processo_id):
+    processo = Processo.objects.get(pk = processo_id)
+    return render(request, 'mais_informacoes.html', {'processo' : processo})

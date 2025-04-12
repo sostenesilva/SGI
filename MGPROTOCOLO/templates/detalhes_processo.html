@@ -1,8 +1,8 @@
 {% extends 'base2.html' %}
 {% block titulo %}Detalhes do Processo{% endblock titulo %}
 {% block contentdash %}
-    <!-- Cabeçalho com Informações Básicas do Processo -->
-    <div class="row">
+   <!-- Cabeçalho com Informações Básicas do Processo -->
+   <div class="row">
         <div class="col">
             <div class="card mb-2">
                 <div class="card-body">
@@ -19,7 +19,7 @@
                             <li><strong>Tempo Restante:</strong> {{ processo.tempo_restante|default:"-" }} dias</li>
                         </div>
                         <div class="col-2">
-                            <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#infoProcessoModal">
+                            <button class="btn btn-secondary" hx-get="{% url 'mais_informacoes' processo.id %}" hx-target="#dialog" hx-trigger="click">
                                 <i class="lni lni-info"></i> Mais Informações
                             </button>
                         </div>
@@ -42,9 +42,9 @@
                     <div class="d-flex justify-content-between">
                         <h5 class="card-title mb-0">Documentos</h5> 
                         {% if pode_modificar %}
-                            <button class="btn btn-sm btn-info py-0" hx-get="{% url 'criar_documento' processo.id %}" hx-target="#dialog" hx-trigger="click" data-bs-toggle="modal" data-bs-target="#modal">
+                            <a type="button" class="btn btn-sm btn-info py-0" hx-get="{% url 'criar_documento' processo.id %}" hx-target="#dialog">
                                 + Adicionar Documento
-                            </button>
+                            </a>
                         {% endif %}
                     </div>
                     
@@ -54,13 +54,11 @@
                         <div class="list-group">
                             {% for documento in processo.documentos.all|dictsortreversed:"criado_em" %}
                                 <div class="list-group-item">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <div>
-                                            <ul class="m-0 p-0" style="font-size: small;">
-                                                <li class="mb-0">{{ documento.descricao }}</li>
-                                                <li class="text-muted" style="font-size: smaller;">Incluído por {{ documento.criado_por.get_full_name }} em {{ documento.criado_em|date:"d/m/Y H:i" }}</li>
-                                                <li class="text-muted" style="font-size: smaller;">{{ documento.get_tipo_display }} - {{ documento.get_classificacao_display }}</li>
-                                            </ul>
+                                    <div class="d-flex flex-row justify-content-between align-items-center" style="font-size: small;">
+                                        <div class="d-flex flex-column">
+                                            <p class="mb-0">{{ documento.descricao }}</p>
+                                            <small class="text-muted">Incluído por {{ documento.criado_por.get_full_name }} em {{ documento.criado_em|date:"d/m/Y H:i" }}</small>
+                                            <small class="text-muted">{{ documento.get_tipo_display }} - {{ documento.get_classificacao_display }}</small>    
                                         </div>
                                         <div>
                                             <a href="{{ documento.arquivo.url }}" class="btn btn-sm btn-outline-primary mx-1" target="_blank">
@@ -91,9 +89,9 @@
                                     <button type="submit" class="btn btn-sm btn-warning">Receber</button>
                                 </form>
                             {% else %}
-                                <button class="btn btn-sm btn-warning py-0" hx-get="{% url 'criar_movimentacao' processo.id %}" hx-target="#dialog" hx-trigger="click" data-bs-toggle="modal" data-bs-target="#modal">
+                                <a type="button" class="btn btn-sm btn-warning py-0" hx-get="{% url 'criar_movimentacao' processo.id %}" hx-target="#dialog">
                                     + Criar Movimentação
-                                </button>
+                                </a>
                             {% endif %}
                         {% endif %}
                     </div>
@@ -102,68 +100,43 @@
                     {% if processo.movimentacoes.all %}
                         <div class="list-group">
                             {% for movimentacao in processo.movimentacoes.all|dictsortreversed:"realizado_em" %}
-                        <div class="list-group-item">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div class="col-9 d-flex flex-column" style="font-size: small;">
-                                    <p class="m-0">
-                                        {% if movimentacao.status == 'arquivada' %}
-                                            <i class="lni lni-archive"></i> Arquivado por {{ movimentacao.realizado_por }}
-                                        {% else %}
-                                            De {{ movimentacao.setor_origem.nome }} para {{ movimentacao.setor_destino.nome }}
-                                        {% endif %}
-                                    </p>
-                                    <small class="text-muted">
-                                        Enviada por {{ movimentacao.realizado_por.get_full_name }} em {{ movimentacao.realizado_em|date:"d/m/Y H:i" }}
-                                    </small>
-                                    {% if movimentacao.status == 'recebida' %}
-                                        <small class="text-muted">
-                                            Recebida por {{ movimentacao.confirmado_por.get_full_name}} em {{ movimentacao.confirmado_em|date:"d/m/Y H:i" }}
-                                        </small>
-                                        {% if movimentacao.descricao %}
-                                        <small class="text-muted">
-                                            Anotação: {{ movimentacao.descricao}}
-                                        </small>
-                                        {% endif %}
-                                            
-                                    {% endif %}
+                                <div class="list-group-item">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div class="col-9 d-flex flex-column" style="font-size: small;">
+                                            <p class="m-0">
+                                                {% if movimentacao.status == 'arquivada' %}
+                                                    <i class="lni lni-archive"></i> Arquivado por {{ movimentacao.realizado_por }}
+                                                {% else %}
+                                                    De {{ movimentacao.remetente.nome }} para {{ movimentacao.destinatario.nome }}
+                                                {% endif %}
+                                            </p>
+                                            <small class="text-muted">
+                                                Enviada por {{ movimentacao.realizado_por.get_full_name }} em {{ movimentacao.realizado_em|date:"d/m/Y H:i" }}
+                                            </small>
+                                            {% if movimentacao.status == 'recebida' %}
+                                                <small class="text-muted">
+                                                    Recebida por {{ movimentacao.confirmado_por.get_full_name}} em {{ movimentacao.confirmado_em|date:"d/m/Y H:i" }}
+                                                </small>
+                                                {% if movimentacao.descricao %}
+                                                <small class="text-muted">
+                                                    Anotação: {{ movimentacao.descricao}}
+                                                </small>
+                                                {% endif %}
+                                                    
+                                            {% endif %}
+                                        </div>
+                                        <div class="col-3 d-flex justify-content-center">
+                                            <span class="badge bg-{% if movimentacao.status == 'recebida' %}success{% elif movimentacao.status == 'arquivada' %}dark{% else %}info{% endif %}">
+                                                {{ movimentacao.get_status_display }}
+                                            </span>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="col-3 d-flex justify-content-center">
-                                    <span class="badge bg-{% if movimentacao.status == 'recebida' %}success{% elif movimentacao.status == 'arquivada' %}dark{% else %}info{% endif %}">
-                                        {{ movimentacao.get_status_display }}
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    {% endfor %}
+                            {% endfor %}
                         </div>
                     {% else %}
                         <p class="text-muted">Nenhuma movimentação encontrada.</p>
                     {% endif %}
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal para Mais Informações do Processo -->
-    <div class="modal fade" id="infoProcessoModal" tabindex="-1" aria-labelledby="infoProcessoModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="infoProcessoModalLabel">Mais Informações do Processo</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <p><strong>Setor Demandante:</strong> {{ processo.setor_demandante.nome }}</p>
-                    <p><strong>Setor Fim:</strong> {{ processo.setor_fim.nome }}</p>
-                    <p><strong>Setor Atual:</strong> {{ processo.setor_atual.nome }}</p>
-                    <p><strong>Setores Envolvidos:</strong> {{ processo.setores_envolvidos|join:", " }}</p>
-                    <p><strong>Criado por:</strong> {{ processo.criado_por }}</p>
-                    <p><strong>Criado em:</strong> {{ processo.criado_em|date:"d/m/Y H:i" }}</p>
-                    <p><strong>Atualizado em:</strong> {{ processo.atualizado_em|date:"d/m/Y H:i" }}</p>
-                    <p><strong>Última Movimentação:</strong> {{ processo.ultima_movimentacao.setor_destino.nome }} em {{ processo.ultima_movimentacao.realizado_em|date:"d/m/Y H:i" }}</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
                 </div>
             </div>
         </div>

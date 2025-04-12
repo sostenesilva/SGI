@@ -13,15 +13,6 @@ def diretorioProtocolo (instance, filename):
     extensao = os.path.splitext(filename)[1]
     return f'MGPROTOCOLO/protocolos/{instance.criado_em.year}/{instance.destinatario.nome}/{instance.criado_em} por {instance.criado_por.username} - id {instance.id}{extensao}'
 
-class Setor(models.Model):
-    nome = models.CharField(max_length=255, unique=True, null=True, blank=True)
-    sigla = models.CharField(max_length=10, blank=True, null=True)
-    usuarios = models.ManyToManyField(User, related_name='setores', null=True, blank=True)
-    ativo = models.BooleanField(default=True)
-
-    def __str__(self):
-        return self.nome
-
 class Processo(models.Model):
     STATUS_CHOICES = [
         ('em_analise', 'Em análise'),
@@ -34,9 +25,6 @@ class Processo(models.Model):
     titulo = models.CharField(max_length=255, null=True, blank=True)
     descricao = models.TextField(blank=True, null=True)
     criado_por = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
-    setor_demandante = models.ForeignKey(Setor, on_delete=models.SET_NULL, null=True, blank=True, related_name='processos_demandantes')
-    setor_fim = models.ForeignKey(Setor, on_delete=models.SET_NULL, null=True, blank=True, related_name='processos_setorfim')
-    setor_atual = models.ForeignKey(Setor, on_delete=models.SET_NULL, null=True, blank=True, related_name='processos_setoratual')
     demandante = models.ForeignKey(SetorHome, on_delete=models.SET_NULL, null=True, blank=True, related_name='SetorDemandante')
     fim = models.ForeignKey(SetorHome, on_delete=models.SET_NULL, null=True, blank=True, related_name='SetorFim')
     atual = models.ForeignKey(SetorHome, on_delete=models.SET_NULL, null=True, blank=True, related_name='SetorAtual')
@@ -116,14 +104,14 @@ class Processo(models.Model):
         """
         Retorna os processos cuja última movimentação está no setor especificado.
         """
-        return cls.objects.filter(atuaç=setor).order_by('-atualizado_em')
+        return cls.objects.filter(atual__in=setor).order_by('-atualizado_em')
 
     @classmethod
     def processos_encaminhados_pelo_setor(cls, setor):
         """
         Retorna os processos que foram encaminhados pelo setor especificado para outros setores.
         """
-        return cls.objects.filter(movimentacoes__remetente=setor).distinct()
+        return cls.objects.filter(movimentacoes__remetente__in=setor).distinct()
     
     def usuario_pode_modificar(self, usuario):
         """
@@ -185,10 +173,8 @@ class Movimentacao(models.Model):
     descricao = models.TextField(null=True, blank=True)
     realizado_por = models.ForeignKey(User, on_delete=models.PROTECT, null=True, blank=True)
     realizado_em = models.DateTimeField(auto_now_add=True, db_index=True, null=True, blank=True)
-    setor_origem = models.ForeignKey(Setor, on_delete=models.PROTECT, related_name='movimentacoes_origem', null=True, blank=True)
-    setor_destino = models.ForeignKey(Setor, on_delete=models.PROTECT, related_name='movimentacoes_destino', null=True, blank=True)
     remetente = models.ForeignKey(SetorHome, on_delete=models.PROTECT, related_name='SetorRemetente', null=True, blank=True)
-    destinario = models.ForeignKey(SetorHome, on_delete=models.PROTECT, related_name='SetorDestinatario', null=True, blank=True)
+    destinatario = models.ForeignKey(SetorHome, on_delete=models.PROTECT, related_name='SetorDestinatario', null=True, blank=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='em_tramitacao', null=True, blank=True)
     confirmacao = models.CharField(max_length=20, choices=RECEBIMENTO_CHOICES, default='pendente', null=True, blank=True)
     confirmado_em = models.DateTimeField(null=True, blank=True)
@@ -198,13 +184,13 @@ class Movimentacao(models.Model):
 
     def __str__(self):
         if self.status != 'arquivada':
-            return f"Movimentação de {self.processo.numero} para {self.destinario.nome} realizada por {self.realizado_por}"
+            return f"Movimentação de {self.processo.numero} para {self.destinatario.nome} realizada por {self.realizado_por}"
         else:
             return f"Movimentação para arquivo do {self.processo.numero} realizada por {self.realizado_por}"
 
 
     def clean(self):
-        if self.remetente == self.destinario:
+        if self.remetente == self.destinatario:
             raise ValidationError("O setor de origem não pode ser o mesmo que o setor de destino.")
 
     def save(self, *args, **kwargs):
@@ -213,7 +199,7 @@ class Movimentacao(models.Model):
         """
         super().save(*args, **kwargs)
         self.processo.ultima_movimentacao = self
-        self.processo.atual = self.destinario
+        self.processo.atual = self.destinatario
         self.processo.save()
 
 class ProtocoloMovimentacao(models.Model):
@@ -224,7 +210,6 @@ class ProtocoloMovimentacao(models.Model):
 
     movimentacoes = models.ManyToManyField(Movimentacao, related_name='protocolos')
     destinatario = models.ForeignKey(SetorHome, on_delete=models.PROTECT, null=True, blank=True, default=None, related_name='SetoresDestinatarios')
-    setor_destino = models.ForeignKey(Setor, on_delete=models.PROTECT, related_name='protocolos_recebidos')
     criado_por = models.ForeignKey(User, on_delete=models.PROTECT)
     criado_em = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pendente')

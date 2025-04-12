@@ -6,7 +6,7 @@ import pandas as pd
 from .models import DbDimensao, DbCriterios, DbAvaliacao, DbAvaliacaoLog, InformacoesCriterio
 from .forms import AvaliacaoLogForm, AvaliacaoForm
 from django.core.paginator import Paginator
-from HOME.models import Secretaria
+from HOME.models import Secretaria, Setor
 from django.db.models import Q
 from HOME.utils import notificar
 
@@ -24,10 +24,10 @@ def listar_criterios(request):
 def listar_avaliacoes(request):
     """Lista as avaliações vinculadas ao usuário logado."""
 
-    if Secretaria.objects.get(sigla='SCI').usuarios.contains(request.user):
+    if Setor.objects.get(sigla='CSCI').usuarios.contains(request.user):
         avaliacoes = DbAvaliacao.objects.all()
     else:
-        avaliacoes = DbAvaliacao.objects.filter(secretaria__in=request.user.secretaria_home.all())
+        avaliacoes = DbAvaliacao.objects.filter(secretaria__setores__in=request.user.setor_home.all())
 
     # Capturar o termo de busca
     query = request.GET.get('buscar', '')

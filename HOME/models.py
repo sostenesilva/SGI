@@ -13,8 +13,8 @@ class Secretaria(models.Model):
 
 class Setor(models.Model):
     nome = models.CharField(max_length=255, unique=True, null=True, blank=True)
-    secretaria = models.ForeignKey(Secretaria, on_delete=models.SET_NULL, null=True, blank=True)
-    usuarios = models.ManyToManyField(User, null=True, blank=True)
+    secretaria = models.ForeignKey(Secretaria, on_delete=models.SET_NULL, null=True, blank=True, related_name='setores')
+    usuarios = models.ManyToManyField(User, null=True, blank=True, related_name='setor_home')
     sigla = models.CharField(max_length=10, blank=True, null=True)
     ativo = models.BooleanField(default=True)
 

@@ -1,0 +1,19 @@
+<div class="modal-content">
+    <div class="modal-header">
+        <h5 class="modal-title" id="infoProcessoModalLabel">Mais Informações do Processo</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    </div>
+    <div class="modal-body">
+        <p><strong>Setor Demandante:</strong> {{ processo.demandante.nome }}</p>
+        <p><strong>Setor Fim:</strong> {{ processo.fim.nome }}</p>
+        <p><strong>Setor Atual:</strong> {{ processo.atual.nome }}</p>
+        <p><strong>Setores Envolvidos:</strong> {{ processo.setores_envolvidos|join:", " }}</p>
+        <p><strong>Criado por:</strong> {{ processo.criado_por }}</p>
+        <p><strong>Criado em:</strong> {{ processo.criado_em|date:"d/m/Y H:i" }}</p>
+        <p><strong>Atualizado em:</strong> {{ processo.atualizado_em|date:"d/m/Y H:i" }}</p>
+        <p><strong>Última Movimentação:</strong> {{ processo.ultima_movimentacao.destinatario.nome }} em {{ processo.ultima_movimentacao.realizado_em|date:"d/m/Y H:i" }}</p>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+    </div>
+</div>

@@ -174,70 +174,81 @@
     <ul class="sidebar-nav">
       <li><a href="/">Dashboard</a></li>
 
-      <li>
-        <a href="#" onclick="abrirSubmenu(this, 'menu-contratos')">Contratos</a>
-        <input type="checkbox" id="menu-contratos" hidden />
-        <ul class="submenu">
-          <!-- <li><a 
-            hx-get="{% url 'contratos_base' %}"
-            hx-target="#main-content"
-            hx-push-url="true"
-            hx-swap="innerHTML">Listar Contratos</a></li> -->
-          <li><a href="{% url 'contratos' %}">Listar Contrato</a></li>
-          <li><a href="{% url 'ordens' %}">Painel do Gestor</a></li>
-          <!-- <li><a href="#">Novo Contrato</a></li> -->
-        </ul>
-      </li>
+      {% if perms.auth.autorizado_Acessar_MGC %}
+        <li>
+          <a href="#" onclick="abrirSubmenu(this, 'menu-contratos')">Contratos</a>
+          <input type="checkbox" id="menu-contratos" hidden />
+          <ul class="submenu">
+            <!-- <li><a 
+              hx-get="{% url 'contratos_base' %}"
+              hx-target="#main-content"
+              hx-push-url="true"
+              hx-swap="innerHTML">Listar Contratos</a></li> -->
+            <li><a href="{% url 'contratos' %}">Listar Contrato</a></li>
+            <li><a href="{% url 'ordens' %}">Painel do Gestor</a></li>
+            <!-- <li><a href="#">Novo Contrato</a></li> -->
+          </ul>
+        </li>
+      {% endif %}
+      
+      {% if perms.auth.autorizado_Acessar_MGREGULARIDADE %}
+        <li>
+          <a href="#" onclick="abrirSubmenu(this, 'menu-regularidade')">Regularidade Fiscal</a>
+          <input type="checkbox" id="menu-regularidade" hidden />
+          <ul class="submenu">
+            <li><a href="{% url 'dashregularidadefiscal' %}">Fornecedores</a></li>
+            <li><a href="{% url 'consulta_externa' %}">Consulta Externa</a></li>
+          </ul>
+        </li>
+      {% endif %}
+      
+      {% if perms.auth.autorizado_Acessar_MGTRANSPARENCIA %}
+        <li>
+          <a href="#" onclick="abrirSubmenu(this, 'menu-transparencia')">Transparência</a>
+          <input type="checkbox" id="menu-transparencia" hidden />
+          <ul class="submenu">
+            <li><a href="{% url 'listar_criterios' %}">Critérios</a></li>
+            <li><a href="{% url 'listar_avaliacoes' %}">Avaliações</a></li>
+            {% if "auth.adicionar_Avaliacao_MGTRANSPARENCIA" in perms%}
+              <li class="sidebar-item">
+                  <a class="sidebar-link" hx-get="{% url 'adicionar_avaliacao' %}" hx-target="#dialog" hx-trigger="click" data-bs-toggle="modal" data-bs-target="#modal">
+                      <span>Nova Avaliação</span>
+                  </a>
+              </li>
+            {% endif %}
+          </ul>
+        </li>
+      {% endif %}
+      
+      {% if perms.auth.autorizado_Acessar_MGCOMBUSTIVEIS %}
+        <li>
+          <a href="#" onclick="abrirSubmenu(this, 'menu-transportes')">Transportes</a>
+          <input type="checkbox" id="menu-transportes" hidden />
+          <ul class="submenu">
+            <li><a href="{% url 'dashcombustiveis' %}">Dashboard</a></li>
+            <li><a href="{% url 'abastecimentos' %}">Abastecimentos</a></li>
+            <li><a href="{% url 'frota' %}#">Frota</a></li>
+            <li><a href="{% url 'condutores' %}">Condutores</a></li>
+            <li><a href="{% url 'emitir_relatorio' %}">Relatórios</a></li>
+          </ul>
+        </li>
+      {% endif %}
 
-      <li>
-        <a href="#" onclick="abrirSubmenu(this, 'menu-regularidade')">Regularidade Fiscal</a>
-        <input type="checkbox" id="menu-regularidade" hidden />
-        <ul class="submenu">
-          <li><a href="{% url 'dashregularidadefiscal' %}">Fornecedores</a></li>
-          <li><a href="{% url 'consulta_externa' %}">Consulta Externa</a></li>
-        </ul>
-      </li>
+      {% if perms.auth.autorizado_Acessar_MGPROTOCOLO %}
+        <li>
+          <a href="#" onclick="abrirSubmenu(this, 'menu-protocolo')">Protocolo</a>
+          <input type="checkbox" id="menu-protocolo" hidden />
+          <ul class="submenu">
+            <li><a href="{% url 'criar_processo' %}">Novo Processo</a></li>
+            <li><a href="{% url 'processos_no_setor' %}">No Setor</a></li>
+            <li><a href="{% url 'processos_encaminhados_pelo_setor' %}">Encaminhados</a></li>
+            <li><a href="{% url 'processos_arquivados' %}">Arquivados</a></li>
+            <li><a href="{% url 'listar_movimentacoes_tramitacao' %}">Em tramitação</a></li>
+            <li><a href="{% url 'listar_protocolos' %}">Comprovantes</a></li>
+          </ul>
+        </li>
+      {% endif %}
 
-      <li>
-        <a href="#" onclick="abrirSubmenu(this, 'menu-transparencia')">Transparência</a>
-        <input type="checkbox" id="menu-transparencia" hidden />
-        <ul class="submenu">
-          <li><a href="{% url 'listar_criterios' %}">Critérios</a></li>
-          <li><a href="{% url 'listar_avaliacoes' %}">Avaliações</a></li>
-          {% if "auth.adicionar_Avaliacao_MGTRANSPARENCIA" in perms%}
-            <li class="sidebar-item">
-                <a class="sidebar-link" hx-get="{% url 'adicionar_avaliacao' %}" hx-target="#dialog" hx-trigger="click" data-bs-toggle="modal" data-bs-target="#modal">
-                    <span>Nova Avaliação</span>
-                </a>
-            </li>
-          {% endif %}
-        </ul>
-      </li>
-
-      <li>
-        <a href="#" onclick="abrirSubmenu(this, 'menu-transportes')">Transportes</a>
-        <input type="checkbox" id="menu-transportes" hidden />
-        <ul class="submenu">
-          <li><a href="{% url 'dashcombustiveis' %}">Dashboard</a></li>
-          <li><a href="{% url 'abastecimentos' %}">Abastecimentos</a></li>
-          <li><a href="{% url 'frota' %}#">Frota</a></li>
-          <li><a href="{% url 'condutores' %}">Condutores</a></li>
-          <li><a href="{% url 'emitir_relatorio' %}">Relatórios</a></li>
-        </ul>
-      </li>
-
-      <li>
-        <a href="#" onclick="abrirSubmenu(this, 'menu-protocolo')">Protocolo</a>
-        <input type="checkbox" id="menu-protocolo" hidden />
-        <ul class="submenu">
-          <li><a href="{% url 'criar_processo' %}">Novo Processo</a></li>
-          <li><a href="{% url 'processos_no_setor' %}">No Setor</a></li>
-          <li><a href="{% url 'processos_encaminhados_pelo_setor' %}">Encaminhados</a></li>
-          <li><a href="{% url 'processos_arquivados' %}">Arquivados</a></li>
-          <li><a href="{% url 'listar_movimentacoes_tramitacao' %}">Em tramitação</a></li>
-          <li><a href="{% url 'listar_protocolos' %}">Comprovantes</a></li>
-        </ul>
-      </li>
     </ul>
   </aside>
 
@@ -259,7 +270,7 @@
           <!-- 🔢 Este span será atualizado com HTMX -->
           <span id="notificacao-contador"
                 hx-get="{% url 'notificacoes_quantidade' %}"
-                hx-trigger="load, every 30s"
+                hx-trigger="load, every 60s"
                 hx-swap="innerHTML">
             {% if notificacoes_nao_lidas %}
               <span class="position-absolute top-0 start-50 translate-left badge rounded-pill bg-danger">
@@ -297,25 +308,17 @@
 
   
   <!-- Conteúdo principal -->
-  <main id="main-content" hx-boost="true">
+  <main id="main-content">
     {% block contentdash %}
     <p>Bem-vindo ao SGI!</p>
     {% endblock %}
   </main>
 
   <!-- Placeholder for the modal -->
-  <div id="modal" class="modal fade">
+  <div id="modal" class="modal fade" tabindex="-1" aria-labelledby="htmxModalLabel" aria-hidden="true">
     <div id="dialog" class="modal-dialog modal-lg" hx-target="this"></div>
   </div>
 
-  <!-- Modal HTMX genérico -->
-  <div class="modal fade" id="htmxModal-lg" tabindex="-1" aria-labelledby="htmxModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg"> <!-- Você pode mudar para modal-xl, modal-lg, modal-sm etc -->
-        <div class="modal-content" id="htmxModalContent">
-            <!-- O conteúdo será injetado aqui via htmx -->
-        </div>
-    </div>
-  </div>
   <!-- Empty toast to show the message -->
   <div class="toast-container position-fixed top-0 end-0 p-3">
     <div id="toast" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive"
@@ -357,18 +360,6 @@
         checkbox.checked = !checkbox.checked;
       }
     }
-
-    document.body.addEventListener('htmx:afterSwap', (e) => {
-      if (e.detail.target.id === "htmxModalContent") {
-        const modalEl = document.getElementById('htmxModal');
-        const modal = bootstrap.Modal.getInstance(modalEl);
-        if (modal) {
-          modal.hide();
-        }
-      }
-    });
-
-
 
     ; (function () {
         const modal = new bootstrap.Modal(document.getElementById("modal"))
@@ -415,10 +406,5 @@
 
   </script>
   
-
-    
-
-    
-
 </body>
 </html>

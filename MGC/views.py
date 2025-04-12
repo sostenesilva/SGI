@@ -422,7 +422,7 @@ def ordens (request):
     if request.user.is_superuser:
         SaldoContratoSec = models.SaldoContratoSec.objects.all()
     else:
-        SaldoContratoSec = models.SaldoContratoSec.objects.filter(sec__in=request.user.secretaria_home.all())
+        SaldoContratoSec = models.SaldoContratoSec.objects.filter(sec__setores__in=request.user.setor_home.all())
 
     if buscar:
         SaldoContratoSec = SaldoContratoSec.filter(contrato__Fornecedor__RazaoSocial__icontains = buscar) | models.SaldoContratoSec.objects.filter(contrato__NumeroContrato__icontains = buscar) | models.SaldoContratoSec.objects.filter(contrato__NumeroProcesso__icontains = buscar) | models.SaldoContratoSec.objects.filter(contrato__AnoContrato__icontains = buscar) | models.SaldoContratoSec.objects.filter(contrato__AnoProcesso__icontains = buscar)
