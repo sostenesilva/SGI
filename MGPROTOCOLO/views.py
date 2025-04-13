@@ -6,7 +6,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.db.models import Prefetch
 from weasyprint import CSS, HTML
-from django.db.models import Q  # Adicione esta linha
+from django.db.models import Q
 from .models import Processo, Documento, Movimentacao, ProtocoloMovimentacao
 from HOME.models import Setor
 from .forms import ProcessoForm, DocumentoForm, MovimentacaoForm, ComprovacaoForm

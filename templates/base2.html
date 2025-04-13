@@ -174,7 +174,7 @@
     <ul class="sidebar-nav">
       <li><a href="/">Dashboard</a></li>
 
-      {% if perms.auth.autorizado_Acessar_MGC %}
+      {% if perms.auth.Acessar_MGC %}
         <li>
           <a href="#" onclick="abrirSubmenu(this, 'menu-contratos')">Contratos</a>
           <input type="checkbox" id="menu-contratos" hidden />
@@ -190,8 +190,7 @@
           </ul>
         </li>
       {% endif %}
-      
-      {% if perms.auth.autorizado_Acessar_MGREGULARIDADE %}
+      {% if perms.auth.Acessar_MGREGULARIDADEFISCAL %}
         <li>
           <a href="#" onclick="abrirSubmenu(this, 'menu-regularidade')">Regularidade Fiscal</a>
           <input type="checkbox" id="menu-regularidade" hidden />
@@ -202,7 +201,7 @@
         </li>
       {% endif %}
       
-      {% if perms.auth.autorizado_Acessar_MGTRANSPARENCIA %}
+      {% if perms.auth.Acessar_MGTRANSPARENCIA %}
         <li>
           <a href="#" onclick="abrirSubmenu(this, 'menu-transparencia')">Transparência</a>
           <input type="checkbox" id="menu-transparencia" hidden />
@@ -220,7 +219,7 @@
         </li>
       {% endif %}
       
-      {% if perms.auth.autorizado_Acessar_MGCOMBUSTIVEIS %}
+      {% if perms.auth.Acessar_MGCOMBUSTIVEIS %}
         <li>
           <a href="#" onclick="abrirSubmenu(this, 'menu-transportes')">Transportes</a>
           <input type="checkbox" id="menu-transportes" hidden />
@@ -234,7 +233,7 @@
         </li>
       {% endif %}
 
-      {% if perms.auth.autorizado_Acessar_MGPROTOCOLO %}
+      {% if perms.auth.Acessar_MGPROTOCOLO %}
         <li>
           <a href="#" onclick="abrirSubmenu(this, 'menu-protocolo')">Protocolo</a>
           <input type="checkbox" id="menu-protocolo" hidden />
@@ -261,6 +260,15 @@
     </div>
 
     <div class="d-flex align-items-center gap-3">
+      {% if request.user.is_superuser %}
+        <a href="/admin" type="button" class="btn btn-sm btn-light" target="_blank">
+          <i class="fa-solid fa-lock fs-5"></i>
+        </a>
+        <a href="{% url 'listar_usuarios' %}" type="button" class="btn btn-sm btn-light">
+          <i class="fa-solid fa-sliders fs-5"></i>
+        </a>
+      {% endif %}
+
       <div class="dropdown">
         <button class="btn btn-light position-relative" type="button"
                 id="dropdownNotificacoes" data-bs-toggle="dropdown"

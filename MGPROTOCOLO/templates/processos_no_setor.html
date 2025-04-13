@@ -3,12 +3,12 @@
 {% block contentdash %}
     <div class="d-flex justify-content-between">
         <h4><b>SGI</b> - Protocolos no Setor</h4>
+        <form method="GET" action="{% url 'processos_no_setor' %}" class="d-flex flex-row col-4">
+            <input type="text" name="buscar" class="form-control me-2" placeholder="Buscar processos..." value="{{ query }}">
+            <button type="submit" class="btn btn-primary">Buscar</button>
+        </form>
     </div>
     <hr>
-    <form method="GET" action="{% url 'processos_no_setor' %}" class="d-flex mb-3">
-        <input type="text" name="buscar" class="form-control me-2" placeholder="Buscar processos..." value="{{ query }}">
-        <button type="submit" class="btn btn-primary">Buscar</button>
-    </form>
     <div class="table-responsive" style="min-height: 50vh; max-height: 70vh;">
         <table class="table">
             <thead>

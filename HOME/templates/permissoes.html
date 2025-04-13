@@ -1,0 +1,23 @@
+<div class="modal-content" hx-debug="true">
+    <div class="modal-header justify-content-between">
+        <div>
+            <h5 class="modal-title">Gerenciar Permissões</h5>
+        </div>
+    </div>
+    <div class="modal-body px-5">
+        <div class="d-flex flex-column">
+            {% for permissao in permissoes %}
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" role="switch" id="perm_{{permissao.id}}" 
+                    {% if permissao.id in permissoes_usuario %}checked{% endif %}
+                    hx-get="{% url 'atualizar_permissao_usuario' user.id permissao.id %}"
+                    hx-trigger="change">
+                    <label class="form-check-label" for="perm_{{permissao.id}}">{{ permissao.name }}</label>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="modal-footer">
+        <small style="font-size: xx-small;">Informações enviadas por <b>{{ request.user }}</b></small>
+    </div>
+</div>

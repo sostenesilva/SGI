@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, JsonResponse
 from django.contrib.auth.models import Group, Permission, User
 from django.template.loader import render_to_string
+from django.db.models import Q
 
 @login_required
 def novoportal(request):
@@ -23,23 +24,28 @@ def modulo_detalhes(request, modulo_id):
 
 def listar_usuarios(request):
     usuarios = User.objects.all()
+    
+    # Capturar o termo de busca
+    query = request.GET.get('buscar', '')
+
+    if query:
+        usuarios = usuarios.filter(
+            Q(username__icontains=query) |
+            Q(last_name__icontains=query) |
+            Q(first_name__icontains=query)
+        )
+
     return render(request, 'listar_usuarios.html',{'usuarios':usuarios})
 
-def privilegios(request, user_id):
+def permissoes(request, user_id):
     usuario = get_object_or_404(User, id=user_id)
-    permissoes = Permission.objects.all()
-    grupos = Group.objects.all()
-    return render(request, "privilegios.html", {"grupos": grupos, 'user':usuario})
+    # permissoes = Permission.objects.filter(content_type = 'auth | permissão')
+    permissoes = Permission.objects.filter(content_type__app_label = 'auth', content_type__model = 'permission')
 
-def carregar_permissoes(request, user_id, grupo_id):
-    usuario = get_object_or_404(User, id=user_id)
-    grupo = get_object_or_404(Group, id=grupo_id)
-    permissoes = grupo.permissions.all()
     permissoes_usuario = usuario.user_permissions.values_list("id", flat=True)  # Obtém IDs das permissões do usuário
+    return render(request, "permissoes.html", {'user':usuario, 'permissoes':permissoes, "permissoes_usuario": list(permissoes_usuario)})
 
-    return render(request, "permissoes_lista.html", {"permissoes": permissoes, "grupo": grupo, 'user':usuario, "permissoes_usuario": list(permissoes_usuario)})
-
-def atualizar_permissao_usuario(request, user_id, grupo_id, permissao_id):
+def atualizar_permissao_usuario(request, user_id, permissao_id):
     usuario = get_object_or_404(User, id=user_id)
     permissao = get_object_or_404(Permission, id=permissao_id)
 
@@ -51,7 +57,7 @@ def atualizar_permissao_usuario(request, user_id, grupo_id, permissao_id):
         usuario.user_permissions.add(permissao)
         status = "adicionada"
 
-    return JsonResponse({"status": status, "permissao": permissao.codename})
+    return
 
 
 def listar_notificacoes(request, user_id):

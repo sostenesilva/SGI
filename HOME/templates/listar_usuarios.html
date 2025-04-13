@@ -1,16 +1,25 @@
-<div id="containerusuario">
-    <h3>Gerenciar <b>Usuários</b></h3>
-    <p>Lista todos os usuários registrados no sistema</p>
-    <!-- <a href="/{{ modulo.link_modulo }}" class="btn btn-primary mb-3">Acessar Módulo</a> -->
-    <br>
-    <div class="row">
-        <table class="table">
+{% extends 'base2.html' %}
+{% block titulo %}Usuários e Permissões{% endblock titulo %}
+{% block contentdash %}
+    <div class="d-flex justify-content-between">
+        <h4><b>SGI</b> - Usuários e Permissões</h4>
+        <form method="GET" action="{% url 'listar_usuarios' %}" class="d-flex flex-row col-4">
+            <input type="text" name="buscar" class="form-control me-2" placeholder="Buscar usuário..." value="{{ query }}">
+            <button type="submit" class="btn btn-primary">Buscar</button>
+        </form>
+    </div>
+    <hr>
+    <div class="table-responsive" style="max-height: 80vh;">
+        <table class="table table-sm table-striped">
             <thead>
                 <tr>
-                    <th>ID</th>
-                    <th>Usuário</th>
-                    <th>Status</th>
-                    <th>Ações</th>
+                    <th class="col-1">ID</th>
+                    <th class="col-1">Usuário</th>
+                    <th class="col-2">Nome</th>
+                    <th class="col-3">Último login</th>
+                    <th class="col-3">Setor</th>
+                    <th class="col-1">Status</th>
+                    <th class="col-1">Ações</th>
                 </tr>
             </thead>
             <tbody>
@@ -18,17 +27,22 @@
                     <tr>
                         <td>{{ user.id }}</td>
                         <td>{{ user.username }}</td>
-                        <td>Status</td>
+                        <td>{{ user.get_full_name}}</td>
+                        <td>{{ user.last_login}}</td>
+                        <td>{% for setor in user.setor_home.all %}<small class="badge bg-secondary" style="margin-right: 1px;">{{setor}}</small>{% endfor %}</td>
+                        <td><i class="fa-solid fa-check"></i></td>
                         <td>
-                            <a hx-get="{% url 'privilegios' user.id %}" class="btn btn-info btn-sm" hx-target="#containerusuario" hx-swap="innerHTML">Privilégios</a>
+                            <a class="btn btn-info btn-sm" hx-get="{% url 'permissoes' user.id %}" hx-target="#dialog"><i class="fa-solid fa-star"></i></a>
                         </td>
                     </tr>
                 {% empty %}
                     <tr>
-                        <td colspan="4">Nenhum usuário registrado.</td>
+                        <td colspan="7">Nenhum usuário registrado.</td>
                     </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
 </div>
+
+{% endblock %}
