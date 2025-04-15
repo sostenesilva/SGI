@@ -9,7 +9,12 @@
             {% csrf_token %}
             {{ form.as_p }}
             
-            <button class="btn btn-sm btn-primary">Salvar</button>
+            {% if request.user.usuario_pode_modificar %}
+                <button type="submit" class="btn btn-success">Salvar Alterações</button>
+            {% else %}
+                <div class="alert alert-warning">Você não pode editar este processo porque ele não está no seu setor.</div>
+            {% endif %}
+</form>
         </form>
         </div>
         <div class="col-6 table-responsive" style="max-height: 500px;">
