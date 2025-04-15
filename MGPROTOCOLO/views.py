@@ -229,8 +229,10 @@ def arquivar_processo(request, processo_id):
         descricao=f"Processo arquivado pelo setor {processo.atual}",
         realizado_por=request.user,
         remetente=processo.atual,  # Último setor que estava
-        destino=arquivo,  # Não há destino real
-        status='arquivada'
+        destinatario=arquivo,  # Não há destino real
+        status='arquivada',
+        confirmado_em = datetime.now(),
+        realizado_em = datetime.now(),
     )
 
     # Alterar status do processo para arquivado
