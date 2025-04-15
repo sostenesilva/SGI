@@ -4,8 +4,13 @@
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="row">
-            {{ form.non_field_errors }}
-            <div class="col-md-6">
+            <div class="d-flex flex-column col-6">
+                {{ form.non_field_errors }}
+                <!-- DESCRIÇÃO -->
+                <div class="mb-3">
+                    Descrição:
+                    {{ form.descricao }}
+                </div>
                 <div class="mb-3">
                     Número do Documento Motivador:
                     {{ form.numero }}
@@ -14,30 +19,33 @@
                     Assunto:
                     {{ form.titulo }}
                 </div>
-            </div>
-            <div class="col-md-6">
                 <div class="mb-3">
-                    {{ form.fim.label_tag }}
+                    Setor fim:
                     {{ form.fim }}
                 </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-12">
-                <div class="mb-3">
-                    Descrição:
-                    {{ form.descricao }}
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-12">
-                <div class="mb-3">
-                    {{ form.documentos_iniciais.label_tag }}
+                <div class="mb-3 card p-3">
+                    <small>{{ form.documentos_iniciais.label_tag }}</small>
                     {{ form.documentos_iniciais }}
                 </div>
+                <button type="submit" class="btn btn-primary">Salvar</button>
+            </div>
+            <div class="col-6">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h6>Sugestão de preenchimento</h6>
+                    <a href="#"
+                    class="btn btn-sm btn-secondary"
+                    hx-get="{% url 'sugerir_dados_processo' %}"
+                    hx-include="#id_descricao"
+                    hx-target="#sugestao-descricao"
+                    hx-indicator="#loading">
+                    Sugerir
+                    </a>
+
+                </div>
+                <hr>
+                <small id="sugestao-descricao" class="text-muted d-block mt-1"></small>
+                <span id="loading" style="display:none;">🔄 Sugerindo...</span>
             </div>
         </div>
-        <button type="submit" class="btn btn-primary">Salvar</button>
     </form>
 {% endblock %}

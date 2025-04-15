@@ -8,14 +8,12 @@
             <form hx-post="{% url 'salvar_correcoes_processo' processo.id %}" hx-target="#dialog" hx-swap="innerHTML">
             {% csrf_token %}
             {{ form.as_p }}
-            
             {% if pode_modificar %}
                 <button type="submit" class="btn btn-success">Salvar Alterações</button>
             {% else %}
-                <div class="alert alert-warning">Você não pode editar este processo porque ele não está no seu setor.</div>
+                <div class="alert alert-warning" style="font-size:12px;">Você não pode editar este processo porque ele não está no seu setor.</div>
             {% endif %}
-</form>
-        </form>
+            </form>
         </div>
         <div class="col-6 table-responsive" style="max-height: 500px;">
             <table class="table table-striped">

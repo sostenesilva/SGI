@@ -355,3 +355,23 @@ def salvar_correcoes_processo(request, processo_id):
             return HttpResponse(
                 headers={"HX-Redirect": reverse("detalhes_processo", args=[processo.id])}
             )
+
+
+def sugerir_dados_processo(request):
+    descricao = request.GET.get('descricao', '').strip()
+
+    if not descricao or len(descricao) < 5:
+        return HttpResponse("<p class='text-muted'>Digite pelo menos 5 caracteres para sugerir.</p>")
+
+    processo = (
+        Processo.objects
+        .filter(descricao__icontains=descricao)
+        .exclude(descricao__exact=descricao)
+        .order_by('-criado_em')
+        .first()
+    )
+
+    if not processo:
+        return HttpResponse("<p class='text-muted'>Nenhum processo semelhante encontrado.</p>")
+
+    return render(request, 'sugestao_processo.html', {'processo': processo})
