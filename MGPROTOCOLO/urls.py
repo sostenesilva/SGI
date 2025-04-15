@@ -27,7 +27,7 @@ urlpatterns = [
     path('processo/<int:processo_id>/corrigir/', views.historico_correcoes_processo, name='historico_correcoes_processo'),
     path('processo/<int:processo_id>/corrigir/salvar/', views.salvar_correcoes_processo, name='salvar_correcoes_processo'),
 
-    path('sugerir-dados-processo/', views.sugerir_dados_processo, name='sugerir_dados_processo'),
+    path('sugerir-dados-processo/', views.sugerir_descricao_processo, name='sugerir_dados_processo'),
 
 
 ]
