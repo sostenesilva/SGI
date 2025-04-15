@@ -368,18 +368,4 @@ def sugerir_descricao_processo(request):
     if not sugestoes:
         return HttpResponse("<small class='text-muted'>Nenhum processo semelhante encontrado.</small>")
 
-    html = ""
-    for processo in sugestoes:
-        html += f"""
-        <div class='card p-2 mb-2'>
-            <p><strong>{processo.titulo}</strong></p>
-            <p><small>{processo.descricao}</small></p>
-            <p><small><b>Nº Documento:</b> {processo.numero} | <b>Setor Fim:</b> {processo.fim.nome}</small></p>
-            <button type="button" class="btn btn-sm btn-outline-primary"
-                    onclick="preencherCampos('{processo.numero}', '{processo.titulo}', `{processo.descricao}`, '{processo.fim.id}')">
-                Usar este modelo
-            </button>
-        </div>
-        """
-
-    return HttpResponse(html)
+    return render(request, 'sugestao_processo.html', {'sugestoes': sugestoes})
