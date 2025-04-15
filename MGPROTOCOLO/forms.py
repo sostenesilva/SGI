@@ -41,6 +41,23 @@ class ProcessoForm(forms.ModelForm):
 
         }
 
+class ProcessoCorrecaoForm(forms.ModelForm):
+    def __init__(self, *args, disabled=False, **kwargs):
+        super().__init__(*args, **kwargs)
+        if disabled:
+            for field in self.fields.values():
+                field.widget.attrs['disabled'] = True
+
+    class Meta:
+        model = Processo
+        fields = ['numero','titulo','descricao','fim']
+        widgets = {
+            'numero': forms.TextInput(attrs={'class': 'form-control form-control-sm', 'placeholder': 'Número do Processo'}),
+            'titulo': forms.TextInput(attrs={'class': 'form-control form-control-sm', 'placeholder': 'Título do Processo'}),
+            'descricao': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': '3', 'placeholder': 'Descrição do Processo'}),
+            'fim': forms.Select(attrs={'class': 'form-control form-control-sm'}),
+        }
+
 class DocumentoForm(forms.ModelForm):
     class Meta:
         model = Documento

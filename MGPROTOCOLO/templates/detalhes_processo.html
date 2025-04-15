@@ -10,17 +10,15 @@
                         <div class="col-7">
                             <p class="card-title"><b>{{ processo.numero }} - {{ processo.titulo }}</b></p>
                             <div style="margin: 0; padding: 0; font-size: small;">
-                                <li>{{ processo.descricao }}</li>
+                                <li style="list-style-type: None;">{{ processo.descricao }}</li>
                             </div>
                         </div>
-                        <div class="col-3">
-                            <li><strong>Status:</strong> {{ processo.get_status_display }}</li>
-                            <li><strong>Prazo:</strong> {{ processo.prazo|default:"-" }}</li>
-                            <li><strong>Tempo Restante:</strong> {{ processo.tempo_restante|default:"-" }} dias</li>
-                        </div>
-                        <div class="col-2">
+                        <div class="col-2 btn-group-vertical">
                             <button class="btn btn-secondary" hx-get="{% url 'mais_informacoes' processo.id %}" hx-target="#dialog" hx-trigger="click">
                                 <i class="lni lni-info"></i> Mais Informações
+                            </button>
+                            <button class="btn btn-light" hx-get="{% url 'historico_correcoes_processo' processo.id %}" hx-target="#dialog2" hx-trigger="click">
+                                <i class="lni lni-info"></i> Corrigir
                             </button>
                         </div>
                     </div>
@@ -113,16 +111,16 @@
                                             <small class="text-muted">
                                                 Enviada por {{ movimentacao.realizado_por.get_full_name }} em {{ movimentacao.realizado_em|date:"d/m/Y H:i" }}
                                             </small>
-                                            {% if movimentacao.status == 'recebida' %}
-                                                <small class="text-muted">
-                                                    Recebida por {{ movimentacao.confirmado_por.get_full_name}} em {{ movimentacao.confirmado_em|date:"d/m/Y H:i" }}
-                                                </small>
-                                                {% if movimentacao.descricao %}
+                                            {% if movimentacao.descricao %}
                                                 <small class="text-muted">
                                                     Anotação: {{ movimentacao.descricao}}
                                                 </small>
                                                 {% endif %}
-                                                    
+                                            {% if movimentacao.status == 'recebida' %}
+                                                <small class="text-muted">
+                                                    Recebida por {{ movimentacao.confirmado_por.get_full_name}} em {{ movimentacao.confirmado_em|date:"d/m/Y H:i" }}
+                                                </small>
+                                                                       
                                             {% endif %}
                                         </div>
                                         <div class="col-3 d-flex justify-content-center">

@@ -23,4 +23,8 @@ urlpatterns = [
     path('protocolos/', views.listar_protocolos, name='listar_protocolos'),
     path('protocolos/<int:protocolo_id>/comprovacao/', views.anexar_comprovacao, name='anexar_comprovacao'),
     path('protocolos/<int:protocolo_id>/comprovacao/visualizar/', views.visualizar_comprovacao, name='visualizar_comprovacao'),
+
+    path('processo/<int:processo_id>/corrigir/', views.historico_correcoes_processo, name='historico_correcoes_processo'),
+    path('processo/<int:processo_id>/corrigir/salvar/', views.salvar_correcoes_processo, name='salvar_correcoes_processo'),
+
 ]

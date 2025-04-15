@@ -11,4 +11,9 @@ class Movimentacao(admin.ModelAdmin):
 class Processo(admin.ModelAdmin):
     list_display = ('numero','descricao','atual')
 
+    
+@admin.register(models.CorrecaoProcesso)
+class CorrecaoProcesso(admin.ModelAdmin):
+    list_display = ('processo','campo_alterado','usuario','data')
+
 admin.site.register(models.ProtocoloMovimentacao)

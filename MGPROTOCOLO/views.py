@@ -5,11 +5,12 @@ from django.template.loader import render_to_string
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.db.models import Prefetch
+from django.urls import reverse
 from weasyprint import CSS, HTML
 from django.db.models import Q
-from .models import Processo, Documento, Movimentacao, ProtocoloMovimentacao
+from .models import Processo, Documento, Movimentacao, ProtocoloMovimentacao, CorrecaoProcesso
 from HOME.models import Setor
-from .forms import ProcessoForm, DocumentoForm, MovimentacaoForm, ComprovacaoForm
+from .forms import ProcessoCorrecaoForm, ProcessoForm, DocumentoForm, MovimentacaoForm, ComprovacaoForm
 from django.templatetags.static import static
 
 @login_required
@@ -307,3 +308,49 @@ def processos_arquivados(request):
 def mais_informacoes(request, processo_id):
     processo = Processo.objects.get(pk = processo_id)
     return render(request, 'mais_informacoes.html', {'processo' : processo})
+
+@login_required
+def historico_correcoes_processo(request, processo_id):
+    processo = get_object_or_404(Processo, id=processo_id)
+    correcoes = processo.correcoes.order_by('-data')
+    form = ProcessoCorrecaoForm(instance=processo, disabled = processo.usuario_pode_modificar(request.user))
+
+    context = {
+        'processo': processo,
+        'correcoes': correcoes,
+        'form': form,
+    }
+    return render(request, 'correcao_processo_modal.html', context)
+
+@login_required
+def salvar_correcoes_processo(request, processo_id):
+    processo = get_object_or_404(Processo, id=processo_id)
+
+    if request.method == 'POST':
+        form = ProcessoCorrecaoForm(request.POST, instance=processo)
+
+        # 🔸 Capture os valores antigos *antes* de atualizar o processo
+        valores_anteriores = {
+            'numero': processo.numero,
+            'titulo': processo.titulo,
+            'descricao': processo.descricao,
+            'fim':processo.fim,
+        }
+
+        if form.is_valid():
+            for field in valores_anteriores:
+                antigo = valores_anteriores[field]
+                novo = form.cleaned_data.get(field)
+
+                if antigo != novo:
+                    CorrecaoProcesso.objects.create(
+                        processo=processo,
+                        usuario=request.user,
+                        campo_alterado=field,
+                        valor_anterior=antigo,
+                        valor_novo=novo
+                    )
+            form.save()
+            return HttpResponse(
+                headers={"HX-Redirect": reverse("detalhes_processo", args=[processo.id])}
+            )

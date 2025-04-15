@@ -41,6 +41,12 @@ class Processo(models.Model):
     def clean(self):
         if self.demandante == self.fim:
             raise ValidationError("O setor demandante não pode ser o mesmo que o setor responsável.")
+        
+    def validate_unique(self, exclude=None):
+        super().validate_unique(exclude)
+        # Verifica se já existe outro processo com o mesmo número
+        if Processo.objects.filter(numero=self.numero).exclude(pk=self.pk).exists():
+            raise ValidationError({'numero': "Já existe um processo com esse número."})
 
     def esta_ativo(self):
         """
@@ -188,8 +194,10 @@ class Movimentacao(models.Model):
         else:
             return f"Movimentação para arquivo do {self.processo.numero} realizada por {self.realizado_por}"
 
-
     def clean(self):
+        if self.remetente == self.destinatario:
+            raise ValidationError("O setor de origem não pode ser o mesmo que o setor de destino.")
+        
         if self.remetente == self.destinatario:
             raise ValidationError("O setor de origem não pode ser o mesmo que o setor de destino.")
 
@@ -225,3 +233,23 @@ class ProtocoloMovimentacao(models.Model):
         self.status = 'confirmado'
         self.save()
         self.movimentacoes.update(status='recebida', confirmacao='manual')
+
+class CorrecaoProcesso(models.Model):
+
+    CAMPOS_CHOICES = [
+        ("numero", "Número"),
+        ("titulo", "Título"),
+        ("descricao", "Descrição"),
+        ("fim", "Setor Fim"),
+    ]
+
+    processo = models.ForeignKey(Processo, on_delete=models.CASCADE, related_name='correcoes')
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE)
+    data = models.DateTimeField(auto_now_add=True)
+
+    campo_alterado = models.CharField(max_length=50, choices=CAMPOS_CHOICES)  # ex: 'título', 'setor_destino'
+    valor_anterior = models.TextField()
+    valor_novo = models.TextField()
+
+    def __str__(self):
+        return f"Correção do campo '{self.campo_alterado}' por {self.usuario.get_full_name}"

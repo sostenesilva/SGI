@@ -1,0 +1,39 @@
+<div class="modal-content">
+    <div class="modal-header">
+        <h5 class="modal-title">Histórico de Correções - Processo {{ processo.numero }}</h5>
+    </div>
+    <div class="modal-body d-flex flex-row justify-content-between">
+        <div class="col-5">
+            <h6>Nova Correção</h6>
+            <form hx-post="{% url 'salvar_correcoes_processo' processo.id %}" hx-target="#dialog" hx-swap="innerHTML">
+            {% csrf_token %}
+            {{ form.as_p }}
+            
+            <button class="btn btn-sm btn-primary">Salvar</button>
+        </form>
+        </div>
+        <div class="col-6 table-responsive" style="max-height: 500px;">
+            <table class="table table-striped">
+                <tbody>
+                    {% if correcoes %}
+                        {% for correcao in correcoes %}
+                            <tr>
+                                <td style="font-size: 10px; text-align: left;">
+                                    <strong>{{ correcao.get_campo_alterado_display }}:</strong> 
+                                    "{{ correcao.valor_anterior }}" → "{{ correcao.valor_novo }}" <br>
+                                    <small class="text-muted">Por {{ correcao.usuario.get_full_name }} em {{ correcao.data|date:"d/m/Y H:i" }}</small>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td>
+                                <p class="text-muted">Nenhuma correção registrada.</p>
+                            </td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
