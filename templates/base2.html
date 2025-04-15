@@ -306,7 +306,7 @@
         </ul>
       </div>
       <span>{{ request.user.get_full_name|default:"Usuário" }}</span>
-      <a href="#" class="btn btn-outline-danger btn-sm">Sair</a>
+      <a href="{% url 'account_logout' %}" class="btn btn-outline-danger btn-sm">Sair</a>
     </div>
   </div>
 
