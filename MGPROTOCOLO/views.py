@@ -217,6 +217,7 @@ def gerar_protocolo(request):
 @login_required
 def arquivar_processo(request, processo_id):
     processo = get_object_or_404(Processo, id=processo_id)
+    arquivo = get_object_or_404(Setor, sigla='ARQ')
 
     # Verifica se o processo já está arquivado ou concluído
     if processo.status in ['arquivado', 'concluido', 'cancelado']:
@@ -228,13 +229,13 @@ def arquivar_processo(request, processo_id):
         descricao=f"Processo arquivado pelo setor {processo.atual}",
         realizado_por=request.user,
         remetente=processo.atual,  # Último setor que estava
-        destino=None,  # Não há destino real
+        destino=arquivo,  # Não há destino real
         status='arquivada'
     )
 
     # Alterar status do processo para arquivado
     processo.status = 'arquivado'
-    processo.atual = None  # Remove o setor atual, pois foi arquivado
+    processo.atual = arquivo  # Remove o setor atual, pois foi arquivado
     processo.ultima_movimentacao = movimentacao  # Atualiza a última movimentação
     processo.save()
 
