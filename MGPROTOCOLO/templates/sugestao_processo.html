@@ -1,7 +1,8 @@
-<div class="card p-2">
-    <p class="mb-1"><strong>Descrição: </strong>{{ processo.descricao }}</p>
+{% for processo in processos %}
+  <div class="card p-2 mb-2">
+    <p class="mb-1"><strong>Descrição:</strong><br>{{ processo.descricao }}</p>
     <p class="mb-1"><strong>Assunto:</strong> {{ processo.titulo }}</p>
     <p class="mb-1"><strong>Número:</strong> {{ processo.numero }}</p>
     <p class="mb-1"><strong>Setor Destino:</strong> {{ processo.fim.nome }}</p>
   </div>
-  
+{% endfor %}

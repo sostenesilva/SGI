@@ -8,7 +8,18 @@
                 {{ form.non_field_errors }}
                 <!-- DESCRIÇÃO -->
                 <div class="mb-3">
-                    Descrição:
+                    <div class="d-flex flex-row justify-content-between align-items-center mb-1">
+                        <label>Descrição:</label>
+                        <a href="#"
+                        class="btn btn-sm btn-secondary"
+                        hx-get="{% url 'sugerir_dados_processo' %}"
+                        hx-include="#id_descricao"
+                        hx-target="#sugestao-descricao"
+                        hx-indicator="#loading">
+                        Buscar registros semelhantes
+                        </a>
+                    </div>
+                    
                     {{ form.descricao }}
                 </div>
                 <div class="mb-3">
@@ -31,16 +42,7 @@
             </div>
             <div class="col-6">
                 <div class="d-flex justify-content-between align-items-center">
-                    <h6>Sugestão de preenchimento</h6>
-                    <a href="#"
-                    class="btn btn-sm btn-secondary"
-                    hx-get="{% url 'sugerir_dados_processo' %}"
-                    hx-include="#id_descricao"
-                    hx-target="#sugestao-descricao"
-                    hx-indicator="#loading">
-                    Sugerir
-                    </a>
-
+                    <h6>Sugestões de preenchimento</h6>
                 </div>
                 <hr>
                 <small id="sugestao-descricao" class="text-muted d-block mt-1"></small>

@@ -363,15 +363,14 @@ def sugerir_dados_processo(request):
     if not descricao or len(descricao) < 5:
         return HttpResponse("<p class='text-muted'>Digite pelo menos 5 caracteres para sugerir.</p>")
 
-    processo = (
+    processos = (
         Processo.objects
         .filter(descricao__icontains=descricao)
         .exclude(descricao__exact=descricao)
-        .order_by('-criado_em')
-        .first()
+        .order_by('-criado_em')[:5]
     )
 
-    if not processo:
+    if not processos:
         return HttpResponse("<p class='text-muted'>Nenhum processo semelhante encontrado.</p>")
 
-    return render(request, 'sugestao_processo.html', {'processo': processo})
+    return render(request, 'sugestao_processo.html', {'processos': processos})
