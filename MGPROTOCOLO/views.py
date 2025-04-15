@@ -314,11 +314,12 @@ def historico_correcoes_processo(request, processo_id):
     processo = get_object_or_404(Processo, id=processo_id)
     correcoes = processo.correcoes.order_by('-data')
     form = ProcessoCorrecaoForm(instance=processo, disabled =not processo.usuario_pode_modificar(request.user))
-
+    pode_modificar = processo.usuario_pode_modificar(request.user)
     context = {
         'processo': processo,
         'correcoes': correcoes,
         'form': form,
+        'pode_modificar':pode_modificar
     }
     return render(request, 'correcao_processo_modal.html', context)
 
