@@ -4,13 +4,14 @@ from django.http import HttpResponse
 from django.template.loader import render_to_string
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
-from django.db.models import Prefetch, Q, Case, When, Value, IntegerField, Sum
+from django.db.models import Prefetch, Q, Case, When, Value, IntegerField, Sum, ExpressionWrapper, F
 from django.urls import reverse
 from weasyprint import CSS, HTML
 from .models import Processo, Documento, Movimentacao, ProtocoloMovimentacao, CorrecaoProcesso
 from HOME.models import Setor
 from .forms import ProcessoCorrecaoForm, ProcessoForm, DocumentoForm, MovimentacaoForm, ComprovacaoForm
 from django.templatetags.static import static
+from django.db.models.functions import Coalesce
 
 @login_required
 def processos_no_setor(request):
@@ -362,23 +363,26 @@ def sugerir_descricao_processo(request):
     termos = descricao_digitada.lower().split()
 
     if not termos:
-        return render(request, 'sugestao_processo.html', {'sugestoes': []})
+        return render(request, 'partials/sugestoes_processo.html', {'sugestoes': []})
 
-    # Criamos um Q para trazer processos que tenham pelo menos algum termo
+    # Filtro: qualquer termo no título, descrição ou número
     filtro_q = Q()
     for termo in termos:
         filtro_q |= Q(descricao__icontains=termo) | Q(titulo__icontains=termo) | Q(numero__icontains=termo)
 
-    # Agora criamos os anotadores de relevância (quantas palavras coincidem)
-    anotacoes = []
+    # Soma da pontuação de relevância
+    relevancia = None
     for termo in termos:
-        anotacoes.append(Case(When(descricao__icontains=termo, then=Value(1)), default=Value(0), output_field=IntegerField()))
-        anotacoes.append(Case(When(titulo__icontains=termo, then=Value(1)), default=Value(0), output_field=IntegerField()))
-        anotacoes.append(Case(When(numero__icontains=termo, then=Value(1)), default=Value(0), output_field=IntegerField()))
+        partes = [
+            Case(When(descricao__icontains=termo, then=Value(1)), default=Value(0), output_field=IntegerField()),
+            Case(When(titulo__icontains=termo, then=Value(1)), default=Value(0), output_field=IntegerField()),
+            Case(When(numero__icontains=termo, then=Value(1)), default=Value(0), output_field=IntegerField())
+        ]
+        for parte in partes:
+            relevancia = parte if relevancia is None else relevancia + parte
 
-    # Aplicamos o filtro + anotamos a relevância
     processos = Processo.objects.filter(filtro_q)\
-        .annotate(relevancia=Sum(*anotacoes))\
+        .annotate(relevancia=ExpressionWrapper(relevancia, output_field=IntegerField()))\
         .order_by('-relevancia', '-criado_em')[:5]
 
-    return render(request, 'sugestao_processo.html', {'sugestoes': processos})
+    return render(request, 'partials/sugestoes_processo.html', {'sugestoes': processos})
