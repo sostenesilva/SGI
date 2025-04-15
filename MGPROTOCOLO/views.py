@@ -385,4 +385,4 @@ def sugerir_descricao_processo(request):
         .annotate(relevancia=ExpressionWrapper(relevancia, output_field=IntegerField()))\
         .order_by('-relevancia', '-criado_em')[:5]
 
-    return render(request, 'sugestao.html', {'sugestoes': processos})
+    return render(request, 'sugestao_processo.html', {'sugestoes': processos})
