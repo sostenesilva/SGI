@@ -50,4 +50,13 @@
             </div>
         </div>
     </form>
+
+    <script>
+        function preencherCampos(numero, titulo, descricao, fim_id) {
+            document.getElementById("id_numero").value = numero;
+            document.getElementById("id_titulo").value = titulo;
+            document.getElementById("id_descricao").value = descricao;
+            document.getElementById("id_fim").value = fim_id;
+        }
+    </script>
 {% endblock %}

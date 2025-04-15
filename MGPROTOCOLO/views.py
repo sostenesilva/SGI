@@ -357,20 +357,29 @@ def salvar_correcoes_processo(request, processo_id):
             )
 
 
-def sugerir_dados_processo(request):
-    descricao = request.GET.get('descricao', '').strip()
+def sugerir_descricao_processo(request):
+    query = request.GET.get("descricao", "").strip()
 
-    if not descricao or len(descricao) < 5:
-        return HttpResponse("<p class='text-muted'>Digite pelo menos 5 caracteres para sugerir.</p>")
+    if not query:
+        return HttpResponse("<small class='text-muted'>Digite algo para receber sugestões.</small>")
 
-    processos = (
-        Processo.objects
-        .filter(descricao__icontains=descricao)
-        .exclude(descricao__exact=descricao)
-        .order_by('-criado_em')[:5]
-    )
+    sugestoes = Processo.objects.filter(descricao__icontains=query).order_by("-criado_em")[:5]
 
-    if not processos:
-        return HttpResponse("<p class='text-muted'>Nenhum processo semelhante encontrado.</p>")
+    if not sugestoes:
+        return HttpResponse("<small class='text-muted'>Nenhum processo semelhante encontrado.</small>")
 
-    return render(request, 'sugestao_processo.html', {'processos': processos})
+    html = ""
+    for processo in sugestoes:
+        html += f"""
+        <div class='card p-2 mb-2'>
+            <p><strong>{processo.titulo}</strong></p>
+            <p><small>{processo.descricao}</small></p>
+            <p><small><b>Nº Documento:</b> {processo.numero} | <b>Setor Fim:</b> {processo.fim.nome}</small></p>
+            <button type="button" class="btn btn-sm btn-outline-primary"
+                    onclick="preencherCampos('{processo.numero}', '{processo.titulo}', `{processo.descricao}`, '{processo.fim.id}')">
+                Usar este modelo
+            </button>
+        </div>
+        """
+
+    return HttpResponse(html)
