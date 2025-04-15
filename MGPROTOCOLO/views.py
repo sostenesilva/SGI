@@ -313,7 +313,7 @@ def mais_informacoes(request, processo_id):
 def historico_correcoes_processo(request, processo_id):
     processo = get_object_or_404(Processo, id=processo_id)
     correcoes = processo.correcoes.order_by('-data')
-    form = ProcessoCorrecaoForm(instance=processo, disabled = processo.usuario_pode_modificar(request.user))
+    form = ProcessoCorrecaoForm(instance=processo, disabled =not processo.usuario_pode_modificar(request.user))
 
     context = {
         'processo': processo,
