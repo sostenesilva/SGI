@@ -363,7 +363,7 @@ def sugerir_descricao_processo(request):
     termos = descricao_digitada.lower().split()
 
     if not termos:
-        return render(request, 'partials/sugestoes_processo.html', {'sugestoes': []})
+        return render(request, 'sugestao_processo.html', {'sugestoes': []})
 
     # Filtro: qualquer termo no título, descrição ou número
     filtro_q = Q()
@@ -385,4 +385,4 @@ def sugerir_descricao_processo(request):
         .annotate(relevancia=ExpressionWrapper(relevancia, output_field=IntegerField()))\
         .order_by('-relevancia', '-criado_em')[:5]
 
-    return render(request, 'partials/sugestoes_processo.html', {'sugestoes': processos})
+    return render(request, 'sugestao.html', {'sugestoes': processos})
