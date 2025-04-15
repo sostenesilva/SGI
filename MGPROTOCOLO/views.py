@@ -362,7 +362,7 @@ def sugerir_descricao_processo(request):
     termos = descricao_digitada.lower().split()
 
     if not termos:
-        return render(request, 'partials/sugestoes_processo.html', {'sugestoes': []})
+        return render(request, 'sugestoes_processo.html', {'sugestoes': []})
 
     # Criamos um Q para trazer processos que tenham pelo menos algum termo
     filtro_q = Q()
@@ -381,4 +381,4 @@ def sugerir_descricao_processo(request):
         .annotate(relevancia=Sum(*anotacoes))\
         .order_by('-relevancia', '-criado_em')[:5]
 
-    return render(request, 'partials/sugestoes_processo.html', {'sugestoes': processos})
+    return render(request, 'sugestoes_processo.html', {'sugestoes': processos})
