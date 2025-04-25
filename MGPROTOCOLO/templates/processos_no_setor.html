@@ -39,33 +39,36 @@
                                 </div>
                             {% endif %}
                         </td>
-                        <td class="col-1 d-flex flex-row" colspan="2">
-                            {% if processo.ultima_movimentacao.status == 'em_tramitacao' and processo.ultima_movimentacao.confirmacao == 'pendente' %}
-                            <div class="m-2">
-                                <i class="fa-solid fa-file-import"></i>
-                            </div>    
-                            {% endif %}
-                            <div class="btn-group" role="group">
-                                <button id="btnGroupDrop1" type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                                  Ações
-                                </button>
-                                <ul class="dropdown-menu" aria-labelledby="btnGroupDrop1">
-                                    <div class="dropdown-item">
-                                        {% if processo.ultima_movimentacao.status == 'em_tramitacao' and processo.ultima_movimentacao.confirmacao == 'pendente' %}
-                                            <a type="button" href="{% url 'receber_processo' processo.id %}" class="btn btn-sm btn-warning">
-                                                Receber
+                        <td class="col-1" rowspan="2">
+                            <div class="d-flex flex-row">
+                                {% if processo.ultima_movimentacao.status == 'em_tramitacao' and processo.ultima_movimentacao.confirmacao == 'pendente' %}
+                                <div class="m-2">
+                                    <i class="fa-solid fa-file-import"></i>
+                                </div>    
+                                {% endif %}
+                                <div class="btn-group" role="group">
+                                    <button id="btnGroupDrop1" type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Ações
+                                    </button>
+                                    <ul class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+                                        <div class="dropdown-item">
+                                            {% if processo.ultima_movimentacao.status == 'em_tramitacao' and processo.ultima_movimentacao.confirmacao == 'pendente' %}
+                                                <a type="button" href="{% url 'receber_processo' processo.id %}" class="btn btn-sm btn-warning">
+                                                    Receber
+                                                </a>
+                                            {% else %}
+                                                <a class="btn btn-warning btn-sm" hx-get="{% url 'criar_movimentacao' processo.id %}" hx-target="#dialog" hx-trigger="click" data-bs-toggle="modal" data-bs-target="#modal">
+                                                    Mover
+                                                </a>
+                                            {% endif %}
+                                            <a href="{% url 'detalhes_processo' processo.id %}" class="btn btn-info btn-sm">
+                                                Detalhes
                                             </a>
-                                        {% else %}
-                                            <a class="btn btn-warning btn-sm" hx-get="{% url 'criar_movimentacao' processo.id %}" hx-target="#dialog" hx-trigger="click" data-bs-toggle="modal" data-bs-target="#modal">
-                                                Mover
-                                            </a>
-                                        {% endif %}
-                                        <a href="{% url 'detalhes_processo' processo.id %}" class="btn btn-info btn-sm">
-                                            Detalhes
-                                        </a>
-                                    </div>
-                                </ul>
+                                        </div>
+                                    </ul>
+                                </div>
                             </div>
+                            
                             
                         </td>
                     </tr>
