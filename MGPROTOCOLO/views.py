@@ -156,7 +156,7 @@ def listar_movimentacoes_tramitacao(request):
     # Filtrar os setores DESTINATÁRIOS
     setores = Setor.objects.prefetch_related(
         Prefetch(
-            'movimentacoes_destino',  # related_name da FK 'destinatario'
+            'SetorDestinatario',  # related_name da FK 'destinatario'
             queryset=Movimentacao.objects.filter(
                 remetente__in=setores_ids,
                 status='em_tramitacao',
