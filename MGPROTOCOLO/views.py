@@ -150,13 +150,12 @@ def listar_movimentacoes_tramitacao(request):
     if not setores_usuario.exists():
         return render(request, 'listar_movimentacoes_tramitacao.html', {'setores': []})
 
-    # IDs dos setores do usuário
     setores_ids = setores_usuario.values_list('id', flat=True)
 
-    # Filtrar os setores DESTINATÁRIOS
+    # Prefetch dos setores DESTINATÁRIOS com movimentações PENDENTES feitas por setores do usuário
     setores = Setor.objects.prefetch_related(
         Prefetch(
-            'SetorDestinatario',  # related_name da FK 'destinatario'
+            'SetorDestinatario',  # related_name da FK `destinatario` na model Movimentacao
             queryset=Movimentacao.objects.filter(
                 remetente__in=setores_ids,
                 status='em_tramitacao',
@@ -164,7 +163,7 @@ def listar_movimentacoes_tramitacao(request):
             ).select_related('remetente', 'destinatario', 'processo'),
             to_attr='movs_pendentes'
         )
-    ).filter(movimentacoes_destino__remetente__in=setores_ids).distinct()
+    ).filter(SetorDestinatario__remetente__in=setores_ids).distinct()
 
     return render(request, 'listar_movimentacoes_tramitacao.html', {'setores': setores})
 
