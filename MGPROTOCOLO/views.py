@@ -145,26 +145,26 @@ def criar_movimentacao(request, processo_id):
 
 @login_required
 def listar_movimentacoes_tramitacao(request):
-    usuario = request.user
-    setores_usuario = usuario.setor_home.all()
-    print(setores_usuario)
+    setores_usuario = request.user.setor_home.all()
+
     if not setores_usuario.exists():
         return render(request, 'listar_movimentacoes_tramitacao.html', {'setores': []})
 
-    # Pega todos os IDs dos setores do usuário
+    # IDs dos setores do usuário
     setores_ids = setores_usuario.values_list('id', flat=True)
-    print(setores_ids)
 
+    # Filtrar os setores DESTINATÁRIOS
     setores = Setor.objects.prefetch_related(
         Prefetch(
-            'SetorRemetente',  # <- related_name da FK 'remetente'
+            'movimentacoes_destino',  # related_name da FK 'destinatario'
             queryset=Movimentacao.objects.filter(
+                remetente__in=setores_ids,
                 status='em_tramitacao',
                 confirmacao='pendente'
-            ).select_related('processo', 'destinatario', 'remetente'),
-            to_attr='movs_pendentes'  # <- nome personalizado para acessar no template
+            ).select_related('remetente', 'destinatario', 'processo'),
+            to_attr='movs_pendentes'
         )
-    ).filter(id__in=setores_usuario.values_list('id', flat=True))
+    ).filter(movimentacoes_destino__remetente__in=setores_ids).distinct()
 
     return render(request, 'listar_movimentacoes_tramitacao.html', {'setores': setores})
 

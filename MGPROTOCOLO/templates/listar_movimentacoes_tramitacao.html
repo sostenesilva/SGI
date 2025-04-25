@@ -5,8 +5,8 @@
         {% csrf_token %}
         <div class="container">
             <div class="row">
-                {% for setor in setores %}
-                    {% if setor.movs_pendentes %}
+                {% if setor.movs_pendentes %}
+                    {% for movimentacao in setor.movs_pendentes %}
                         <div class="col-md-6 col-lg-4 mb-4">  <!-- Adapta para 2 ou 3 colunas -->
                             <div class="card shadow-sm">
                                 <div class="card-header bg-primary text-white">
