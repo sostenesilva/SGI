@@ -157,7 +157,7 @@ def listar_movimentacoes_tramitacao(request):
 
     setores = Setor.objects.prefetch_related(
         Prefetch(
-            'SetorRemetente',
+            'Setor_Remetente',
             queryset=Movimentacao.objects.filter(
                 remetente__in=setores_usuario,
                 status='em_tramitacao',
@@ -165,7 +165,6 @@ def listar_movimentacoes_tramitacao(request):
             ).select_related('remetente', 'destinatario')
         )
     ).distinct()
-    print(setores)
 
     return render(request, 'listar_movimentacoes_tramitacao.html', {'setores': setores})
 
