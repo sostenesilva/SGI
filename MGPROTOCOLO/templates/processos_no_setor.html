@@ -39,9 +39,11 @@
                                 </div>
                             {% endif %}
                         </td>
-                        <td class="col-1 d-flex flex-row text-center" rowspan="2">
+                        <td class="col-1 d-flex flex-row" rowspan="2">
                             {% if processo.ultima_movimentacao.status == 'em_tramitacao' and processo.ultima_movimentacao.confirmacao == 'pendente' %}
+                            <div class="m-2">
                                 <i class="fa-solid fa-file-import"></i>
+                            </div>    
                             {% endif %}
                             <div class="btn-group" role="group">
                                 <button id="btnGroupDrop1" type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
