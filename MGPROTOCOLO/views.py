@@ -157,14 +157,14 @@ def listar_movimentacoes_tramitacao(request):
 
     setores = Setor.objects.prefetch_related(
         Prefetch(
-            'Setor_Remetente',
+            'SetorRemetente',  # <- related_name da FK 'remetente'
             queryset=Movimentacao.objects.filter(
-                remetente__in=setores_usuario,
                 status='em_tramitacao',
                 confirmacao='pendente'
-            ).select_related('remetente', 'destinatario')
+            ).select_related('processo', 'destinatario', 'remetente'),
+            to_attr='movs_pendentes'  # <- nome personalizado para acessar no template
         )
-    ).distinct()
+    ).filter(id__in=setores_usuario.values_list('id', flat=True))
 
     return render(request, 'listar_movimentacoes_tramitacao.html', {'setores': setores})
 

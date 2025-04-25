@@ -6,7 +6,7 @@
         <div class="container">
             <div class="row">
                 {% for setor in setores %}
-                    {% if setor.Setor_Remetente %}
+                    {% if setor.movs_pendentes %}
                         <div class="col-md-6 col-lg-4 mb-4">  <!-- Adapta para 2 ou 3 colunas -->
                             <div class="card shadow-sm">
                                 <div class="card-header bg-primary text-white">
@@ -23,7 +23,7 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {% for movimentacao in setor.Setor_Remetente.all %}
+                                            {% for movimentacao in setor.movs_pendentes %}
                                                 <tr>
                                                     <td><input type="checkbox" name="movimentacoes" value="{{ movimentacao.id }}" class="check_{{ setor.id }}"></td>
                                                     <td>{{ movimentacao.processo.numero }}</td>
