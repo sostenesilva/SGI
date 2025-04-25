@@ -147,23 +147,25 @@ def criar_movimentacao(request, processo_id):
 def listar_movimentacoes_tramitacao(request):
     usuario = request.user
     setores_usuario = usuario.setor_home.all()
-
+    print(setores_usuario)
     if not setores_usuario.exists():
         return render(request, 'listar_movimentacoes_tramitacao.html', {'setores': []})
 
     # Pega todos os IDs dos setores do usuário
     setores_ids = setores_usuario.values_list('id', flat=True)
+    print(setores_ids)
 
     setores = Setor.objects.prefetch_related(
         Prefetch(
             'SetorRemetente',
             queryset=Movimentacao.objects.filter(
-                remetente__in=setores_ids,
+                remetente__in=setores_usuario,
                 status='em_tramitacao',
                 confirmacao='pendente'
             ).select_related('remetente', 'destinatario')
         )
     ).distinct()
+    print(setores)
 
     return render(request, 'listar_movimentacoes_tramitacao.html', {'setores': setores})
 
@@ -177,13 +179,13 @@ def gerar_protocolo(request):
 
         if movimentacoes.exists():
             # Verificar se todas as movimentações são do mesmo setor de destino
-            setor_destino = movimentacoes.first().destinatario
-            if not all(m.setor_destino == setor_destino for m in movimentacoes):
+            SetorDestinatario = movimentacoes.first().destinatario
+            if not all(m.destinatario == SetorDestinatario for m in movimentacoes):
                 return HttpResponse("Todas as movimentações devem ser do mesmo setor de destino.", status=400)
 
             # Criar o protocolo
             protocolo = ProtocoloMovimentacao.objects.create(
-                destino=setor_destino,
+                destinatario=SetorDestinatario,
                 criado_por=request.user
             )
             protocolo.movimentacoes.set(movimentacoes)
@@ -199,7 +201,7 @@ def gerar_protocolo(request):
             html_string = render_to_string('protocolo_pdf.html', {
                 'protocolo': protocolo,
                 'page_background': page_background,
-                'setor_usuario': request.user.setores.first()
+                'setor_usuario': request.user.setor_home.first()
             })
 
             # Caminho absoluto do CSS
