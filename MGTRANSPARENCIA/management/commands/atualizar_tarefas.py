@@ -1,12 +1,15 @@
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 from MGTRANSPARENCIA.models import DbAvaliacaoLog
+from datetime import timedelta
 
 class Command(BaseCommand):
     help = 'Atualiza tarefas pendentes para atrasadas se a data limite passou'
 
     def handle(self, *args, **kwargs):
-        agora = timezone.now()
+        ## A data limite da tarefa tem hora 00:00, por isso o deslocamento de 1 dia na data atual.
+        agora = timezone.now() - timedelta(days=1)
+
         tarefas_atrasadas = DbAvaliacaoLog.objects.filter(
             status='Pendente',
             data_limite__lt=agora
