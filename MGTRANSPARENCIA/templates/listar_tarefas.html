@@ -32,7 +32,17 @@
                     <b>Responsável:</b> {{ tarefa.avaliacao.secretaria }}
                 </td>
                 <td class="" style="text-align: left; padding-left: 30px; font-size: smaller;  margin-top: -8px;">
-                    <b>Status:</b> {{ tarefa.status }}
+                    
+                    <b>Status:</b> <span class="badge 
+                    {% if tarefa.status == 'Pendente' %}bg-secondary
+                    {% elif tarefa.status == 'Atrasado' %}bg-danger
+                    {% elif tarefa.status == 'Em análise' %}bg-warning
+                    {% elif tarefa.status == 'Publicado' %}bg-success
+                    {% elif tarefa.status == 'Publicado com atraso' %}bg-dark
+                    {% else %}bg-light
+                    {% endif %}">
+                        {{ tarefa.status }}
+                    </span>
                 </td>
                 <td class="" style="text-align: left; padding-left: 30px; font-size: smaller;  margin-top: -8px;">
                     <b>Prazo:</b> {{ tarefa.data_limite|date:"d/m/Y" }}
