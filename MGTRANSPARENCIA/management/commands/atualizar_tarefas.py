@@ -14,4 +14,4 @@ class Command(BaseCommand):
         count = tarefas_atrasadas.count()
         tarefas_atrasadas.update(status='Atrasado')
 
-        self.stdout.write(self.style.SUCCESS(f'{count} tarefas marcadas como atrasadas.'))
+        self.stdout.write(self.style.SUCCESS(f'Data atual: {agora} - {count} tarefas marcadas como atrasadas.'))
