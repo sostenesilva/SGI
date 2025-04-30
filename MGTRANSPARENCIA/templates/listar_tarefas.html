@@ -1,0 +1,57 @@
+{% extends 'base2.html' %}
+{% block titulo %}Minhas Avaliações{% endblock titulo %}
+{% block contentdash %}
+<form method="GET" action="{% url 'listar_tarefas' %}" class="d-flex mb-3">
+    <input type="text" name="buscar" class="form-control me-2" placeholder="Buscar tarefa..." value="{{ query }}">
+    <button type="submit" class="btn btn-primary">Buscar</button>
+</form>
+<div class="table-responsive" style="max-height: 570px;">
+    <table class="table table-sm">
+        <thead>
+            <tr>
+                <th colspan="4">Relação de Tarefas</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for tarefa in tarefas %}
+            <tr>
+                <td colspan="3" style="height: 5px; background-color: transparent;"></td>
+            </tr>
+            <tr>
+                <td class="" style="text-align: left; padding-left: 30px; font-size: smaller;  margin-top: -8px;" colspan="3">
+                    <b>Tarefa:</b> {{ tarefa.tarefa }}
+                </td>
+                <td class="" style="vertical-align : middle;text-align:center;" rowspan="3">
+                    <a type="button" href="{% url 'detalhes_avaliacao' tarefa.avaliacao.id %}" class="btn btn-sm btn-secondary">
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                    </a>
+                </td>
+            </tr>
+            <tr>
+                <td class="" style="text-align: left; padding-left: 30px; font-size: smaller;  margin-top: -8px;">
+                    <b>Responsável:</b> {{ tarefa.avaliacao.secretaria }}
+                </td>
+                <td class="" style="text-align: left; padding-left: 30px; font-size: smaller;  margin-top: -8px;">
+                    <b>Status:</b> {{ tarefa.status }}
+                </td>
+                <td class="" style="text-align: left; padding-left: 30px; font-size: smaller;  margin-top: -8px;">
+                    <b>Prazo:</b> {{ tarefa.data_limite|date:"d/m/Y" }}
+                </td>
+            </tr>   
+            
+            <tr>
+                <td class="" style="text-align: left; padding-left: 30px; font-size: smaller;  margin-top: -8px;" colspan="3">
+                    <b>Critério:</b> {{ tarefa.avaliacao.criterio.item }} - {{ tarefa.avaliacao.criterio.criterio }}
+                </td>
+            </tr>
+            
+            {% empty %}
+            <tr>
+                <td colspan="3" class="text-center">Nenhuma tarefa encontrada.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

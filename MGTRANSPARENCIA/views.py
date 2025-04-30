@@ -50,6 +50,36 @@ def listar_avaliacoes(request):
     return render(request, 'listar_avaliacoes.html', {'avaliacoes': avaliacoes, 'query': query})
 
 @login_required
+def listar_tarefas(request):
+    """Lista as tarefas"""
+
+    tarefas = DbAvaliacaoLog.objects.all()
+
+    # if Setor.objects.get(sigla='CSCI').usuarios.contains(request.user):
+    #     avaliacoes = DbAvaliacao.objects.all()
+    # else:
+    #     avaliacoes = DbAvaliacao.objects.filter(secretaria__setores__in=request.user.setor_home.all())
+
+    # Capturar o termo de busca
+    query = request.GET.get('buscar', '')
+
+    if query:
+        tarefas = DbAvaliacaoLog.objects.filter(
+            Q(avaliacao__criterio__criterio__icontains=query) |
+            Q(avaliacao__secretaria__nome__icontains=query) |
+            Q(avaliacao__secretaria__sigla__icontains=query) |
+            Q(avaliacao__criterio__item__icontains=query) |
+            Q(tarefa__icontains=query) |
+            Q(status__icontains=query) |
+            Q(data_limite__icontains=query)
+        )
+
+    # paginator = Paginator(tarefas, 20)
+    # page_number = request.GET.get('page')
+    # page_obj = paginator.get_page(page_number)
+    return render(request, 'listar_tarefas.html', {'tarefas': tarefas, 'query': query})
+
+@login_required
 def detalhes_avaliacao(request, avaliacao_id):
     """Exibe detalhes da avaliação e permite o envio de documentos."""
     avaliacao = get_object_or_404(DbAvaliacao, id=avaliacao_id)

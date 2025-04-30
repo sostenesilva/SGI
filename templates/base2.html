@@ -209,11 +209,14 @@
             <li><a href="{% url 'listar_criterios' %}">Critérios</a></li>
             <li><a href="{% url 'listar_avaliacoes' %}">Avaliações</a></li>
             {% if "auth.adicionar_Avaliacao_MGTRANSPARENCIA" in perms%}
-              <li class="sidebar-item">
+              <li>
                   <a class="sidebar-link" hx-get="{% url 'adicionar_avaliacao' %}" hx-target="#dialog" hx-trigger="click" data-bs-toggle="modal" data-bs-target="#modal">
                       <span>Nova Avaliação</span>
                   </a>
               </li>
+            {% endif %}
+            {% if request.user.is_superuser %}
+            <li><a href="{% url 'listar_tarefas' %}">Tarefas</a></li>
             {% endif %}
           </ul>
         </li>
