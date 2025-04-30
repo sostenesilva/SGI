@@ -7,7 +7,7 @@ from .models import DbDimensao, DbCriterios, DbAvaliacao, DbAvaliacaoLog, Inform
 from .forms import AvaliacaoLogForm, AvaliacaoForm
 from django.core.paginator import Paginator
 from HOME.models import Secretaria, Setor
-from django.db.models import Q
+from django.db.models import Q, Case, When, IntegerField
 from HOME.utils import notificar
 
 
@@ -74,6 +74,19 @@ def listar_tarefas(request):
             Q(data_limite__icontains=query)
         )
 
+
+    ordem_status = Case(
+        When(status='Atrasado', then=0),
+        When(status='Pendente', then=1),
+        When(status='Em análise', then=2),
+        When(status='Publicado', then=3),
+        When(status='Publicado com atraso', then=4),
+        output_field=IntegerField()
+    )
+
+    tarefas = tarefas.annotate(
+        ordem_personalizada=ordem_status
+    ).order_by('ordem_personalizada', 'data_limite')
     # paginator = Paginator(tarefas, 20)
     # page_number = request.GET.get('page')
     # page_obj = paginator.get_page(page_number)
