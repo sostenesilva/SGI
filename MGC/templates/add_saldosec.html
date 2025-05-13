@@ -27,8 +27,8 @@
                 {{ saldocontratosec_form.fiscal }}
             <div class="col-4 btn-group mx-2" role="group" style="height:fit-content">
                 <button type="submit" class="btn btn-sm btn-success">Adicionar</button>
-                <button type="button" href="{% url 'contratos' %}" class="btn btn-sm btn-danger">Cancelar</button>
-                <button type="button" href="{% url 'contratos_additens' contrato.id %}" class="btn btn-sm btn-secondary">Adicionar Itens Manualmente</button>
+                <a type="button" href="{% url 'contratos' %}" class="btn btn-sm btn-danger">Cancelar</a>
+                <a type="button" href="{% url 'contratos_additens' contrato.id %}" class="btn btn-sm btn-secondary">Adicionar Itens Manualmente</a>
             </div>
         </div>
 

@@ -1,0 +1,12 @@
+{% extends 'base2.html' %}
+{% block titulo %}Confirmar Exclusão{% endblock %}
+{% block contentdash %}
+<div class="container">
+    <h4>Tem certeza que deseja excluir?</h4>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Confirmar</button>
+        <a href="{{ voltar_url }}" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+{% endblock %}

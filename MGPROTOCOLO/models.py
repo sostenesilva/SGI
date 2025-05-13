@@ -140,6 +140,7 @@ class Documento(models.Model):
     CLASSIFICACAO_CHOICES = [
         ('oficio', 'Ofício'),
         ('ci', 'Comunicado Interno'),
+        ('despacho', 'Despacho'),
         ('memorando', 'Memorando'),
         ('parecer', 'Parecer'),
         ('laudo', 'Láudo'),

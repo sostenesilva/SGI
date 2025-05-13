@@ -1,0 +1,82 @@
+{% extends 'base2.html' %}
+{% block titulo %}Detalhes da Demanda{% endblock %}
+{% block contentdash %}
+<div class="container">
+
+    <div class="d-flex justify-content-between">
+        <div class="d-flex flex-row">
+            <h4><b>SGI</b> - Detalhar Demanda</h4>
+            <a href="{% url 'criar_demanda' %}" class="btn btn-sm btn-primary mx-3" style="height:fit-content;">+ Nova Demanda</a>
+        </div>
+        <form method="GET" action="{% url 'listar_demandas' %}" class="d-flex flex-row col-4">
+            <input type="text" name="buscar" class="form-control me-2" placeholder="Buscar..." value="{{ query }}">
+            <button type="submit" class="btn btn-primary">Buscar</button>
+        </form>
+    </div>
+    <hr>
+
+    <table class="table table-sm table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>Título</th>
+                <th>Documento Motivador</th>
+                <th>Prazo Geral</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>{{ demanda.titulo }}</td>
+                <td>{{ demanda.documento_motivador }}</td>
+                <td>{{ demanda.prazo_geral|date:"d/m/Y" }}</td>
+                <td>{{ demanda.status }}</td>
+            </tr>
+            <tr>
+                <td colspan="6" style="text-align: left;" class="px-4"><b>Descrição:</b> {{ demanda.descricao|truncatewords:100 }}</td>
+            </tr>
+        </tbody>
+    </table>
+    <hr>
+    <div class="d-flex flex-row">
+        <h6>Diligências</h6>
+        <a hx-get="{% url 'criar_diligencia' demanda.id %}" hx-target="#dialog" class="btn btn-primary btn-sm mx-2" style="font-size: 7pt; height: fit-content;">+ Nova Diligência</a>
+    </div>
+
+    <div class="table-responsive" style="max-height: 70vh;">
+        <table class="table table-sm table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>Título</th>
+                    <th>Tipo</th>
+                    <th>Setor Responsável</th>
+                    <th>Prazo</th>
+                    <th>Status</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for diligencia in demanda.diligencias.all %}
+                    <tr>
+                        <td>{{ diligencia.titulo }}</td>
+                        <td>{{ diligencia.tipo }}</td>
+                        <td>{{ diligencia.setor_responsavel }}</td>
+                        <td>{{ diligencia.prazo|date:"d/m/Y" }}</td>
+                        <td>{{ diligencia.status }}</td>
+                        <td>
+                            <a href="{% url 'editar_diligencia' diligencia.id %}" class="btn btn-sm btn-warning" style="font-size: 9pt; height: fit-content;">Editar</a>
+                            <a href="{% url 'excluir_diligencia' diligencia.id %}" class="btn btn-sm btn-danger" style="font-size: 9pt; height: fit-content;">Excluir</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="6" style="text-align: left;" class="px-4"><b>Descrição:</b> {{ demanda.descricao|truncatewords:100 }}</td>
+                    </tr>
+                    <tr style="height: 4px; background-color: transparent;"></tr>
+                {% empty %}
+                    <tr><td colspan="6" class="text-center">Nenhuma demanda registrada.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>    
+    <a href="{% url 'listar_demandas' %}" class="btn btn-secondary mt-3">Voltar</a>
+</div>
+{% endblock %}

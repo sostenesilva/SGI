@@ -1,0 +1,20 @@
+<div class="modal-content" hx-debug="true">
+    <div class="modal-header justify-content-between">
+        <h5 class="modal-title">{{ form.instance.pk|yesno:"Editar Diligência,Nova Diligência" }}</h5>
+    </div>
+    <div class="modal-body">
+
+        <div class="container">
+            <form method="post" action="{% url 'criar_diligencia' demanda.id %}">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="btn btn-primary">Salvar</button>
+                <a href="{% url 'detalhar_demanda' demanda.id %}" class="btn btn-secondary">Cancelar</a>
+            </form>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <small style="font-size: xx-small;">Informações enviadas por <b>{{ request.user }}</b></small>
+    </div>
+</div>
+

@@ -251,6 +251,22 @@
         </li>
       {% endif %}
 
+      {% if perms.auth.Acessar_MGCOMUNICACAO %}
+        <li>
+          <a href="#" onclick="abrirSubmenu(this, 'menu-demandas')">Demandas</a>
+          <input type="checkbox" id="menu-demandas" hidden />
+          <ul class="submenu">
+            <!-- <li><a 
+              hx-get="{% url 'contratos_base' %}"
+              hx-target="#main-content"
+              hx-push-url="true"
+              hx-swap="innerHTML">Listar Contratos</a></li> -->
+            <li><a href="{% url 'listar_demandas' %}">Listar Demandas</a></li>
+            <!-- <li><a href="#">Novo Contrato</a></li> -->
+          </ul>
+        </li>
+      {% endif %}
+
     </ul>
   </aside>
 

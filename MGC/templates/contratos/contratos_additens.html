@@ -1,10 +1,10 @@
-{% extends "base.html" %}
+{% extends "base2.html" %}
 
 {% block head_title %} Adicionar Itens {% endblock head_title %}
 
 {% block contentdash %}
     <div class="d-flex justify-content-between">
-        <h1>Adicionar Itens - PROCESSO Nº {{ contrato.NumeroProcesso }}/{{ contrato.AnoProcesso }} - CONTRATO Nº {{ contrato.NumeroContrato }}/{{ contrato.AnoContrato }}</h1>
+        <h5>Adicionar Itens - PROCESSO Nº {{ contrato.NumeroProcesso }}/{{ contrato.AnoProcesso }} - CONTRATO Nº {{ contrato.NumeroContrato }}/{{ contrato.AnoContrato }}</h1>
     </div>
     <p>
         <small>Valor adjudicado: R${{ contrato.Valor }} | Edital: <a href="{{ contrato.LinkEdital }}" target="_blank">clique para visualizar o edital</a> | Contrato: <a href="{{ contrato.LinkContrato }}" target="_blank">clique para visualizar o contrato</a><b></b></small><br>

@@ -59,7 +59,7 @@
                                             <small class="text-muted">{{ documento.get_tipo_display }} - {{ documento.get_classificacao_display }}</small>    
                                         </div>
                                         <div>
-                                            <a href="{{ documento.arquivo.url }}" class="btn btn-sm btn-outline-primary mx-1" target="_blank">
+                                            <a href="{% if documento.arquivo %}{{ documento.arquivo.url }}{% endif %}" class="btn btn-sm btn-outline-primary mx-1" target="_blank">
                                                 <i class="lni lni-download"></i> Baixar
                                             </a>
                                         </div>

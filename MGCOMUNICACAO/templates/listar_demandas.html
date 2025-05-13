@@ -1,0 +1,54 @@
+{% extends 'base2.html' %}
+{% block titulo %}Demandas do Controle Interno{% endblock %}
+{% block contentdash %}
+<div class="container">
+
+    <div class="d-flex justify-content-between">
+        <div class="d-flex flex-row">
+            <h4><b>SGI</b> - Controle de Demandas</h4>
+            <a hx-get="{% url 'criar_demanda' %}" hx-target="#dialog" class="btn btn-sm btn-primary mx-3" style="height:fit-content;">+ Nova Demanda</a>
+        </div>
+        <form method="GET" action="{% url 'listar_demandas' %}" class="d-flex flex-row col-4">
+            <input type="text" name="buscar" class="form-control me-2" placeholder="Buscar..." value="{{ query }}">
+            <button type="submit" class="btn btn-primary">Buscar</button>
+        </form>
+    </div>
+    <hr>
+
+    <div class="table-responsive" style="max-height: 70vh;">
+        <table class="table table-sm table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>Título</th>
+                    <th>Documento Motivador</th>
+                    <th>Prazo Geral</th>
+                    <th>Status</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for demanda in demandas %}
+                    <tr>
+                        <td>{{ demanda.titulo }}</td>
+                        <td>{{ demanda.documento_motivador }}</td>
+                        <td>{{ demanda.prazo_geral|date:"d/m/Y" }}</td>
+                        <td>{{ demanda.status }}</td>
+                        <td>
+                            <a href="{% url 'detalhar_demanda' demanda.id %}" class="btn btn-sm btn-info">Ver</a>
+                            <a href="{% url 'editar_demanda' demanda.id %}" class="btn btn-sm btn-warning">Editar</a>
+                            <a href="{% url 'excluir_demanda' demanda.id %}" class="btn btn-sm btn-danger">Excluir</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="6" style="text-align: left;" class="px-4"><b>Descrição:</b> {{ demanda.descricao|truncatewords:100 }}</td>
+                    </tr>
+                    <tr style="height: 4px; background-color: transparent;"></tr>
+                {% empty %}
+                    <tr><td colspan="6" class="text-center">Nenhuma demanda registrada.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+</div>
+{% endblock %}
