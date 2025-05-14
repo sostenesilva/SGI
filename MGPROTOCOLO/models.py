@@ -7,7 +7,8 @@ from HOME.models import Setor as SetorHome
 from HOME.models import Secretaria as SecretariaHome
 
 def diretorioDocumento (instance, filename):
-    return f'MGPROTOCOLO/documentos/{instance.processo.criado_em.year}/{instance.processo.demandante.nome}/{instance.processo.numero}/{filename}'
+    filename = filename.replace("/","-")
+    return f'MGPROTOCOLO/documentos/{instance.processo.criado_em.year}/{instance.processo.demandante.nome}/{filename}'
 
 def diretorioProtocolo (instance, filename):
     extensao = os.path.splitext(filename)[1]

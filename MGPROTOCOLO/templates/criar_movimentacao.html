@@ -21,17 +21,7 @@
                 </form>
             </div>
             <div class="col-md-6 align-items-center p-5">
-                <div class="row"><small>Caso este processo não careça de movimentação ou adição de documentos, encaminhar a arquivo:</small></div>
-                <div class="row">
-                    {% if processo.status != "arquivado" %}
-                    <form method="post" action="{% url 'arquivar_processo' processo.id %}">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-secondary btn-sm">Arquivar Processo</button>
-                    </form>
-                    {% else %}
-                        <span class="badge bg-dark">Arquivado</span>
-                    {% endif %}
-                </div>               
+                <div class="row"><small>Caso este processo não careça de movimentação ou adição de documentos, encaminhar para o setor arquivo com anotação que descreva o arquivamento.</small></div>              
             </div>
         </div>
     </div>

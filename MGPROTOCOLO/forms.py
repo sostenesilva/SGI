@@ -66,7 +66,7 @@ class DocumentoForm(forms.ModelForm):
         widgets = {
             'descricao': forms.TextInput(attrs={'class': 'form-control form-control-sm', 'placeholder': 'Descrição do Documento'}),
             'classificacao': forms.Select(attrs={'class': 'form-control form-control-sm'}),
-            'arquivo': forms.FileInput(attrs={'class': 'form-control form-control-sm'}),
+            'arquivo': forms.FileInput(attrs={'class': 'form-control form-control-sm', 'required':True}),
         }
 
 class MovimentacaoForm(forms.ModelForm):
@@ -85,5 +85,5 @@ class ComprovacaoForm(forms.ModelForm):
         fields = ['comprovacao']
 
         widgets = {
-            'comprovacao': forms.FileInput(attrs={'class': 'form-control form-control-sm'}),
+            'comprovacao': forms.FileInput(attrs={'class': 'form-control form-control-sm', 'required':True}),
         }
