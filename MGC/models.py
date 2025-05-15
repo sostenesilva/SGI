@@ -159,6 +159,10 @@ class SaidaSec (models.Model):
     dataehora = models.DateTimeField(auto_now=True)
     usuario = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.PROTECT)
 
+    @property
+    def short_item(self):
+        return truncatechars(self.item, 40)
+    
     def valorTotal(self):
         return self.item.PrecoUnitario * self.quantidade
 

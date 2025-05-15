@@ -17,7 +17,15 @@ class Itens(admin.ModelAdmin):
     search_fields = ('Descricao',)
 
 @admin.register(models.EntradaSec)
-class Itens(admin.ModelAdmin):
+class EntradaSec(admin.ModelAdmin):
+
+    list_display = ('short_item','saldocontratosec','quantidade')
+    list_filter = ('saldocontratosec',)
+    search_fields = ('item','saldocontratosec')
+    list_editable = ('quantidade',)
+
+@admin.register(models.SaidaSec)
+class SaidaSec(admin.ModelAdmin):
 
     list_display = ('short_item','saldocontratosec','quantidade')
     list_filter = ('saldocontratosec',)
@@ -26,7 +34,6 @@ class Itens(admin.ModelAdmin):
 
     
 
-admin.site.register(models.SaidaSec)
 admin.site.register(models.Ordem)
 admin.site.register(models.SaldoContratoSec)
 admin.site.register(Permission)
