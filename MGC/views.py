@@ -165,7 +165,7 @@ def confirmar_fornecedor(request, saldocontratosec_id):
 # def contrato_enviar(request, contrato_pk):
 #     contrato = models.Contratos.objects.get(pk=contrato_pk)
 #     contrato_saldoof = models.SaldoSec(contrato=contrato)
-#     contrato_saldoof_hist = models.Ordem.objects.filter(saldoof=contrato_saldoof).order_by('-dataehora')
+#     contrato_saldoof_hist = models.Ordem.objects.filter(saldoof=contrato_saldoof).order_by('-dataregistro')
     
 #     contrato_form = forms.Contratos_form(request.POST or None)
     
@@ -468,7 +468,7 @@ def saldo_detalhes (request,saldodetalhes_pk):
     entradasSec = models.EntradaSec.objects.filter(saldocontratosec=SaldoContratoSec)
 
 
-    Ordem_hist = models.Ordem.objects.filter(saldoContratosec=SaldoContratoSec).order_by('-dataehora')
+    Ordem_hist = models.Ordem.objects.filter(saldoContratosec=SaldoContratoSec).order_by('-dataregistro')
     
     ordens_paginator = Paginator(Ordem_hist,6)
     page_num_ordens = request.GET.get('page')

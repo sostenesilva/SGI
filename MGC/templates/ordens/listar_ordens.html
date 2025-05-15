@@ -16,7 +16,7 @@
         <tbody>
             {% for log in page_ordens_log %}
                 <tr>
-                    <td>{{ log.dataehora }}</td>
+                    <td>{{ log.dataregistro }}</td>
                     <td>{{ log.descricao }}</td>
                     <td>R$ {{ log.valor|floatformat:2 }}</td>
                     <!-- <td>
