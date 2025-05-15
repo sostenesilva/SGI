@@ -27,9 +27,9 @@ class EntradaSec(admin.ModelAdmin):
 @admin.register(models.SaidaSec)
 class SaidaSec(admin.ModelAdmin):
 
-    list_display = ('short_item','saldocontratosec','quantidade')
-    list_filter = ('saldocontratosec',)
-    search_fields = ('item','saldocontratosec')
+    list_display = ('short_item','ordem','quantidade')
+    list_filter = ('ordem',)
+    search_fields = ('item','ordem')
     list_editable = ('quantidade',)
 
     
