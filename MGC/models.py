@@ -4,6 +4,8 @@ from django.contrib.auth.models import Group, User
 import json
 from django.db.models import Sum
 from HOME.models import Secretaria
+from django.template.defaultfilters import truncatechars
+
 
 class Fornecedores (models.Model):
     NumeroDocumentoAjustado = models.CharField(max_length=100, null=True, blank=True)
@@ -94,7 +96,7 @@ class SaldoContratoSec(models.Model):
     saldoAtual = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True, default=0)
 
     def __str__(self) -> str:
-        return 'Contrato {} - {}'.format(self.contrato, self.sec)
+        return 'Contrato {}/{} - {} - {} - {}'.format(self.contrato.NumeroContrato, self.contrato.AnoContrato, self.contrato.TipoProcesso, self.contrato.Fornecedor.RazaoSocial, self.sec)
 
 class EntradaSec (models.Model):
     item = models.ForeignKey(Itens, on_delete=models.CASCADE)
@@ -105,6 +107,10 @@ class EntradaSec (models.Model):
     
     def __str__(self) -> str:
         return '{}'.format(self.item)
+    
+    @property
+    def short_item(self):
+        return truncatechars(self.item, 40)
 
     def total_por_item(self, tipo='dif_sec'):
         item = self.item
@@ -135,7 +141,8 @@ def diretorioOF (instance, filename):
 class Ordem (models.Model):
     valor = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
     arquivo = models.FileField(null=True, blank=True)
-    dataehora = models.DateTimeField(auto_now=True)
+    dataregistro = models.DateTimeField(auto_now=True)
+    dataemissao = models.DateField(null=True, blank=True)
     usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
     saldoContratosec = models.ForeignKey(SaldoContratoSec, on_delete=models.PROTECT, related_name='saidas')
     descricao = models.TextField(null=True, blank=True)

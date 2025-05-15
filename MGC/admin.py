@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.models import Permission
 
+
 from . import models
 
 @admin.register(models.Contratos)
@@ -15,8 +16,16 @@ class Itens(admin.ModelAdmin):
     list_filter = ('Contrato',)
     search_fields = ('Descricao',)
 
+@admin.register(models.EntradaSec)
+class Itens(admin.ModelAdmin):
 
-admin.site.register(models.EntradaSec)
+    list_display = ('short_item','saldocontratosec','quantidade')
+    list_filter = ('saldocontratosec',)
+    search_fields = ('item','saldocontratosec')
+    list_editable = ('quantidade',)
+
+    
+
 admin.site.register(models.SaidaSec)
 admin.site.register(models.Ordem)
 admin.site.register(models.SaldoContratoSec)
