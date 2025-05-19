@@ -569,6 +569,32 @@ def emitirOF (request, ordem, listadeitens):
     response['Content-Disposition'] = f'attachment; filename="ordem_1.pdf"'
     return caminho_pdf
 
+# def reemitir_of (request, ordem_id):
+#     ordem = models.Ordem.objects.get(pk = ordem_id)
+#     saidas = models.SaidaSec.objects.filter(ordem = ordem)
+
+#     if request.POST:
+#         valordaordem = 0
+#         listaitens = []
+
+#         ordem.valor = valordaordem
+#         ordem.codigo = uuid.uuid4()
+#         caminho_absoluto = emitirOF(request, ordem, listaitens)
+#         ordem.arquivo.name = os.path.relpath(caminho_absoluto, settings.MEDIA_ROOT)
+#         ordem.save()
+#         return redirect('saldo_detalhes', SaldoContratoSec.id)
+        
+#         # 🔹 Retorna diretamente o PDF para download
+#         # return FileResponse(open(ordem.arquivo.path, 'rb'), content_type='application/pdf', as_attachment=True)
+
+#     context = {
+#         'ordem_form': ordem_form,
+#         'contrato': ContratoSec,
+#         'SaldoContratoSec': SaldoContratoSec,
+#         'entradasSec': entradasSec,
+#     }
+
+#     return render(request, 'ordens_emitir.html',context)
 
 def of_edit (request, saldoof_pk):
     pass
