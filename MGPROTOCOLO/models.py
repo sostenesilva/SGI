@@ -24,6 +24,11 @@ class Processo(models.Model):
         ('arquivado', 'Arquivado'),
     ]
 
+    MODALIDADE_CHOICES = [
+        ('digital', 'Digital'),
+        ('fisico', 'Físico'),
+    ]
+
     numero = models.CharField(max_length=100, unique=True, db_index=True, null=True, blank=True)
     titulo = models.CharField(max_length=255, null=True, blank=True)
     descricao = models.TextField(blank=True, null=True)
@@ -37,7 +42,8 @@ class Processo(models.Model):
     atualizado_em = models.DateTimeField(auto_now=True, null=True, blank=True)
     ultima_movimentacao = models.ForeignKey('Movimentacao', on_delete=models.SET_NULL, null=True, blank=True, related_name='processo_ultima_movimentacao')
     ativo = models.BooleanField(default=True)
-
+    modalidade = models.CharField(max_length=15,choices=MODALIDADE_CHOICES, default='fisico')
+    
     def __str__(self):
         return f"{self.numero} - {self.titulo}"
 

@@ -31,14 +31,14 @@ class ProcessoForm(forms.ModelForm):
     class Meta:
 
         model = Processo
-        fields = ['numero','titulo','descricao','fim']
+        fields = ['numero','titulo','descricao','fim', 'modalidade']
 
         widgets = {
-            'numero': forms.TextInput(attrs={'class': 'form-control form-control-sm', 'placeholder': 'Número do Processo'}),
-            'titulo': forms.TextInput(attrs={'class': 'form-control form-control-sm', 'placeholder': 'Título do Processo'}),
-            'descricao': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': '3', 'placeholder': 'Descrição do Processo'}),
+            'numero': forms.TextInput(attrs={'class': 'form-control form-control-sm', 'placeholder': 'Ex: CI 001/2025/SASCF'}),
+            'titulo': forms.TextInput(attrs={'class': 'form-control form-control-sm', 'placeholder': "Ex: 'Solicitação de Liquidação', 'Contrato 005/2025 - HMR - Via Contabilidade'."}),
+            'descricao': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': '3', 'placeholder': 'Ex: Número da nota, nome do fornecedor, período, número do contrato, nome do contratado, etc.'}),
             'fim': forms.Select(attrs={'class': 'form-control form-control-sm'}),
-
+            'modalidade': forms.Select(attrs={'class': 'form-control form-control-sm'}),
         }
 
 class ProcessoCorrecaoForm(forms.ModelForm):
@@ -52,10 +52,11 @@ class ProcessoCorrecaoForm(forms.ModelForm):
         model = Processo
         fields = ['numero','titulo','descricao','fim']
         widgets = {
-            'numero': forms.TextInput(attrs={'class': 'form-control form-control-sm', 'placeholder': 'Número do Processo'}),
-            'titulo': forms.TextInput(attrs={'class': 'form-control form-control-sm', 'placeholder': 'Título do Processo'}),
-            'descricao': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': '3', 'placeholder': 'Descrição do Processo'}),
+            'numero': forms.TextInput(attrs={'class': 'form-control form-control-sm', 'placeholder': 'Número do Processo (ex: CI 001/2025/SASCF)'}),
+            'titulo': forms.TextInput(attrs={'class': 'form-control form-control-sm', 'placeholder': "Título do Processo (ex: 'Solicitação de Liquidação')"}),
+            'descricao': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': '3', 'placeholder': 'Descrição do Processo (ex: Número da nota, nome do fornecedor, período, número do contrato, nome do contratado, etc.)'}),
             'fim': forms.Select(attrs={'class': 'form-control form-control-sm'}),
+            'modalidade': forms.Select(attrs={'class': 'form-control form-control-sm'}),
         }
 
 class DocumentoForm(forms.ModelForm):

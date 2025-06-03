@@ -19,6 +19,7 @@
                         <tr>
                             <th>Número</th>
                             <th>Título</th>
+                            <th></th>
                             <th>Ações</th>
                         </tr>
                     </thead>
@@ -29,13 +30,19 @@
                             <tr style="font-size: small;">
                                 <td class="col-1" style="word-wrap: break-word; white-space: normal;">{{ processo.numero }}</td>
                                 <td class="col-3" style="word-wrap: break-word; white-space: normal;">{{ processo.titulo|truncatewords:30 }}</td>
+                                <td class="col-1"><span class="my-1 badge 
+                                        {% if processo.modalidade == 'fisico' %}bg-secondary          
+                                        {% else %}bg-primary
+                                        {% endif %}" style="width: fit-content;">
+                                            {{ processo.modalidade }}
+                                        </span></td>
                                 <!-- <td class="col-1" style="word-wrap: break-word; white-space: normal;">
                                     <span class="badge {% if processo.status == 'concluido' %}bg-success{% else %}bg-warning{% endif %}">
                                         {{ processo.get_status_display }}
                                     </span>
                                 </td> -->
                                 <td class="col-1">
-                                    <div class="d-flex flex-row justify-content-center">
+                                    <div class="d-flex flex-column justify-content-center">
                                         <div class="btn-group" role="group">
                                             <button id="btnGroupDrop1" type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                                             Ações
@@ -57,6 +64,7 @@
                                                 </div>
                                             </ul>
                                         </div>
+                                        
                                     </div>
                                     
                                     
@@ -94,6 +102,7 @@
                         <tr>
                             <th>Número</th>
                             <th>Título</th>
+                            <th></th>
                             <th>Ações</th>
                         </tr>
                     </thead>
@@ -104,6 +113,12 @@
                             <tr style="font-size: small;">
                                 <td class="col-1" style="word-wrap: break-word; white-space: normal;">{{ processo.numero }}</td>
                                 <td class="col-3" style="word-wrap: break-word; white-space: normal;">{{ processo.titulo|truncatewords:30 }}</td>
+                                <td class="col-1"><span class="my-1 badge 
+                                        {% if processo.modalidade == 'fisico' %}bg-secondary          
+                                        {% else %}bg-primary
+                                        {% endif %}" style="width: fit-content;">
+                                            {{ processo.modalidade }}
+                                        </span></td>
                                 <!-- <td class="col-1" style="word-wrap: break-word; white-space: normal;">
                                     <span class="badge {% if processo.status == 'concluido' %}bg-success{% else %}bg-warning{% endif %}">
                                         {{ processo.get_status_display }}
