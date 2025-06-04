@@ -9,7 +9,7 @@
                 <input type="text" id="buscar" name="buscar" class="form-group form-control" style="width:300px; margin-right:5px" placeholder="Contrato, Processo, Ano ou Fornecedor...">
                 <input type="submit" class="btn btn-primary form-group" value="Buscar">
             </div>
-            <a type="button" class="btn btn-success" hx-get="{% url 'add_contratos' %}" hx-target="#dialog">Adicionar Contratos</a>
+            {% if perms.auth.Controle %}<a type="button" class="btn btn-success" hx-get="{% url 'add_contratos' %}" hx-target="#dialog">Adicionar Contratos</a>{% endif %}
     </form>
     <hr>
     <div class="table-responsive" style="max-height: 520px;">
