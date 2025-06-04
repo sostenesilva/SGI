@@ -293,7 +293,9 @@ def receber_processo(request, processo_id):
 
 @login_required
 def processos_arquivados(request):
-    processos = Processo.objects.filter(atual__sigla='ARQ').order_by('-atualizado_em')
+    setor_usuario = request.user.setor_home.all()
+
+    processos = Processo.objects.filter(atual__sigla='ARQ')
 
     # Capturar o termo de busca
     query = request.GET.get('buscar', '')
@@ -306,7 +308,16 @@ def processos_arquivados(request):
             Q(atual__nome__icontains=query) |
             Q(descricao__icontains=query)
         )
-    return render(request, 'processos_arquivados.html', {'processos': processos, 'query': query })
+
+    # Converte para lista ou mantém como QuerySet
+    processos_filtrados = []
+    for processo in processos:
+        setores_env = processo.setores_envolvidos()  # retorna lista de nomes
+        # Checa se o nome de algum setor do usuário está nos setores envolvidos
+        if any(setor.nome in setores_env for setor in setor_usuario):
+            processos_filtrados.append(processo)
+    
+    return render(request, 'processos_arquivados.html', {'processos': processos_filtrados, 'query': query })
 
 @login_required
 def mais_informacoes(request, processo_id):
