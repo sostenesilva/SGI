@@ -271,12 +271,12 @@ def contratos_request(request):
     ano = request.GET.get('ano', '2025')  # Padrão para 2025 se não for informado
      # Buscar contratos e processos na API do TCE-PE
     contratos_licon = requests.get(
-        f'https://sistemas.tcepe.tc.br/DadosAbertos/Contratos!json?UnidadeOrcamentaria=Prefeitura&Esfera=M&Municipio=Cortes&AnoContrato={ano}'
+        f'https://sistemas.tcepe.tc.br/DadosAbertos/Contratos!json?UnidadeOrcamentaria=Prefeitura&Esfera=M&Municipio=Cortes&AnoContrato={ano}', verify=False
     ).json()['resposta']['conteudo']
 
     processos_licon = requests.get(
         f'https://sistemas.tcepe.tc.br/DadosAbertos/LicitacoesDetalhes!json?CODIGOUG=211&UG=CORTES&ANOMODALIDADE={ano}&CODIGOMUNICIPIO=P050'
-    ).json()['resposta']['conteudo']
+    , verify=False).json()['resposta']['conteudo']
 
     # Criar um dicionário associando os códigos PL aos objetos dos processos
     processos_dict = {proc['CODIGOPL']: proc for proc in processos_licon}
