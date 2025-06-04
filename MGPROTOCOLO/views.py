@@ -306,7 +306,6 @@ def processos_arquivados(request):
             Q(atual__nome__icontains=query) |
             Q(descricao__icontains=query)
         )
-
     return render(request, 'processos_arquivados.html', {'processos': processos, 'query': query })
 
 @login_required
