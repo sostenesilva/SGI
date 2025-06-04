@@ -125,16 +125,21 @@ def criar_documento(request, processo_id):
 @login_required
 def criar_movimentacao(request, processo_id):
     processo = get_object_or_404(Processo, id=processo_id)
-    if request.method == 'POST':
+    if request.method == 'POST':           
         form = MovimentacaoForm(request.POST, request.FILES)
         if form.is_valid():
-            movimentacao = form.save(commit=False)
-            movimentacao.processo = processo
-            movimentacao.remetente = processo.atual
-            movimentacao.status = 'em_tramitacao'
-            movimentacao.confirmacao = 'pendente'
-            movimentacao.realizado_por = request.user
-            movimentacao.save()
+            if processo.usuario_pode_modificar(request.user):
+                movimentacao = form.save(commit=False)
+                movimentacao.processo = processo
+                movimentacao.remetente = processo.atual
+                movimentacao.realizado_por = request.user
+                if movimentacao.destinatario == Setor.objects.get(sigla='ARQ'):
+                    movimentacao.status = 'recebida'
+                    movimentacao.confirmacao = 'sistema'
+                else:
+                    movimentacao.status = 'em_tramitacao'
+                    movimentacao.confirmacao = 'pendente'
+                movimentacao.save()
             return redirect('detalhes_processo', processo_id=processo.id)
     else:
         form = MovimentacaoForm(initial={
@@ -288,7 +293,7 @@ def receber_processo(request, processo_id):
 
 @login_required
 def processos_arquivados(request):
-    processos = Processo.objects.filter(status='arquivado').order_by('-criado_em')
+    processos = Processo.objects.filter(atual__sigla='ARQ').order_by('-atualizado_em')
 
     # Capturar o termo de busca
     query = request.GET.get('buscar', '')

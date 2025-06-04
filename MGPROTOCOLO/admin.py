@@ -10,6 +10,8 @@ class Movimentacao(admin.ModelAdmin):
 @admin.register(models.Processo)
 class Processo(admin.ModelAdmin):
     list_display = ('numero','descricao','atual')
+    list_filter = ('atual',)
+    search_fields = ('numero','titulo','descricao')
 
     
 @admin.register(models.CorrecaoProcesso)

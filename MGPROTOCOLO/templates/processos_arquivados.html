@@ -17,7 +17,6 @@
                 <tr>
                     <th>Número</th>
                     <th>Título</th>
-                    <th>Status</th>
                     <th>Movimentação</th>
                     <th>Ações</th>
                 </tr>
@@ -28,16 +27,11 @@
                     <tr>
                         <td class="col-2" style="word-wrap: break-word; white-space: normal;">{{ processo.numero }}</td>
                         <td class="col-3" style="word-wrap: break-word; white-space: normal;">{{ processo.titulo|truncatewords:30 }}</td>
-                        <td class="col-1" style="word-wrap: break-word; white-space: normal;">
-                            <span class="badge {% if processo.status == 'concluido' %}bg-success{% else %}bg-warning{% endif %}">
-                                {{ processo.get_status_display }}
-                            </span>
-                        </td>
                         <td class="" style="font-size: smaller;">
                             {% if processo.ultima_movimentacao %}
                                 <div class="d-flex flex-column">
-                                    <span> {{ processo.ultima_movimentacao.descricao }} </span>
-                                    <span>{{ processo.ultima_movimentacao.realizado_por.get_full_name }} em {{ processo.ultima_movimentacao.realizado_em|date:"d/m/Y H:m" }}</span>
+                                    <span>  </span>
+                                    <span>Arquivado por {{ processo.ultima_movimentacao.realizado_por.get_full_name }} em {{ processo.ultima_movimentacao.realizado_em|date:"d/m/Y H:m" }}</span>
                                 </div>
                             {% endif %}
                         </td>
@@ -50,6 +44,10 @@
                     <tr>
                         <td colspan="4" style="word-wrap: break-word; white-space: normal; font-size: smaller; text-align: left;"><b>Descrição: </b>{{ processo.descricao }}</td>
                     </tr>
+                    <tr>
+                        <td colspan="4" style="word-wrap: break-word; white-space: normal; font-size: smaller; text-align: left;"><b>Anotação do arquivamento: </b>{{ processo.ultima_movimentacao.descricao }}</td>
+                    </tr>
+                    
                     
                 {% empty %}
                     <tr>
