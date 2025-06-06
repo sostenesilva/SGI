@@ -119,8 +119,8 @@
                                             {% if movimentacao.status == 'recebida' and movimentacao.destinatario.sigla != 'ARQ'%}
                                                 {% if movimentacao.confirmacao == 'manual' %}
                                                     <small class="text-muted">
-                                                        Confirmado manualmente em {{ movimentacao.realizado_em|date:"d/m/Y H:i" }} 
-                                                        <a hx-get="{% url 'visualizar_comprovacao' protocolo.id %}" class="btn btn-success btn-sm" hx-target="#dialog" hx-trigger="click" data-bs-toggle="modal" data-bs-target="#modal">(Detalhes)</a>
+                                                        <a type="button" style="text-decoration: none;" hx-get="{% url 'visualizar_comprovacao' movimentacao.protocolos.first.id %}" hx-target="#dialog" hx-trigger="click" data-bs-toggle="modal" data-bs-target="#modal">Confirmado manualmente em {{ movimentacao.realizado_em|date:"d/m/Y H:i" }}
+                                                        (Visualizar)</a>
                                                     </small>
                                                 {% else %}
                                                     <small class="text-muted">
