@@ -50,7 +50,7 @@ class ProcessoCorrecaoForm(forms.ModelForm):
 
     class Meta:
         model = Processo
-        fields = ['numero','titulo','descricao','fim']
+        fields = ['numero','titulo','descricao','fim','modalidade']
         widgets = {
             'numero': forms.TextInput(attrs={'class': 'form-control form-control-sm', 'placeholder': 'Número do Processo (ex: CI 001/2025/SASCF)'}),
             'titulo': forms.TextInput(attrs={'class': 'form-control form-control-sm', 'placeholder': "Título do Processo (ex: 'Solicitação de Liquidação')"}),

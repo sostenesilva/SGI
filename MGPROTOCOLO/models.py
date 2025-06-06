@@ -152,6 +152,7 @@ class Documento(models.Model):
         ('despacho', 'Despacho'),
         ('memorando', 'Memorando'),
         ('parecer', 'Parecer'),
+        ('portaria', 'Portaria'),
         ('laudo', 'Láudo'),
         ('relatorio', 'Relatório'),
         ('contrato', 'Contrato'),

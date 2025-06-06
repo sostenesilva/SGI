@@ -3,6 +3,7 @@ from datetime import datetime
 from django.http import HttpResponse
 from django.template.loader import render_to_string
 from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db.models import Prefetch, Q, Case, When, Value, IntegerField, Sum, ExpressionWrapper, F
 from django.urls import reverse
@@ -91,6 +92,10 @@ def criar_processo(request):
                 )
 
             return redirect('detalhes_processo', processo_id=processo.id)
+        else:
+            for field in form:
+                for error in field.errors:
+                    messages.error(request, error)
     else:
         form = ProcessoForm()
     return render(request, 'criar_processo.html', {'form': form})
@@ -128,6 +133,7 @@ def criar_movimentacao(request, processo_id):
     processo = get_object_or_404(Processo, id=processo_id)
     if request.method == 'POST':           
         form = MovimentacaoForm(request.POST, request.FILES)
+        form_correcao = CorrecaoProcesso(request.POST)
         if form.is_valid():
             if processo.usuario_pode_modificar(request.user):
                 movimentacao = form.save(commit=False)
@@ -141,6 +147,7 @@ def criar_movimentacao(request, processo_id):
                     movimentacao.status = 'em_tramitacao'
                     movimentacao.confirmacao = 'pendente'
                 movimentacao.save()
+                
             return redirect('detalhes_processo', processo_id=processo.id)
     else:
         form = MovimentacaoForm(initial={
@@ -185,7 +192,8 @@ def gerar_protocolo(request):
             # Verificar se todas as movimentações são do mesmo setor de destino
             SetorDestinatario = movimentacoes.first().destinatario
             if not all(m.destinatario == SetorDestinatario for m in movimentacoes):
-                return HttpResponse("Todas as movimentações devem ser do mesmo setor de destino.", status=400)
+                messages.error(request, "Todas as movimentações devem ser do mesmo setor de destino.")
+                return redirect('listar_movimentacoes_tramitacao')  # ou a view da página anterior
 
             # Criar o protocolo
             protocolo = ProtocoloMovimentacao.objects.create(
