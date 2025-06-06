@@ -16,8 +16,15 @@
                         {{ form.destinatario }}
                     </div>
                     <div class="mb-3">
-                        Sua movimentação será:
-                        {{ form.destinatario }}
+                        <span>Sua movimentação será em meio:</span>
+                        <div class="d-flex flex-row">
+                            <input type="radio" class="btn-check" name="options-outlined" id="fisico" autocomplete="off" checked>
+                            <label class="btn btn-sm btn-outline-primary mx-1" style="height: fit-content;" for="fisico">Físico</label>
+
+                            <input type="radio" class="btn-check" name="options-outlined" id="digital" autocomplete="off">
+                            <label class="btn btn-sm btn-outline-primary" style="height: fit-content;" for="digital">Digital</label>
+                        </div>
+                        
                     </div>
                     <div>
                         <button type="submit" class="btn btn-primary">Mover</button>
