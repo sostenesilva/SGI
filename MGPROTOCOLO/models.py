@@ -1,5 +1,6 @@
 from datetime import date
 import os
+import uuid
 from django.db import models
 from django.contrib.auth.models import User
 from django.forms import ValidationError
@@ -80,10 +81,14 @@ class Processo(models.Model):
         resumo = []
         for movimentacao in self.movimentacoes.all():
             resumo.append({
-                'data': movimentacao.realizado_em.strftime('%d/%m/%Y %H:%M'),
+                'realizado_em': movimentacao.realizado_em.strftime('%d/%m/%Y %H:%M'),
+                'realizado_por': movimentacao.realizado_por.get_full_name(),
                 'remetente': movimentacao.remetente.nome,
                 'destinatario': movimentacao.destinatario.nome,
                 'status': movimentacao.get_status_display(),
+                'confirmacao': movimentacao.confirmacao,
+                'confirmado_em': movimentacao.confirmado_em.strftime('%d/%m/%Y %H:%M'),
+                'confirmado_por': movimentacao.confirmado_por.get_full_name(),
             })
         return resumo
     
@@ -252,6 +257,7 @@ class CorrecaoProcesso(models.Model):
         ("titulo", "Título"),
         ("descricao", "Descrição"),
         ("fim", "Setor Fim"),
+        ("modalidade", "Modalidade"),
     ]
 
     processo = models.ForeignKey(Processo, on_delete=models.CASCADE, related_name='correcoes')
@@ -263,4 +269,11 @@ class CorrecaoProcesso(models.Model):
     valor_novo = models.TextField()
 
     def __str__(self):
-        return f"Correção do campo '{self.campo_alterado}' por {self.usuario.get_full_name}"
+        return f"Alteração do campo '{self.campo_alterado}' por {self.usuario.get_full_name}"
+    
+
+class ComprovanteMovimentacao(models.Model):
+    movimentacoes = models.ManyToManyField(Movimentacao, related_name='comprovantes')
+    criado_por = models.ForeignKey(User, on_delete=models.PROTECT)
+    criado_em = models.DateTimeField(auto_now_add=True)
+    codigo = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)

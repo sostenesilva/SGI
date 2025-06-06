@@ -15,19 +15,20 @@
                         Setor de destino:
                         {{ form.destinatario }}
                     </div>
-                    <div class="mb-3">
+                    <div class="mb-5">
                         <span>Sua movimentação será em meio:</span>
-                        <div class="d-flex flex-row">
-                            <input type="radio" class="btn-check" name="options-outlined" id="fisico" autocomplete="off" checked>
+                        <div class="btn-group btn-group-toggle" data-toggle="modalidade">
+
+                            <input type="radio" class="btn-check" name="modalidade" id="fisico" value="fisico" autocomplete="off" required>
                             <label class="btn btn-sm btn-outline-primary mx-1" style="height: fit-content;" for="fisico">Físico</label>
 
-                            <input type="radio" class="btn-check" name="options-outlined" id="digital" autocomplete="off">
+                            <input type="radio" class="btn-check" name="modalidade" id="digital" value="digital" autocomplete="off" required>
                             <label class="btn btn-sm btn-outline-primary" style="height: fit-content;" for="digital">Digital</label>
                         </div>
                         
                     </div>
                     <div>
-                        <button type="submit" class="btn btn-primary">Mover</button>
+                        <button type="submit" class="btn btn-primary">Confirmar Movimentação</button>
                     </div>
                 </form>
             </div>

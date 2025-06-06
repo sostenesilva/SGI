@@ -8,7 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Prefetch, Q, Case, When, Value, IntegerField, Sum, ExpressionWrapper, F
 from django.urls import reverse
 from weasyprint import CSS, HTML
-from .models import Processo, Documento, Movimentacao, ProtocoloMovimentacao, CorrecaoProcesso
+from .models import Processo, Documento, Movimentacao, ProtocoloMovimentacao, CorrecaoProcesso, ComprovanteMovimentacao
 from HOME.models import Setor
 from .forms import ProcessoCorrecaoForm, ProcessoForm, DocumentoForm, MovimentacaoForm, ComprovacaoForm
 from django.templatetags.static import static
@@ -131,9 +131,9 @@ def criar_documento(request, processo_id):
 @login_required
 def criar_movimentacao(request, processo_id):
     processo = get_object_or_404(Processo, id=processo_id)
-    if request.method == 'POST':           
+    if request.method == 'POST':  
+        print(request.POST)         
         form = MovimentacaoForm(request.POST, request.FILES)
-        form_correcao = CorrecaoProcesso(request.POST)
         if form.is_valid():
             if processo.usuario_pode_modificar(request.user):
                 movimentacao = form.save(commit=False)
@@ -148,6 +148,21 @@ def criar_movimentacao(request, processo_id):
                     movimentacao.confirmacao = 'pendente'
                 movimentacao.save()
                 
+                modalidade_antiga = processo.modalidade
+                modalidade_nova = request.POST.get('modalidade')
+                if modalidade_antiga != modalidade_nova:
+                    CorrecaoProcesso.objects.create(
+                            processo=processo,
+                            usuario=request.user,
+                            campo_alterado='modalidade',
+                            valor_anterior=modalidade_antiga,
+                            valor_novo=modalidade_nova
+                        )
+                elif modalidade_antiga == modalidade_nova:
+                    pass
+                else:
+                    messages.error(request, "Escolha uma modalidade válida.")
+    
             return redirect('detalhes_processo', processo_id=processo.id)
     else:
         form = MovimentacaoForm(initial={
@@ -360,6 +375,7 @@ def salvar_correcoes_processo(request, processo_id):
             'titulo': processo.titulo,
             'descricao': processo.descricao,
             'fim':processo.fim,
+            'modalidade': processo.modalidade
         }
 
         if form.is_valid():
@@ -410,3 +426,37 @@ def sugerir_descricao_processo(request):
         .order_by('-relevancia', '-criado_em')[:5]
 
     return render(request, 'sugestao_processo.html', {'sugestoes': processos})
+
+
+@login_required
+def gerar_historico_tramitacoes(request, processo_id):
+
+    processo = Processo.objects.get(id = processo_id)
+    movimentacoes = processo.movimentacoes.all()
+    comprovante = ComprovanteMovimentacao.objects.create(
+        criado_por = request.user
+    )
+    comprovante.movimentacoes.set(movimentacoes)
+    comprovante.save()
+    # Função para converter imagens estáticas em Base6
+    with open("static/img/bg-timbrado-logo.png", "rb") as image_file:
+        page_background = base64.b64encode(image_file.read()).decode('utf-8')
+
+    # Gerar HTML com contexto atualizado
+    html_string = render_to_string('tramitacoes_pdf.html', {
+        'processo': processo,
+        'movimentacoes': movimentacoes,
+        'comprovante': comprovante,
+        'page_background': page_background,
+    })
+
+    # Caminho absoluto do CSS
+    base_url = request.build_absolute_uri('/')
+
+    # Gerar PDF
+    pdf_file = HTML(string=html_string, base_url=base_url).write_pdf()
+
+    # Retornar o PDF para download
+    response = HttpResponse(pdf_file, content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="Tramitacoes do Processo {processo.id}.pdf"'
+    return response

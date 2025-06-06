@@ -34,11 +34,11 @@ class ProcessoForm(forms.ModelForm):
         fields = ['numero','titulo','descricao','fim', 'modalidade']
 
         widgets = {
-            'numero': forms.TextInput(attrs={'class': 'form-control form-control-sm', 'placeholder': 'Ex: CI 001/2025/SASCF'}),
-            'titulo': forms.TextInput(attrs={'class': 'form-control form-control-sm', 'placeholder': "Ex: 'Solicitação de Liquidação', 'Contrato 005/2025 - HMR - Via Contabilidade'."}),
+            'numero': forms.TextInput(attrs={'class': 'form-control form-control-sm', 'placeholder': 'Ex: CI 001/2025/SASCF','required':True}),
+            'titulo': forms.TextInput(attrs={'class': 'form-control form-control-sm', 'placeholder': "Ex: 'Solicitação de Liquidação', 'Contrato 005/2025 - HMR - Via Contabilidade'.",'required':True}),
             'descricao': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': '3', 'placeholder': 'Ex: Número da nota, nome do fornecedor, período, número do contrato, nome do contratado, etc.'}),
-            'fim': forms.Select(attrs={'class': 'form-control form-control-sm'}),
-            'modalidade': forms.Select(attrs={'class': 'form-control form-control-sm'}),
+            'fim': forms.Select(attrs={'class': 'form-control form-control-sm','required':True}),
+            'modalidade': forms.Select(attrs={'class': 'form-control form-control-sm','required':True}),
         }
 
 class ProcessoCorrecaoForm(forms.ModelForm):
@@ -77,7 +77,7 @@ class MovimentacaoForm(forms.ModelForm):
 
         widgets = {
             'descricao': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': '3', 'placeholder': 'Descrição da Movimentação'}),
-            'destinatario': forms.Select(attrs={'class': 'form-control form-control-sm'}),
+            'destinatario': forms.Select(attrs={'class': 'form-control form-control-sm', 'required':True}),
         }
 
 class ComprovacaoForm(forms.ModelForm):

@@ -19,27 +19,26 @@
                         Buscar registros semelhantes
                         </a>
                     </div>
-                    
                     {{ form.descricao }}
                 </div>
-                <div class="mb-3">
-                    Número do Documento Motivador:
+                <div class="d-flex flex-column mb-3">
+                    <span>Número do Documento Motivador:</span>
+                    <span style="font-size: x-small;">Não pode haver mais de um processo com o mesmo número de documento motivador/assunto.</span>
                     {{ form.numero }}
-                    <small>Não pode haver mais de um processo com o mesmo número de documento motivador/assunto.</small>
                 </div>
                 <div class="mb-3">
-                    Assunto:
+                    <span>Assunto:</span>
                     {{ form.titulo }}
                 </div>
-                <div class="mb-3">
-                    Setor fim:
+                <div class="d-flex flex-column mb-3">
+                    <span>Setor fim:</span>
+                    <span style="font-size: x-small;">O "setor fim" é utilizado pra que o destinatário final possa saber com antecedência que um documento destinado a ele está tramitando em outros setores.</span>
                     {{ form.fim }}
-                    <small>O "setor fim" é utilizado pra que o destinatário final possa saber com antecedência que um documento destinado a ele está tramitando em outros setores.</small>
                 </div>
-                <div class="mb-3">
-                    Forma de tramitação:
+                <div class="d-flex flex-column mb-3">
+                    <span>Forma de tramitação:</span>
+                    <span style="font-size: x-small;">Selecione "Digital" caso não pretenda enviar nenhum documento fisico (impresso) para circular entre os setores. Processos digitais costumam circular de forma mais ágil.</span>
                     {{ form.modalidade }}
-                    <small>Selecione "Digital" caso não pretenda enviar nenhum documento fisico (impresso) para circular entre os setores. Processos digitais costumam circular de forma mais ágil.</small>
                 </div>
                 <button type="submit" class="btn btn-primary">Salvar</button>
             </div>

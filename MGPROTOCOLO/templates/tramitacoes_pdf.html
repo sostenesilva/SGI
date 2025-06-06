@@ -1,0 +1,190 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Comprovante de Movimentação</title>
+    <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" /> -->
+    <!-- <link href="https://cdn.lineicons.com/4.0/lineicons.css" rel="stylesheet" />
+    <script src="https://kit.fontawesome.com/9ade8f3144.js" crossorigin="anonymous"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>  -->
+    <style>
+        @page {
+            size: A4;
+            margin: 0;
+            padding: 3cm 2cm 5cm 2cm; /* Deixa espaço interno para o conteúdo */
+            background: url("data:image/png;base64,{{ page_background }}") no-repeat center;
+            background-size: cover;
+        }
+  
+        body {
+            font-family: Arial, sans-serif;
+            text-align: justify;
+            line-height: 1.4;
+            margin: 0;
+        }
+
+        .content{
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 24px;
+        }
+
+        header {
+            position: fixed;
+            top: 0cm;
+            left: -20cm;
+            right: 0cm;
+            height: 8cm;
+            text-align: center;
+            background-size: 100%;
+            background-repeat: no-repeat;
+            background-position: 2cm;
+        }
+
+        header .brasao {
+            position: fixed;
+            top: 1.2cm;
+            left: 1.5cm;
+            right: 0;
+            height: 2cm;
+            text-align: right;
+        }
+
+        footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 5cm;
+            text-align: bottom;
+            background-size: 100%;
+            background-repeat: no-repeat;
+            background-position: -2cm;
+        }
+
+        .section-title {
+            font-weight: bold;
+            font-size: 16px;
+            text-transform: uppercase;
+            margin-top: 0.7cm;
+            margin-bottom: 0cm;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table th, table td {
+            border: 0px solid #ddd;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        table th {
+            background-color: #f4f4f4;
+        }
+
+        .instructions {
+            font-size: 14px;
+        }
+
+        .signature {
+            text-align: right;
+            font-size: 14px;
+        }
+
+        .dados-footer{
+            width: fit-content;
+            position:fixed;
+            top: 91%;
+            right: 7%;
+            text-align: right;
+            font-size: 14px;
+        }
+
+        .badge{
+            font-size: 12px;
+            color: white;
+            font-weight: 700;
+            padding: 0.5em;
+            border-radius: 0.37rem;
+            display: inline-block;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="content">
+        <h1>Histórico de Tramitações</h1>
+        <ul style="margin: 0; padding: 0; list-style: none; font-size: 12px;">
+            <li><strong>Processo:</strong> {{ processo.numero }} - {{ processo.titulo }}</li>
+            <li><strong>Descrição:</strong> {{ processo.descricao }}</li>
+            <li><strong>Criado por:</strong> {{ processo.criado_por.get_full_name }} - {{ processo.demandante.nome }} | <strong>Criado em:</strong> {{ processo.criado_em }}</li>
+            <li><strong>Autenticidade:</strong> {{ comprovante.codigo }}</li>
+        </ul>
+        <h2>Movimentações</h2>
+        <table>
+            <tbody>
+                {% if processo.movimentacoes.all %}
+                    {% for movimentacao in processo.movimentacoes.all|dictsortreversed:"realizado_em" %}
+                        <tr>
+                            <td style="text-align: start; display: flex; flex-direction: column; line-height: 14px;">
+                               <span style="font-size: 14px;">
+                                    {% if movimentacao.destinatario.sigla == 'ARQ' %}
+                                        Arquivado por {{ movimentacao.remetente.nome }}
+                                    {% else %}
+                                        De <b>{{ movimentacao.remetente.nome }}</b> para <b>{{ movimentacao.destinatario.nome }}</b>
+                                    {% endif %}
+                               </span>
+                                <span style="font-size: 12px;">
+                                    Enviada por {{ movimentacao.realizado_por.get_full_name }} em {{ movimentacao.realizado_em|date:"d/m/Y H:i" }}
+                                </span>
+                                {% if movimentacao.descricao %}
+                                    <span style="font-size: 12px;">
+                                        Anotação: {{ movimentacao.descricao}}
+                                    </span>
+                                {% endif %}
+                                {% if movimentacao.status == 'recebida' and movimentacao.destinatario.sigla != 'ARQ'%}
+                                    {% if movimentacao.confirmacao == 'manual' %}
+                                        <span style="font-size: 12px;">
+                                            <a type="button" style="text-decoration: none;" hx-get="{% url 'visualizar_comprovacao' movimentacao.protocolos.first.id %}" hx-target="#dialog" hx-trigger="click" data-bs-toggle="modal" data-bs-target="#modal">Confirmado manualmente em {{ movimentacao.realizado_em|date:"d/m/Y H:i" }}
+                                            (Visualizar)</a>
+                                        </span>
+                                    {% else %}
+                                        <span style="font-size: 12px;">
+                                            Recebida por {{ movimentacao.confirmado_por.get_full_name}} em {{ movimentacao.confirmado_em|date:"d/m/Y H:i" }}
+                                        </span>
+                                    {% endif %}
+                                {% endif %} 
+                            </td>
+                            <td>
+                                {% if movimentacao.destinatario.sigla == 'ARQ' %}
+                                    <span class="badge" style="background-color: black;">
+                                        Arquivado
+                                    </span>
+                                {% else %}
+                                    <span class="badge" style="{% if movimentacao.status == 'recebida' %}background-color: #198754;{% else %}background-color: #17a2b8;{% endif %}">
+                                        {{ movimentacao.get_status_display }}
+                                    </span>
+                                    
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td>
+                            <p>Nenhuma movimentação encontrada.</p>
+                        </td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

@@ -80,18 +80,21 @@
                 <div class="card-header">
                     <div class="d-flex justify-content-between">
                         <h5 class="card-title mb-0">Movimentações</h5> 
-                        {% if pode_modificar %}
-                            {% if processo.ultima_movimentacao.status == 'em_tramitacao' and processo.ultima_movimentacao.confirmacao == 'pendente' %}
-                                <form method="post" action="{% url 'receber_processo' processo.id %}">
-                                    {% csrf_token %}
-                                    <button type="submit" class="btn btn-sm btn-warning">Receber</button>
-                                </form>
-                            {% else %}
-                                <a type="button" class="btn btn-sm btn-warning py-0" hx-get="{% url 'criar_movimentacao' processo.id %}" hx-target="#dialog">
-                                    + Criar Movimentação
-                                </a>
+                        <div class="flex-row">
+                            {% if pode_modificar %}
+                                {% if processo.ultima_movimentacao.status == 'em_tramitacao' and processo.ultima_movimentacao.confirmacao == 'pendente' %}
+                                    <form method="post" action="{% url 'receber_processo' processo.id %}">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-sm btn-warning">Receber</button>
+                                    </form>
+                                {% else %}
+                                    <a type="button" class="btn btn-sm btn-warning py-0" hx-get="{% url 'criar_movimentacao' processo.id %}" hx-target="#dialog">
+                                        + Criar Movimentação
+                                    </a>
+                                {% endif %}
                             {% endif %}
-                        {% endif %}
+                            <a type="button" class="btn btn-sm btn-info py-0" href="{% url 'gerar_historico_tramitacoes' processo.id %}">Tramitações <i class="fa-solid fa-print"></i></a>
+                        </div>
                     </div>
                 </div>
                 <div class="card-body">
