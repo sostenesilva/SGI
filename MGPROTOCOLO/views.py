@@ -41,6 +41,7 @@ def processos_encaminhados_pelo_setor(request):
     """
     setor_usuario = request.user.setor_home.all()  # Supondo que o usuário pertence a um setor
     processos = Processo.processos_encaminhados_pelo_setor(setor_usuario).order_by('-atualizado_em')
+    processos = processos.filter(~Q(atual__sigla='ARQ'))
 
     # Capturar o termo de busca
     query = request.GET.get('buscar', '')

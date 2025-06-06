@@ -17,7 +17,6 @@
                 <tr>
                     <th>Número</th>
                     <th>Título</th>
-                    <th>Status</th>
                     <th>Movimentação</th>
                     <th>Ações</th>
                 </tr>
@@ -28,16 +27,14 @@
                     <tr style="font-size: small;">
                         <td class="col-2" style="word-wrap: break-word; white-space: normal;">{{ processo.numero }}</td>
                         <td class="col-3" style="word-wrap: break-word; white-space: normal;">{{ processo.titulo|truncatewords:30 }}</td>
-                        <td class="col-1" style="word-wrap: break-word; white-space: normal;">
-                            <span class="badge {% if processo.status == 'concluido' %}bg-success{% else %}bg-warning{% endif %}">
-                                {{ processo.get_status_display }}
-                            </span>
-                        </td>
                         <td class="" style="font-size: smaller;">
                             {% if processo.ultima_movimentacao %}
                                 <div class="d-flex flex-column">
                                     <span>Remetente: {{ processo.ultima_movimentacao.remetente }} ({{ processo.ultima_movimentacao.realizado_por.get_full_name }} em {{ processo.ultima_movimentacao.realizado_em|date:"d/m/Y H:m" }})</span>
-                                    <span>Destinatário: {{ processo.ultima_movimentacao.destinatario }} ({% if processo.ultima_movimentacao.confirmacao == 'pendente' %}Pendente de recebimento{% else %}{{ processo.ultima_movimentacao.confirmado_por.get_full_name }} em {{ processo.ultima_movimentacao.confirmado_em|date:"d/m/Y H:m" }}{% endif %})</span>
+                                    <span>Destinatário: {{ processo.ultima_movimentacao.destinatario }} (
+                                        {% if processo.ultima_movimentacao.confirmacao == 'pendente' %}Pendente de recebimento
+                                        {% elif processo.ultima_movimentacao.confirmacao == 'manual' %}Encaminhado Manualmente em {{ processo.ultima_movimentacao.realizado_em|date:"d/m/Y H:m" }}
+                                        {% else %}{{ processo.ultima_movimentacao.confirmado_por.get_full_name }} em {{ processo.ultima_movimentacao.confirmado_em|date:"d/m/Y H:m" }}{% endif %})</span>
                                 </div>
                             {% endif %}
                         </td>
