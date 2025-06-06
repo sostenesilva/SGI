@@ -23,7 +23,6 @@
                             <a hx-get="{% url 'anexar_comprovacao' protocolo.id %}" class="btn btn-info btn-sm" hx-target="#dialog" hx-trigger="click" data-bs-toggle="modal" data-bs-target="#modal">Anexar Comprovação</a>
                         {% else %}
                             <a hx-get="{% url 'visualizar_comprovacao' protocolo.id %}" class="btn btn-success btn-sm" hx-target="#dialog" hx-trigger="click" data-bs-toggle="modal" data-bs-target="#modal">Detalhes</a>
-                        
                         {% endif %}
                     </td>
                 </tr>

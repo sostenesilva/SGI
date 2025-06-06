@@ -116,10 +116,17 @@
                                                     Anotação: {{ movimentacao.descricao}}
                                                 </small>
                                                 {% endif %}
-                                            {% if movimentacao.status == 'recebida' and movimentacao.destinatario.sigla != 'ARQ' %}
-                                                <small class="text-muted">
-                                                    Recebida por {{ movimentacao.confirmado_por.get_full_name}} em {{ movimentacao.confirmado_em|date:"d/m/Y H:i" }}
-                                                </small>           
+                                            {% if movimentacao.status == 'recebida' and movimentacao.destinatario.sigla != 'ARQ'%}
+                                                {% if movimentacao.confirmacao == 'manual' %}
+                                                    <small class="text-muted">
+                                                        Confirmado manualmente em {{ movimentacao.realizado_em|date:"d/m/Y H:i" }} 
+                                                        <a hx-get="{% url 'visualizar_comprovacao' protocolo.id %}" class="btn btn-success btn-sm" hx-target="#dialog" hx-trigger="click" data-bs-toggle="modal" data-bs-target="#modal">(Detalhes)</a>
+                                                    </small>
+                                                {% else %}
+                                                    <small class="text-muted">
+                                                        Recebida por {{ movimentacao.confirmado_por.get_full_name}} em {{ movimentacao.confirmado_em|date:"d/m/Y H:i" }}
+                                                    </small>
+                    
                                             {% endif %}
                                         </div>
                                         <div class="col-3 d-flex justify-content-center">

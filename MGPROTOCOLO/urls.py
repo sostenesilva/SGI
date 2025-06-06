@@ -18,7 +18,6 @@ urlpatterns = [
     path('processo/<int:processo_id>/arquivar/', views.arquivar_processo, name='arquivar_processo'),
     path('processos-arquivados/', views.processos_arquivados, name='processos_arquivados'),
 
-
     path('protocolos/gerar/', views.gerar_protocolo, name='gerar_protocolo'),
     path('protocolos/', views.listar_protocolos, name='listar_protocolos'),
     path('protocolos/<int:protocolo_id>/comprovacao/', views.anexar_comprovacao, name='anexar_comprovacao'),
@@ -28,6 +27,4 @@ urlpatterns = [
     path('processo/<int:processo_id>/corrigir/salvar/', views.salvar_correcoes_processo, name='salvar_correcoes_processo'),
 
     path('sugerir-dados-processo/', views.sugerir_descricao_processo, name='sugerir_dados_processo'),
-
-
 ]
