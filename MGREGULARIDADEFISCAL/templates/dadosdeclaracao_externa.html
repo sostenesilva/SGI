@@ -33,7 +33,11 @@
                     <strong>Chave de Autenticidade:</strong> {{ declaracao.codigo }}
                 </td>
                 <td>
-                    <a type="btn" href="{{ declaracao.arquivo.url }}" target="_blank"><i class="lni lni-eye"></i> Visualizar declaração</a>
+                    {% if declaracao.situacao == '-' %}
+                        <a type="btn" href="/{{ declaracao.arquivo }}" target="_blank"><i class="lni lni-eye"></i> Visualizar declaração</a>
+                    {% else %}
+                        <a type="btn" href="{{ declaracao.arquivo.url }}" target="_blank"><i class="lni lni-eye"></i> Visualizar declaração</a>
+                    {% endif %}
                 </td>
             </tr>
         </table>
