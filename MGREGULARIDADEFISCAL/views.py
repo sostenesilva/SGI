@@ -1,10 +1,12 @@
 import json
 import os
+import uuid
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
-from datetime import date
+from datetime import date, datetime
 from weasyprint import CSS, HTML
 from docx import Document
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from python_docx_replace import docx_replace
 import base64
@@ -13,6 +15,7 @@ from . import models, forms
 from django.forms import formset_factory, modelformset_factory
 from MGC.models import Fornecedores
 from django.template.loader import render_to_string
+from django.core.files.base import ContentFile
 
 def fornecedores_list(request):
     fornecedores = Fornecedores.objects.all()
@@ -64,11 +67,24 @@ def regularidade_resumo(request, fornecedor_id):
     return render(request, 'regularidade_resumo.html', {'fornecedor':fornecedor})
 
 def emitir_declaracao(request,fornecedor_id):
-    print('fui chamado')
     fornecedor = Fornecedores.objects.get(pk = fornecedor_id)
-    declaracao = models.Declaracao.objects.create(fornecedor=fornecedor)
-    certidoes = declaracao.get_certidoes()
+    print(request.POST)
+    # Captura a data de referência do formulário
+    data_referencia_str = request.POST.get("data_referencia")
+    if data_referencia_str:
+        data_referencia = datetime.strptime(data_referencia_str, "%Y-%m-%d").date()
+    else:
+        data_referencia = date.today()
 
+    # Cria a declaração com a data de emissão personalizada
+    declaracao = models.Declaracao.objects.create(
+        fornecedor=fornecedor,
+        emitido_por=request.user,
+        data_emissao=data_referencia  # sobrescreve o default do auto_now_add
+    )
+    certidoes = declaracao.get_certidoes(referencia=data_referencia)
+
+    
     certidao_max = date(2500,1,1)
     certidao_min = date(2000,1,1)
     certidao_none = False
@@ -91,11 +107,25 @@ def emitir_declaracao(request,fornecedor_id):
     # Verifica se todas as certidões foram encontradas
     faltando = [tipo for tipo, certidao in certidoes.items() if certidao is None]
 
-    if faltando:
-        print(f"Certidões faltando: {', '.join(faltando)}")
+    # Filtra apenas as certidões que não são None
+    certidoes_validas = [c for c in certidoes.values() if c is not None]
 
-    caminho = ver_declaracao(request,declaracao)
-    declaracao.arquivo = caminho
+    # Associa as certidões à declaração
+    declaracao.certidoes.set(certidoes_validas)
+
+    # Gerar PDF em bytes
+    declaracao_pdf_bytes = gerar_declaracao(request, declaracao, certidoes)
+
+    # Nome do arquivo
+    nome_arquivo = f"declaracao_{declaracao.id}.pdf"
+
+    # Atribuir usando ContentFile
+    declaracao.arquivo.save(nome_arquivo, ContentFile(declaracao_pdf_bytes))
+    if declaracao.data_validade:
+        declaracao.situacao = 'regular'
+    else:
+        declaracao.situacao = 'insuficiente'
+
     declaracao.save()
 
     return redirect('dashregularidadefiscal')
@@ -106,133 +136,56 @@ def encode_image_base64(image_path):
         return base64.b64encode(img_file.read()).decode("utf-8")
 
 @login_required
-def ver_declaracao (request, declaracao):
+def gerar_declaracao(request, declaracao, certidoes):
 
-    header_image = encode_image_base64("static/img/header.png")
-    footer_image = encode_image_base64("static/img/footer.png")
-    brasao_image = encode_image_base64("static/img/logo_cor_horizontal.png")
+    # Função para converter imagens estáticas em Base6
+    with open("static/img/bg-timbrado-logo.png", "rb") as image_file:
+        page_background = base64.b64encode(image_file.read()).decode('utf-8')
 
-    certidaoIndisponivel = False
+    # Gerar HTML com contexto atualizado
+    html_string = render_to_string('declaracao_pdf.html', {
+        'page_background': page_background,
+        'declaracao': declaracao,
+        'certidoes': certidoes,
+    })
 
-    certidoes_html=""
-    
-    for tipo, certidao in declaracao.get_certidoes().items():
-        if certidao:
-            certidoes_html += f"""
-            <tr>
-                <td>{tipo}</td>
-                <td>{certidao.dataEmissao.strftime('%d/%m/%Y')}</td>
-                <td>{certidao.dataValidade.strftime('%d/%m/%Y')}</td>
-                <td>{certidao.autenticacao}</td>
-            </tr>"""
-        else:
-            certidaoIndisponivel = True
-            certidoes_html += f"""
-            <tr>
-                <td>{tipo}</td>
-                <td>-</td>
-                <td>-</td>
-                <td>Não localizado</td>
-            </tr>"""
+    # Caminho absoluto do CSS
+    base_url = request.build_absolute_uri('/')
 
+    # Gerar o PDF em bytes
+    pdf_file = HTML(string=html_string, base_url=base_url).write_pdf()
 
-    template = f"""
-    <!DOCTYPE html>
-    <html lang="pt-BR">
-    <head>
-        <meta charset="UTF-8">
-        <title>Declaração de Conformidade Fiscal</title>
-    </head>
-    <link rel="stylesheet" href="static/css/detail_pdf_gen.css">
-        <style>
-            header {{
-                background-image: url("data:image/png;base64,{header_image}");
-            }}
-
-            footer {{
-                background-image: url("data:image/png;base64,{footer_image}");
-            }}
-        </style>
-    <body>
-        <header>
-        <img class="brasao" src="data:image/png;base64,{brasao_image}" alt="Brasão da Prefeitura">
-        </header>
-
-            <!-- Conteúdo Principal -->
-        <div class="content">
-            <h1 style="text-align: center;">Declaração de Conformidade Fiscal</h1>
-            <p>Emitimos a presente Declaração de Conformidade Fiscal a fim de verificar se o fornecedor abaixo identificado atende aos requisitos de regularidade fiscal, conforme documentação apresentada e validada por esta administração pública.</p>
-            <p style="margin:0; padding:0;"><strong>Fornecedor:</strong> {declaracao.fornecedor.RazaoSocial}</p>
-            <p style="margin:0; padding:0;"><strong>CNPJ/CPF:</strong> {declaracao.fornecedor.NumeroDocumentoAjustado}</p>"""
-    
-    if certidaoIndisponivel:
-        template += f"""<p style="margin:0; padding:0;color: red;"><strong>Situação:</strong> Certidões insuficientes para atestar a regularidade</p>"""
-    else:
-        template += f"""<p style="margin:0; padding:0;"><strong>Situação:</strong> Regular</p>
-        <p style="margin:0; padding:0;"><strong>Vigência: </strong> {declaracao.data_inicio.strftime('%d/%m/%Y')} à {declaracao.data_validade.strftime('%d/%m/%Y')}</p>"""
-
-    template += f"""<h2 class="section-title">Certidões</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Certidão</th>
-                        <th>Data de Emissão</th>
-                        <th>Data de Validade</th>
-                        <th>Autenticação</th>
-                    </tr>
-                </thead>
-                <tbody>
-        """
-    
-    template += certidoes_html
-
-    template += f"""</tbody>
-                </table>
-                <h2 class="section-title">Instruções para Validação</h2>
-                <p style="margin:0px">Esta declaração possui uma chave de autenticidade, que permite a consulta online das certidões associadas e de sua validade.</p>
-                <p style="margin-bottom:0px">Para verificar esta declaração, acesse o site:</p>
-                <p style="margin:0px; font-size: small;">https://cortes.sginformacao.com.br/regularidadefiscal/consultar</p>
-                <p style="text-align:left; font-size: small;">Chave de autenticação:</p>
-                <p style="text-align:left; font-size: small;"><strong>{declaracao.codigo}</strong></p>
-                <p><strong>Observações Importantes:</strong></p>
-                <ul>
-                    <li>A validade desta declaração está condicionada à vigência das certidões apresentadas.</li>
-                    <li>Documento gerado eletronicamente por meio do sistema de gestão da informação. Qualquer alteração ou modificação invalida este documento.</li>
-                    <li>Em caso de inconsistências ou dúvidas, entre em contato com o setor responsável.</li>
-                </ul>
-            </div>
-
-            <footer><div class="dados-footer">
-            <p style="margin:0px">Rua Coronel José Belarmino, nº 048, Centro, Cortês-PE</p>                    
-            <p style="margin:0px">CEP 55.525-000 | CNPJ: 10.273.548/0001-69</p>
-            <p style="margin:0px">E-mail: gabineteprefeitacortes@gmail.com</p>
-            </div>
-            </footer>
-        </body>
-        </html>"""
-    
-    caminho_pdf = f'media/MGREGULARIDADEFISCAL/declaracoes/{declaracao.codigo}.pdf'
-
-    base_url = os.path.dirname(os.path.realpath(__file__))+"/"
-    html = HTML(string=template, base_url=base_url)
-    css = CSS("./static/css/detail_pdf_gen.css", base_url=base_url)
-
-    html.write_pdf(caminho_pdf, stylesheets=[css])
-
-    return caminho_pdf
+    return pdf_file
 
 def consulta_externa(request):
-    return render(request,'consultadeclaracao.html',{})
+    return render(request, 'consultadeclaracao.html')
 
-def dadosdeclaracao_externa (request):
+def dadosdeclaracao_externa(request):
     chave = request.GET.get('chave')
-    declaracao = models.Declaracao.objects.get(codigo = chave)
-    certidoes = declaracao.get_certidoes()
-    regularidade = True
-    for tipo,certidao in certidoes.items():
-        if not certidao:
-            regularidade = False
-    return render(request, 'dadosdeclaracao_externa.html',{'declaracao': declaracao, 'certidoes':certidoes, 'regularidade':regularidade})
+    if not chave:
+        messages.error(request, "Chave não informada.")
+        return redirect('consulta_externa')
+    
+    try:
+        # Valida se é um UUID válido antes de buscar no banco
+        chave_uuid = uuid.UUID(chave)
+    except ValueError:
+        messages.error(request, "A chave informada não é válida. Verifique e tente novamente.")
+        return render(request, 'consultadeclaracao.html', {})
+
+    try:
+        declaracao = models.Declaracao.objects.get(codigo=chave)
+        certidoes = declaracao.get_certidoes()
+        regularidade = all(certidoes.values())
+        return render(request, 'dadosdeclaracao_externa.html', {
+            'declaracao': declaracao,
+            'certidoes': certidoes,
+            'regularidade': regularidade,
+        })
+    except models.Declaracao.DoesNotExist:
+        messages.error(request, "Declaração não encontrada ou inválida. Verifique a chave e tente novamente.")
+        return redirect('consulta_externa')
+    
 
 @login_required
 def dashregularidade(request):

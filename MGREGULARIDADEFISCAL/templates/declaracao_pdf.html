@@ -1,0 +1,210 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Declaração de Conformidade Fiscal</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 0;
+            padding: 3cm 2cm 5cm 2cm; /* Deixa espaço interno para o conteúdo */
+            background: url("data:image/png;base64,{{ page_background }}") no-repeat center;
+            background-size: cover;
+        }
+  
+        body {
+            font-family: Arial, sans-serif;
+            text-align: justify;
+            line-height: 1.4;
+            margin: 0;
+        }
+
+        .content{
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 24px;
+        }
+
+        header {
+            position: fixed;
+            top: 0cm;
+            left: -20cm;
+            right: 0cm;
+            height: 8cm;
+            text-align: center;
+            background-size: 100%;
+            background-repeat: no-repeat;
+            background-position: 2cm;
+        }
+
+        header .brasao {
+            position: fixed;
+            top: 1.2cm;
+            left: 1.5cm;
+            right: 0;
+            height: 2cm;
+            text-align: right;
+        }
+
+        footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 5cm;
+            text-align: bottom;
+            background-size: 100%;
+            background-repeat: no-repeat;
+            background-position: -2cm;
+        }
+
+        .section-title {
+            font-weight: bolder;
+            font-size: 16px;
+            text-transform: uppercase;
+            margin-top: 0.7cm;
+            margin-bottom: 0cm;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table th, table td {
+            border: 1px solid #f4f4f4;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        table th {
+            background-color: #f4f4f4;
+        }
+
+        .instructions {
+            font-size: 14px;
+        }
+
+        .signature {
+            text-align: right;
+            font-size: 14px;
+        }
+
+        .dados-footer{
+            width: fit-content;
+            position:fixed;
+            top: 91%;
+            right: 7%;
+            text-align: right;
+            font-size: 14px;
+        }
+
+        .badge{
+            font-size: 12px;
+            color: white;
+            font-weight: 700;
+            padding: 0.5em;
+            border-radius: 0.37rem;
+            display: inline-block;
+        }
+
+        .autenticidade-vertical {
+            position: fixed;
+            top: 80%;
+            left: 106%;
+            width: 60em;
+            transform: rotate(-90deg);
+            transform-origin: left top;
+            font-size: 10px;
+            color: #666;
+            letter-spacing: 1px;
+            writing-mode: vertical-lr; /* ajuda em alguns renderizadores */
+            line-height: 13px;
+        }
+
+    </style>
+</head>
+
+<body>
+    <div class="content">
+        <div class="autenticidade-vertical">
+            Documento gerado por <b>{{ declaracao.emitido_por.get_full_name }}</b> em {{ declaracao.data_emissao|date:"d/m/Y" }} por meio de Sistema Informatizado.<br>
+            Chave Digital de autenticação: <b>{{ declaracao.codigo }}</b>
+        </div>
+        <h1>Declaração de Conformidade Fiscal</h1>
+        <p>Emitimos a presente Declaração de Conformidade Fiscal a fim de apresentar análise das certidões apresentadas e/ou diligenciadas pelo poder público a fim de atestar se o prestador de serviço encontra-se regular perante suas obrigações fiscais e trabalhistas.</p>
+        <p>
+            <b>Fornecedor:</b> {{ declaracao.fornecedor.RazaoSocial }} <br>
+            <b>CNPJ/CPF:</b> {{ declaracao.fornecedor.NumeroDocumentoAjustado }} <br>
+            {% if declaracao.data_validade %}
+                <b>Situação:</b> Regular durante o período de vigência <br>
+                <b>Vigência: </b> {{ declaracao.data_inicio|date:"d/m/Y" }} à {{ declaracao.data_validade|date:"d/m/Y" }}
+            {% else %}
+                <span style="color: red;">
+                    <b>Situação:</b> Certidões insuficientes para atestar a regularidade fiscal <br>
+                    <b>Verificação: </b> Atualizado no dia {{ declaracao.data_inicio|date:"d/m/Y" }}
+                </span>
+                
+            {% endif %}
+        </p>
+        
+
+        <h2 class="section-title">Certidões</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Certidão</th>
+                    <th>Data de Emissão</th>
+                    <th>Data de Validade</th>
+                    <th>Autenticação</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for tipo, certidao in certidoes.items %}
+                    <tr>
+                        <td>{{ tipo }}</td>
+                        {% if certidao %}
+                            <td>{{ certidao.dataEmissao|date:"d/m/Y" }}</td>
+                            <td>{{ certidao.dataValidade|date:"d/m/Y" }}</td>
+                            <td>{{ certidao.autenticacao }}</td>
+                        {% else %}
+                            <td colspan="3" style="color: red;">Não localizada</td>
+                        {% endif %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+
+        <h2 class="section-title">Instruções para Validação</h2>
+        <p style="margin-top: 0;">Esta declaração possui uma chave de autenticidade que permite a consulta online da íntegra das certidões associadas a esta declaração e de sua validade.</p>
+        <p>
+            Para verificar esta declaração, acesse o site: <br>
+            <a href="https://cortes.sginformacao.com.br/regularidadefiscal/consultar">https://cortes.sginformacao.com.br/regularidadefiscal/consultar</a>
+        </p>
+
+        <p>
+            Chave de autenticação:
+            <b>{{ declaracao.codigo }}</b>
+        </p>
+
+        <p>
+            <b>Observações Importantes:</b>
+            <ul>
+                <li>A validade desta declaração está condicionada à vigência das certidões apresentadas.</li>
+                <li>Documento gerado eletronicamente por meio do sistema de gestão da informação. Qualquer alteração ou modificação invalida este documento.</li>
+                <li>Em caso de inconsistências ou dúvidas, entre em contato com o setor responsável.</li>
+            </ul>
+        </p>
+            </div>
+
+
+
+
+    </div>
+</body>
+</html>

@@ -7,18 +7,19 @@
         <td>{{ declaracao.data_validade|date_format }}</td>
         <td>
             <div class='btn-group btn-group-sm' role='group'>
-                <a type="btn" href="/{{ declaracao.arquivo }}" target="_blank"><i class="lni lni-eye"></i></a>
+                <a type="btn" href="{{ declaracao.arquivo.url }}" target="_blank"><i class="lni lni-eye"></i></a>
             </div>
         </td>
     </tr>
     {% else %}
     <tr>
         <td>{{ declaracao.data_emissao|date_format }}</td>
-        <td>-</td>
-        <td>-</td>
+        <td colspan="2" style="font-size: smaller; color: red;">Certidões insuficientes</td>
         <td>
             <div class='btn-group btn-group-sm' role='group'>
-                <a type="btn" href="/{{ declaracao.arquivo }}" target="_blank"><i class="lni lni-eye"></i></a>
+                {% if declaracao.arquivo %}
+                    <a type="btn" href="{{ declaracao.arquivo.url }}" target="_blank"><i class="lni lni-eye"></i></a>
+                {% endif %}
             </div>
         </td>
     </tr>

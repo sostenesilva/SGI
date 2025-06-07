@@ -11,4 +11,5 @@ urlpatterns = [
     path('regularidaderesumo/<int:fornecedor_id>/', views.regularidade_resumo, name='regularidade_resumo'),
     path('adicionarcertidoes/<int:fornecedor_id>/', views.certidoes_add, name='certidoes_add'),
     path('emitirdeclaracao/<int:fornecedor_id>/', views.emitir_declaracao, name='emitir_declaracao'),
+    path('emitirdeclaracao/', views.gerar_declaracao, name='gerar_declaracao'),
 ]

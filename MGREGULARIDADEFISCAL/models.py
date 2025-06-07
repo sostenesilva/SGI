@@ -33,30 +33,37 @@ class Certidao(models.Model):
 
 
 def diretorioDeclaracao (instance, filename):
-    return f'MGREGULARIDADEFISCAL/declarações/{instance.data_emissao.year}/{instance.codigo}.pdf'
-
+    return f'MGREGULARIDADEFISCAL/declaracoes/{instance.data_emissao.year}/{instance.codigo}.pdf'
 
 class Declaracao(models.Model):
     fornecedor = models.ForeignKey(Fornecedores, on_delete=models.PROTECT)
     codigo = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
-    data_emissao = models.DateField(auto_now_add=True)
+    data_emissao = models.DateField(null=True, blank=True)
+    emitido_por = models.ForeignKey(User, on_delete=models.PROTECT)
     data_inicio = models.DateField(null=True, blank=True)
     data_validade = models.DateField(null=True, blank=True)
-    arquivo = models.FileField(null=True, blank=True)
+    arquivo = models.FileField(upload_to=diretorioDeclaracao, null=True, blank=True)
+    certidoes = models.ManyToManyField(Certidao, related_name='declaracoes')
+    situacao = models.CharField(max_length=15, default='-')
 
-    def get_certidoes(self):
-            """
-            Retorna um dicionário com a certidão mais recente e válida de cada tipo.
-            """
-            certidoes = {}
-            for tipo, _ in Certidao.certidoes_choices:
-                certidao_valida = (
-                    Certidao.objects.filter(fornecedor=self.fornecedor, tipo=tipo, dataValidade__gte = self.data_emissao)
-                    .order_by('-dataEmissao')
-                    .first()
-                )
-                certidoes[tipo] = certidao_valida
-            return certidoes
+    def get_certidoes(self, referencia=None):
+        """
+        Retorna um dicionário com a certidão mais recente e válida de cada tipo.
+        A validade é avaliada com base na data de referência (por padrão, usa data_emissao).
+        """
+        if referencia is None:
+            referencia = self.data_emissao
+
+        certidoes = {}
+        for tipo, _ in Certidao.certidoes_choices:
+            certidao_valida = (
+                Certidao.objects
+                .filter(fornecedor=self.fornecedor, tipo=tipo, dataValidade__gte=referencia)
+                .order_by('-dataEmissao')
+                .first()
+            )
+            certidoes[tipo] = certidao_valida
+        return certidoes
 
     def __str__(self):
         return f'Declaração - {self.fornecedor} - {self.codigo}'

@@ -152,7 +152,7 @@
                             <td style="text-align: start; display: flex; flex-direction: column; line-height: 14px;">
                                <span style="font-size: 14px;">
                                     {% if movimentacao.destinatario.sigla == 'ARQ' %}
-                                        Arquivado por {{ movimentacao.remetente.nome }}
+                                        Arquivado por <b>{{ movimentacao.remetente.nome }}</b>
                                     {% else %}
                                         De <b>{{ movimentacao.remetente.nome }}</b> para <b>{{ movimentacao.destinatario.nome }}</b>
                                     {% endif %}

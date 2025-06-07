@@ -1,7 +1,15 @@
+{% extends "base2.html" %}
 {% load custom_filters %}
+
+{% block contentdash %}
+<div class="d-flex justify-content-between" style="align-items: end;">
+    <h4><b>SGI</b> - Dados da Declaração</h4>
+    <a href="{% url 'consulta_externa' %}" class="btn btn-secondary mt-4">Nova Consulta</a>
+</div>
+<hr>
+
 {% if declaracao %}
     <div class="declaracao-info">
-        <h4>Dados da Declaração</h4>
         <table class="table table-overflow">
             <tr>
                 <td>
@@ -12,13 +20,11 @@
             </tr>
             <tr>
                 <td>
-                    <strong>Data de Emissão:</strong> {{ declaracao.data_emissao|date_format }}
+                    <strong>Data de Emissão:</strong> {{ declaracao.data_emissao|date:"d/m/Y" }}
                 </td>
                 <td>
                     {% if declaracao.data_validade %}
-                        <strong>Vigência:</strong> {{ declaracao.data_inicio|date_format }} à {{ declaracao.data_validade|date_format }}
-                    {% else %}
-                        <strong>Vigência:</strong> -
+                        <strong>Vigência:</strong> {{ declaracao.data_inicio|date:"d/m/Y" }} à {{ declaracao.data_validade|date:"d/m/Y" }}
                     {% endif %}
                 </td>
             </tr>
@@ -27,7 +33,7 @@
                     <strong>Chave de Autenticidade:</strong> {{ declaracao.codigo }}
                 </td>
                 <td>
-                    <a type="btn" href="/{{ declaracao.arquivo }}" target="_blank"><i class="lni lni-eye"></i> Visualizar declaração</a>
+                    <a type="btn" href="{{ declaracao.arquivo.url }}" target="_blank"><i class="lni lni-eye"></i> Visualizar declaração</a>
                 </td>
             </tr>
         </table>
@@ -35,7 +41,7 @@
 
     <div class="certidoes-info">
         <h4>Certidões Vinculadas</h4>
-        <strong>Situação: </strong>{% if regularidade %}Regular{% else %}Certidões insuficientes para atestar a regularidade{% endif %}
+        <strong>Situação: </strong>{% if declaracao.situacao == 'regular' %}Regular {% elif regularidade %}Regular {% else %}Certidões insuficientes para atestar a regularidade{% endif %}
         <table class="table table-striped">
             <thead>
                 <tr>
@@ -47,28 +53,20 @@
                 </tr>
             </thead>
             <tbody>
-                {% for tipo, certidao in certidoes.items %}
+                {% for certidao in declaracao.certidoes.all %}
                     {% if certidao %}
                         <tr>
-                            <td>{{ tipo }}</td>
+                            <td>{{ certidao.tipo }}</td>
                             <td>{{ certidao.dataEmissao }}</td>
                             <td>{{ certidao.dataValidade }}</td>
                             <td>{{ certidao.autenticacao }}</td>
-                            <td><a href="{{ certidao.arquivo.url }}" download>Baixar</a></td>
-                        </tr>
-                    {% else %}
-                        <tr>
-                            <td>{{ tipo }}</td>
-                            <td>-</td>
-                            <td>-</td>
-                            <td>Não localizada</td>
-                            <td>-</td>
+                            <td><a href="{{ certidao.arquivo.url }}" target="_blank">Visualizar</a></td>
                         </tr>
                     {% endif %}
                 {% endfor %}
             </tbody>
         </table>
     </div>
-{% else %}
-    <p class="error-message">Declaração não encontrada ou inválida. Verifique a chave de autenticidade e tente novamente.</p>
 {% endif %}
+
+{% endblock %}

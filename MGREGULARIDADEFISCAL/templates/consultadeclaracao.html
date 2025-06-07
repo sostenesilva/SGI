@@ -4,21 +4,18 @@
 {% block head_title %} Consulta {% endblock head_title %}
 
 {% block contentdash %}
-    <div class="d-flex justify-content-between">
-        <h4><b>SGI</b> - Consultar Declaração</h4>
+<div class="d-flex justify-content-between">
+    <h4><b>SGI</b> - Consultar Declaração</h4>
+</div>
+<hr>
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <form method="get" action="{% url 'dadosdeclaracao_externa' %}" class="d-flex align-items-center">
+            <label for="consultaInput" class="mx-2">Chave de autenticação:</label>
+            <input type="text" id="consultaInput" name="chave" class="form-control mx-2" placeholder="Digite a chave" style="width: 400px;">
+            <button type="submit" class="btn btn-primary mx-2">Consultar</button>
+        </form>
     </div>
-    <hr>
-    <div class="row justify-content-center">
-        <div class="col-md-12">
-            <div class="d-flex justify-content-center my-2 px-5">
-                <h5 class="mx-2">Chave de autenticação:</h5>
-                <input type="text" id="consultaInput" name="chave" hx-trigger="click from:#consultaBotao" hx-get="{% url 'dadosdeclaracao_externa' %}" hx-target="#resultadoDiv" class="form-group form-control mx-2" placeholder="Digite a chave" style="width: fit-content;">
-                <a type="button" id="consultaBotao" class="form-control mx-2" style="width: fit-content;">Consultar</a>
-        </div>
-        <hr>
-        <div id="resultadoDiv">
-            <p>Digite o código de autenticação (sem espaços) e clique em buscar...</p>
-        </div>
-    </div>
-    
+</div>
 {% endblock contentdash %}

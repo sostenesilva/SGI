@@ -5,7 +5,7 @@ from django.contrib.auth.models import User, Permission
 class Secretaria(models.Model):
     nome = models.CharField(max_length=255, unique=True, null=True, blank=True)
     sigla = models.CharField(max_length=10, blank=True, null=True)
-    usuarios = models.ManyToManyField(User, related_name='secretaria_home', null=True, blank=True)
+    secretario = models.ManyToManyField(User, related_name='secretaria_home')
     ativo = models.BooleanField(default=True)
 
     def __str__(self):
@@ -14,7 +14,7 @@ class Secretaria(models.Model):
 class Setor(models.Model):
     nome = models.CharField(max_length=255, unique=True, null=True, blank=True)
     secretaria = models.ForeignKey(Secretaria, on_delete=models.SET_NULL, null=True, blank=True, related_name='setores')
-    usuarios = models.ManyToManyField(User, null=True, blank=True, related_name='setor_home')
+    usuarios = models.ManyToManyField(User, related_name='setor_home')
     sigla = models.CharField(max_length=10, blank=True, null=True)
     ativo = models.BooleanField(default=True)
 

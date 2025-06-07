@@ -1,13 +1,31 @@
 <div class="modal-content" hx-debug="true">
     <div class="modal-header justify-content-between">
 
-            <h5 class="modal-title">Regularidade Fiscal</h5>
-            <div>
-                <div class="btn-group">
-                    <a type="button" class="btn btn-sm btn-light" hx-get="{% url 'certidoes_add' fornecedor.id %}" hx-target="#dialog">Incluir Certidão</a>
-                    <a type="button" id="emitirdeclaracao" class="btn btn-sm btn-light" href="{% url 'emitir_declaracao' fornecedor.id %}">Emitir Declaração</a>
-                </div>
+        <h5 class="modal-title">Regularidade Fiscal</h5>
+
+        <!-- Data de referência -->
+        <form action="{% url 'emitir_declaracao' fornecedor.id %}" method="post" class="d-flex flex-row" style="align-items:end">
+            {% csrf_token %}
+            <div class="flex-column mx-2">
+                <label for="data_referencia" style="font-size: x-small;">Data de referência:</label>
+                <input class="form-control form-control-sm" type="date" name="data_referencia">
             </div>
+
+            <!-- botões de ação -->
+            <div class="btn-group" role="group">
+                <button id="btnGroupDrop1" type="button" class="btn btn-secondary btn-sm dropdown-toggle" style="height: fit-content;" data-bs-toggle="dropdown" aria-expanded="false">
+                Emitir/Incluir
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+                    <div class="dropdown-item">
+                        <a type="button" class="btn btn-sm" hx-get="{% url 'certidoes_add' fornecedor.id %}" hx-target="#dialog">Incluir Certidão</a>
+                    </div>
+                    <div class="dropdown-item">
+                        <button type="submit" class="btn btn-sm" id="emitirdeclaracao">Emitir Declaração</button>
+                    </div>
+                </ul>
+            </div>
+        </form>              
     </div>
     <div class="modal-body">
         <div class="row justify-content-center">
@@ -43,7 +61,7 @@
                     <table class="table table-sm table-striped">
                         <thead>
                             <tr>
-                                <th scope="col">Emissão</th>
+                                <th scope="col">Referência</th>
                                 <th scope="col">Início</th>
                                 <th scope="col">Validade</th>
                                 <th scope="col">Ações</th>
