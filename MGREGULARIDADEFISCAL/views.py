@@ -197,6 +197,18 @@ def dashregularidade(request):
     # print(certidoes)
     return render(request,'dashregularidadefiscal.html', {})
 
+def atualizar_declaracoes_antigas(request):
+    declaracoes = models.Declaracao.objects.all()
+    for declaracao in declaracoes:
+        certidoes = declaracao.get_certidoes(referencia = declaracao.data_emissao)
+
+        certidoes_validas = [c for c in certidoes.values() if c is not None]
+
+        # Associa as certidões à declaração
+        declaracao.certidoes.set(certidoes_validas)
+
+    return redirect('dashregularidadefiscal')
+
 
 
 
