@@ -1,27 +1,23 @@
 {% load custom_filters %}
 {% for declaracao in declaracoes %}
-    {% if declaracao.data_validade %}
-    <tr>
-        <td>{{ declaracao.data_emissao|date_format }}</td>
-        <td>{{ declaracao.data_inicio|date_format }}</td>
-        <td>{{ declaracao.data_validade|date_format }}</td>
-        <td>
-            <div class='btn-group btn-group-sm' role='group'>
-                <a type="btn" href="{{ declaracao.arquivo.url }}" target="_blank"><i class="lni lni-eye"></i></a>
-            </div>
-        </td>
-    </tr>
-    {% else %}
-    <tr>
-        <td>{{ declaracao.data_emissao|date_format }}</td>
-        <td colspan="2" style="font-size: smaller; color: red;">Certidões insuficientes</td>
-        <td>
-            <div class='btn-group btn-group-sm' role='group'>
-                {% if declaracao.arquivo %}
-                    <a type="btn" href="{{ declaracao.arquivo.url }}" target="_blank"><i class="lni lni-eye"></i></a>
-                {% endif %}
-            </div>
-        </td>
-    </tr>
+    {% if declaracao %}
+        <tr>
+            <td>{{ declaracao.data_emissao|date_format }}</td>
+            {% if declaracao.data_validade %}
+                <td>{{ declaracao.data_inicio|date_format }}</td>
+                <td>{{ declaracao.data_validade|date_format }}</td>
+            {% else %}
+                <td colspan="2" style="font-size: smaller; color: red;">Certidões insuficientes</td>
+            {% endif %}
+            <td>
+                <div class='btn-group btn-group-sm' role='group'>
+                    {% if declaracao.situacao == '-' %}
+                        <a type="btn" href="media/{{ declaracao.arquivo }}" target="_blank"><i class="lni lni-eye"></i></a>
+                    {% else %}
+                        <a type="btn" href="{{ declaracao.arquivo.url }}" target="_blank"><i class="lni lni-eye"></i></a>
+                    {% endif %}
+                </div>
+            </td>
+        </tr>
     {% endif %}
 {% endfor %}
