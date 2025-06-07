@@ -58,7 +58,7 @@ class Declaracao(models.Model):
         for tipo, _ in Certidao.certidoes_choices:
             certidao_valida = (
                 Certidao.objects
-                .filter(fornecedor=self.fornecedor, tipo=tipo, dataValidade__gte=referencia)
+                .filter(fornecedor=self.fornecedor, tipo=tipo, dataValidade__gte=referencia, dataEmissao__lte=referencia)
                 .order_by('-dataEmissao')
                 .first()
             )
