@@ -158,6 +158,8 @@ def criar_movimentacao(request, processo_id):
                             valor_anterior=modalidade_antiga,
                             valor_novo=modalidade_nova
                         )
+                    processo.modalidade = modalidade_nova
+                    processo.save()
                 elif modalidade_antiga == modalidade_nova:
                     pass
                 else:

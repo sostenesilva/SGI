@@ -4,10 +4,6 @@
 <head>
     <meta charset="UTF-8">
     <title>Comprovante de Movimentação</title>
-    <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" /> -->
-    <!-- <link href="https://cdn.lineicons.com/4.0/lineicons.css" rel="stylesheet" />
-    <script src="https://kit.fontawesome.com/9ade8f3144.js" crossorigin="anonymous"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>  -->
     <style>
         @page {
             size: A4;
@@ -115,18 +111,38 @@
             border-radius: 0.37rem;
             display: inline-block;
         }
+
+        .autenticidade-vertical {
+            position: fixed;
+            top: 80%;
+            left: 106%;
+            width: 60em;
+            transform: rotate(-90deg);
+            transform-origin: left top;
+            font-size: 10px;
+            color: #666;
+            letter-spacing: 1px;
+            writing-mode: vertical-lr; /* ajuda em alguns renderizadores */
+            line-height: 13px;
+        }
+
     </style>
 </head>
 
 <body>
     <div class="content">
+        <div class="autenticidade-vertical">
+            Documento gerado por {{ comprovante.criado_por.get_full_name }} em {{ comprovante.criado_em|date:"d/m/Y H:i" }}.<br>
+            Chave Digital de autenticação: {{ comprovante.codigo }}
+        </div>
         <h1>Histórico de Tramitações</h1>
         <ul style="margin: 0; padding: 0; list-style: none; font-size: 12px;">
             <li><strong>Processo:</strong> {{ processo.numero }} - {{ processo.titulo }}</li>
             <li><strong>Descrição:</strong> {{ processo.descricao }}</li>
             <li><strong>Criado por:</strong> {{ processo.criado_por.get_full_name }} - {{ processo.demandante.nome }} | <strong>Criado em:</strong> {{ processo.criado_em }}</li>
-            <li><strong>Autenticidade:</strong> {{ comprovante.codigo }}</li>
         </ul>
+        
+
         <h2>Movimentações</h2>
         <table>
             <tbody>
@@ -152,8 +168,7 @@
                                 {% if movimentacao.status == 'recebida' and movimentacao.destinatario.sigla != 'ARQ'%}
                                     {% if movimentacao.confirmacao == 'manual' %}
                                         <span style="font-size: 12px;">
-                                            <a type="button" style="text-decoration: none;" hx-get="{% url 'visualizar_comprovacao' movimentacao.protocolos.first.id %}" hx-target="#dialog" hx-trigger="click" data-bs-toggle="modal" data-bs-target="#modal">Confirmado manualmente em {{ movimentacao.realizado_em|date:"d/m/Y H:i" }}
-                                            (Visualizar)</a>
+                                            Confirmado manualmente em {{ movimentacao.realizado_em|date:"d/m/Y H:i" }}
                                         </span>
                                     {% else %}
                                         <span style="font-size: 12px;">
