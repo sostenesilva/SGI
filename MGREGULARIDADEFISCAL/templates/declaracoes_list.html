@@ -12,7 +12,7 @@
             <td>
                 <div class='btn-group btn-group-sm' role='group'>
                     {% if declaracao.situacao == '-' %}
-                        <a type="btn" href="media/{{ declaracao.arquivo }}" target="_blank"><i class="lni lni-eye"></i></a>
+                        <a type="btn" href="/{{ declaracao.arquivo }}" target="_blank"><i class="lni lni-eye"></i></a>
                     {% else %}
                         <a type="btn" href="{{ declaracao.arquivo.url }}" target="_blank"><i class="lni lni-eye"></i></a>
                     {% endif %}
