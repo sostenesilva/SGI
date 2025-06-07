@@ -148,7 +148,7 @@
             {% else %}
                 <span style="color: red;">
                     <b>Situação:</b> Certidões insuficientes para atestar a regularidade fiscal <br>
-                    <b>Verificação: </b> Atualizado no dia {{ declaracao.data_inicio|date:"d/m/Y" }}
+                    <b>Verificação: </b> Atualizado no dia {{ declaracao.data_emissao|date:"d/m/Y" }}
                 </span>
                 
             {% endif %}
