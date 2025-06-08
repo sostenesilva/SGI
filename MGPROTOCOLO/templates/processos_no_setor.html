@@ -87,12 +87,8 @@
 
                         {% if receber.has_previous %}
                             <li class="page-item">
-
-                                {% if request.GET.buscar %}
-                                    <a class="page-link" href="?page_receber=1&buscar={{request.GET.buscar}}" aria-label="Anterior">
-                                {% else %}
-                                    <a class="page-link" href="?page_receber=1" aria-label="Anterior">
-                                {% endif %}
+                                
+                                <a class="page-link" href="?page_receber=1{% if request.GET.page_recebidos %}&page_recebidos={{ request.GET.page_recebidos }}{% endif %}{% if request.GET.buscar %}&buscar={{ request.GET.buscar }}{% endif %}" aria-label="Anterior">
                                     <span aria-hidden="true">&laquo;</span>
                                     <span class="sr-only">Primeira</span>
                                 </a>
@@ -106,11 +102,9 @@
                                     <span class="page-link">{{ n }}</span>
                                 </li>
                             {% elif n > receber.number|add:'-3' and n < receber.number|add:'3' %}
-                                {% if request.GET.buscar %}
-                                    <li class="page-item"><a class="page-link" href="?page_receber={{ n }}&buscar={{request.GET.buscar}}">{{ n }}</a></li>
-                                {% else %}
-                                    <li class="page-item"><a class="page-link" href="?page_receber={{ n }}">{{ n }}</a></li>
-                                {% endif %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page_receber={{ n }}{% if request.GET.page_recebidos %}&page_recebidos={{ request.GET.page_recebidos }}{% endif %}{% if request.GET.buscar %}&buscar={{ request.GET.buscar }}{% endif %}">{{ n }}</a>
+                                </li>
                             {% endif %}
 
 
@@ -119,11 +113,7 @@
                     
                         {% if receber.has_next %}
                             <li class="page-item">
-                                {% if request.GET.buscar %}
-                                    <a class="page-link" href="?page_receber={{ receber.paginator.num_pages }}&buscar={{request.GET.buscar}}" aria-label="Próxima">
-                                {% else %}
-                                    <a class="page-link" href="?page_receber={{ receber.paginator.num_pages }}" aria-label="Próxima">
-                                {% endif %}
+                                <a class="page-link" href="?page_receber={{ receber.paginator.num_pages }}{% if request.GET.page_recebidos %}&page_recebidos={{ request.GET.page_recebidos }}{% endif %}{% if request.GET.buscar %}&buscar={{ request.GET.buscar }}{% endif %}" aria-label="Próxima">
                                     <span aria-hidden="true">&raquo;</span>
                                     <span class="sr-only">Última</span>
                                 </a>
@@ -214,12 +204,8 @@
 
                         {% if recebidos.has_previous %}
                             <li class="page-item">
-
-                                {% if request.GET.buscar %}
-                                    <a class="page-link" href="?page_recebidos=1&buscar={{request.GET.buscar}}" aria-label="Anterior">
-                                {% else %}
-                                    <a class="page-link" href="?page_recebidos=1" aria-label="Anterior">
-                                {% endif %}
+                                
+                                <a class="page-link" href="?page_recebidos=1{% if request.GET.page_receber %}&page_receber={{ request.GET.page_receber }}{% endif %}{% if request.GET.buscar %}&buscar={{ request.GET.buscar }}{% endif %}" aria-label="Anterior">
                                     <span aria-hidden="true">&laquo;</span>
                                     <span class="sr-only">Primeira</span>
                                 </a>
@@ -233,11 +219,9 @@
                                     <span class="page-link">{{ n }}</span>
                                 </li>
                             {% elif n > recebidos.number|add:'-3' and n < recebidos.number|add:'3' %}
-                                {% if request.GET.buscar %}
-                                    <li class="page-item"><a class="page-link" href="?page_recebidos={{ n }}&buscar={{request.GET.buscar}}">{{ n }}</a></li>
-                                {% else %}
-                                    <li class="page-item"><a class="page-link" href="?page_recebidos={{ n }}">{{ n }}</a></li>
-                                {% endif %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page_recebidos={{ n }}{% if request.GET.page_receber %}&page_receber={{ request.GET.page_receber }}{% endif %}{% if request.GET.buscar %}&buscar={{ request.GET.buscar }}{% endif %}">{{ n }}</a>
+                                </li>
                             {% endif %}
 
 
@@ -246,11 +230,7 @@
                     
                         {% if recebidos.has_next %}
                             <li class="page-item">
-                                {% if request.GET.buscar %}
-                                    <a class="page-link" href="?page_recebidos={{ recebidos.paginator.num_pages }}&buscar={{request.GET.buscar}}" aria-label="Próxima">
-                                {% else %}
-                                    <a class="page-link" href="?page_recebidos={{ recebidos.paginator.num_pages }}" aria-label="Próxima">
-                                {% endif %}
+                                <a class="page-link" href="?page_recebidos={{ recebidos.paginator.num_pages }}{% if request.GET.page_receber %}&page_receber={{ request.GET.page_receber }}{% endif %}{% if request.GET.buscar %}&buscar={{ request.GET.buscar }}{% endif %}" aria-label="Próxima">
                                     <span aria-hidden="true">&raquo;</span>
                                     <span class="sr-only">Última</span>
                                 </a>
