@@ -57,4 +57,55 @@
             </tbody>
         </table>
     </div>
+    <div class="wrapper justify-content-center py-2">
+        <nav aria-label="Page navigation">
+            <ul class="pagination pagination-sm justify-content-center">
+
+                {% if processos.has_previous %}
+                    <li class="page-item">
+
+                        {% if request.GET.buscar %}
+                            <a class="page-link" href="?page=1&buscar={{request.GET.buscar}}" aria-label="Anterior">
+                        {% else %}
+                            <a class="page-link" href="?page=1" aria-label="Anterior">
+                        {% endif %}
+                            <span aria-hidden="true">&laquo;</span>
+                            <span class="sr-only">Primeira</span>
+                        </a>
+                    </li>   
+                {% endif %}
+            
+                {% for n in processos.paginator.page_range %}
+
+                    {% if processos.number == n %}
+                        <li class="page-item active">
+                            <span class="page-link">{{ n }}</span>
+                        </li>
+                    {% elif n > processos.number|add:'-3' and n < processos.number|add:'3' %}
+                        {% if request.GET.buscar %}
+                            <li class="page-item"><a class="page-link" href="?page={{ n }}&buscar={{request.GET.buscar}}">{{ n }}</a></li>
+                        {% else %}
+                            <li class="page-item"><a class="page-link" href="?page={{ n }}">{{ n }}</a></li>
+                        {% endif %}
+                    {% endif %}
+
+
+
+                {% endfor %}
+            
+                {% if processos.has_next %}
+                    <li class="page-item">
+                        {% if request.GET.buscar %}
+                            <a class="page-link" href="?page={{ processos.paginator.num_pages }}&buscar={{request.GET.buscar}}" aria-label="Próxima">
+                        {% else %}
+                            <a class="page-link" href="?page={{ processos.paginator.num_pages }}" aria-label="Próxima">
+                        {% endif %}
+                            <span aria-hidden="true">&raquo;</span>
+                            <span class="sr-only">Última</span>
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
 {% endblock %}

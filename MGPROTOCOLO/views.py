@@ -347,8 +347,12 @@ def processos_arquivados(request):
         # Checa se o nome de algum setor do usuário está nos setores envolvidos
         if any(setor.nome in setores_env for setor in setor_usuario):
             processos_filtrados.append(processo)
+
+    processos_paginator = Paginator(processos_filtrados,20)
+    page_num_processos = request.GET.get('page')
+    page_processos = processos_paginator.get_page(page_num_processos)
     
-    return render(request, 'processos_arquivados.html', {'processos': processos_filtrados, 'query': query })
+    return render(request, 'processos_arquivados.html', {'processos': page_processos, 'query': query })
 
 @login_required
 def mais_informacoes(request, processo_id):
