@@ -24,8 +24,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for processo in processos %}
-                            {% if processo.ultima_movimentacao.status == 'em_tramitacao' and processo.ultima_movimentacao.confirmacao == 'pendente' %}
+                        {% for processo in receber %}
                             <tr style="height: 10px; background-color: transparent;"></tr>
                             <tr style="font-size: small;">
                                 <td class="col-1" style="word-wrap: break-word; white-space: normal;">{{ processo.numero }}</td>
@@ -49,25 +48,16 @@
                                             </button>
                                             <ul class="dropdown-menu" aria-labelledby="btnGroupDrop1">
                                                 <div class="dropdown-item">
-                                                    {% if processo.ultima_movimentacao.status == 'em_tramitacao' and processo.ultima_movimentacao.confirmacao == 'pendente' %}
-                                                        <a type="button" href="{% url 'receber_processo' processo.id %}" class="btn btn-sm btn-warning">
-                                                            Receber
-                                                        </a>
-                                                    {% else %}
-                                                        <a class="btn btn-warning btn-sm" hx-get="{% url 'criar_movimentacao' processo.id %}" hx-target="#dialog" hx-trigger="click" data-bs-toggle="modal" data-bs-target="#modal">
-                                                            Mover
-                                                        </a>
-                                                    {% endif %}
+                                                    <a type="button" href="{% url 'receber_processo' processo.id %}" class="btn btn-sm btn-warning">
+                                                        Receber
+                                                    </a>
                                                     <a href="{% url 'detalhes_processo' processo.id %}" class="btn btn-info btn-sm">
                                                         Detalhes
                                                     </a>
                                                 </div>
                                             </ul>
                                         </div>
-                                        
                                     </div>
-                                    
-                                    
                                 </td>
                             </tr>
                             <tr>
@@ -82,7 +72,6 @@
                                     {% endif %}
                                 </td>
                             </tr>
-                        {% endif %}
                             
                         {% empty %}
                             <tr>
@@ -92,6 +81,58 @@
                     </tbody>
                 </table>
             </div>
+            <div class="wrapper justify-content-center py-2">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination pagination-sm justify-content-center">
+
+                        {% if receber.has_previous %}
+                            <li class="page-item">
+
+                                {% if request.GET.buscar %}
+                                    <a class="page-link" href="?page_receber=1&buscar={{request.GET.buscar}}" aria-label="Anterior">
+                                {% else %}
+                                    <a class="page-link" href="?page_receber=1" aria-label="Anterior">
+                                {% endif %}
+                                    <span aria-hidden="true">&laquo;</span>
+                                    <span class="sr-only">Primeira</span>
+                                </a>
+                            </li>   
+                        {% endif %}
+                    
+                        {% for n in receber.paginator.page_range %}
+
+                            {% if receber.number == n %}
+                                <li class="page-item active">
+                                    <span class="page-link">{{ n }}</span>
+                                </li>
+                            {% elif n > receber.number|add:'-3' and n < receber.number|add:'3' %}
+                                {% if request.GET.buscar %}
+                                    <li class="page-item"><a class="page-link" href="?page_receber={{ n }}&buscar={{request.GET.buscar}}">{{ n }}</a></li>
+                                {% else %}
+                                    <li class="page-item"><a class="page-link" href="?page_receber={{ n }}">{{ n }}</a></li>
+                                {% endif %}
+                            {% endif %}
+
+
+
+                        {% endfor %}
+                    
+                        {% if receber.has_next %}
+                            <li class="page-item">
+                                {% if request.GET.buscar %}
+                                    <a class="page-link" href="?page_receber={{ receber.paginator.num_pages }}&buscar={{request.GET.buscar}}" aria-label="Próxima">
+                                {% else %}
+                                    <a class="page-link" href="?page_receber={{ receber.paginator.num_pages }}" aria-label="Próxima">
+                                {% endif %}
+                                    <span aria-hidden="true">&raquo;</span>
+                                    <span class="sr-only">Última</span>
+                                </a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+
         </div>
         <!-- RECEBIDOS -->
         <div class="col-7 px-3">
@@ -107,8 +148,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for processo in processos %}
-                            {% if not processo.ultima_movimentacao.status == 'em_tramitacao' and not processo.ultima_movimentacao.confirmacao == 'pendente' %}
+                        {% for processo in recebidos %}
                             <tr style="height: 10px; background-color: transparent;"></tr>
                             <tr style="font-size: small;">
                                 <td class="col-1" style="word-wrap: break-word; white-space: normal;">{{ processo.numero }}</td>
@@ -132,15 +172,9 @@
                                             </button>
                                             <ul class="dropdown-menu" aria-labelledby="btnGroupDrop1">
                                                 <div class="dropdown-item">
-                                                    {% if processo.ultima_movimentacao.status == 'em_tramitacao' and processo.ultima_movimentacao.confirmacao == 'pendente' %}
-                                                        <a type="button" href="{% url 'receber_processo' processo.id %}" class="btn btn-sm btn-warning">
-                                                            Receber
-                                                        </a>
-                                                    {% else %}
-                                                        <a class="btn btn-warning btn-sm" hx-get="{% url 'criar_movimentacao' processo.id %}" hx-target="#dialog" hx-trigger="click" data-bs-toggle="modal" data-bs-target="#modal">
-                                                            Mover
-                                                        </a>
-                                                    {% endif %}
+                                                    <a class="btn btn-warning btn-sm" hx-get="{% url 'criar_movimentacao' processo.id %}" hx-target="#dialog" hx-trigger="click" data-bs-toggle="modal" data-bs-target="#modal">
+                                                        Mover
+                                                    </a>
                                                     <a href="{% url 'detalhes_processo' processo.id %}" class="btn btn-info btn-sm">
                                                         Detalhes
                                                     </a>
@@ -165,7 +199,6 @@
                                     {% endif %}
                                 </td>
                             </tr>
-                            {% endif %}
                         {% empty %}
                             <tr>
                                 <td colspan="5">Nenhum processo encontrado.</td>
@@ -174,6 +207,60 @@
                     </tbody>
                 </table>
             </div>
+
+            <div class="wrapper justify-content-center py-2">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination pagination-sm justify-content-center">
+
+                        {% if recebidos.has_previous %}
+                            <li class="page-item">
+
+                                {% if request.GET.buscar %}
+                                    <a class="page-link" href="?page_recebidos=1&buscar={{request.GET.buscar}}" aria-label="Anterior">
+                                {% else %}
+                                    <a class="page-link" href="?page_recebidos=1" aria-label="Anterior">
+                                {% endif %}
+                                    <span aria-hidden="true">&laquo;</span>
+                                    <span class="sr-only">Primeira</span>
+                                </a>
+                            </li>   
+                        {% endif %}
+                    
+                        {% for n in recebidos.paginator.page_range %}
+
+                            {% if recebidos.number == n %}
+                                <li class="page-item active">
+                                    <span class="page-link">{{ n }}</span>
+                                </li>
+                            {% elif n > recebidos.number|add:'-3' and n < recebidos.number|add:'3' %}
+                                {% if request.GET.buscar %}
+                                    <li class="page-item"><a class="page-link" href="?page_recebidos={{ n }}&buscar={{request.GET.buscar}}">{{ n }}</a></li>
+                                {% else %}
+                                    <li class="page-item"><a class="page-link" href="?page_recebidos={{ n }}">{{ n }}</a></li>
+                                {% endif %}
+                            {% endif %}
+
+
+
+                        {% endfor %}
+                    
+                        {% if recebidos.has_next %}
+                            <li class="page-item">
+                                {% if request.GET.buscar %}
+                                    <a class="page-link" href="?page_recebidos={{ receber.paginator.num_pages }}&buscar={{request.GET.buscar}}" aria-label="Próxima">
+                                {% else %}
+                                    <a class="page-link" href="?page_recebidos={{ receber.paginator.num_pages }}" aria-label="Próxima">
+                                {% endif %}
+                                    <span aria-hidden="true">&raquo;</span>
+                                    <span class="sr-only">Última</span>
+                                </a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+
+
         </div>
         
     </div>

@@ -34,7 +34,20 @@ def processos_no_setor(request):
             Q(atual__nome__icontains=query) |
             Q(descricao__icontains=query)
         )
-    return render(request, 'processos_no_setor.html', {'processos': processos, 'query': query})
+    
+    receber = processos.filter(ultima_movimentacao__status = 'em_tramitacao', ultima_movimentacao__confirmacao = 'pendente')
+
+    receber_paginator = Paginator(receber,20)
+    page_num_receber = request.GET.get('page')
+    page_receber = receber_paginator.get_page(page_num_receber)
+
+    recebidos = processos.filter(~Q(ultima_movimentacao__status = 'em_tramitacao'), ~Q(ultima_movimentacao__confirmacao = 'pendente'))
+
+    recebidos_paginator = Paginator(recebidos,20)
+    page_num_recebidos = request.GET.get('page')
+    page_recebidos = recebidos_paginator.get_page(page_num_recebidos)
+
+    return render(request, 'processos_no_setor.html', {'receber': page_receber, 'recebidos': page_recebidos, 'query': query})
 
 @login_required
 def processos_encaminhados_pelo_setor(request):
