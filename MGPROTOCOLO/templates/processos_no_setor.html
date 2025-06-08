@@ -24,20 +24,20 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for processo in receber %}
+                        {% for processo_receber in receber %}
                             <tr style="height: 10px; background-color: transparent;"></tr>
                             <tr style="font-size: small;">
-                                <td class="col-1" style="word-wrap: break-word; white-space: normal;">{{ processo.numero }}</td>
-                                <td class="col-3" style="word-wrap: break-word; white-space: normal;">{{ processo.titulo|truncatewords:30 }}</td>
+                                <td class="col-1" style="word-wrap: break-word; white-space: normal;">{{ processo_receber.numero }}</td>
+                                <td class="col-3" style="word-wrap: break-word; white-space: normal;">{{ processo_receber.titulo|truncatewords:30 }}</td>
                                 <td class="col-1"><span class="my-1 badge 
-                                        {% if processo.modalidade == 'fisico' %}bg-secondary          
+                                        {% if processo_receber.modalidade == 'fisico' %}bg-secondary          
                                         {% else %}bg-primary
                                         {% endif %}" style="width: fit-content;">
-                                            {{ processo.modalidade }}
+                                            {{ processo_receber.modalidade }}
                                         </span></td>
                                 <!-- <td class="col-1" style="word-wrap: break-word; white-space: normal;">
-                                    <span class="badge {% if processo.status == 'concluido' %}bg-success{% else %}bg-warning{% endif %}">
-                                        {{ processo.get_status_display }}
+                                    <span class="badge {% if processo_receber.status == 'concluido' %}bg-success{% else %}bg-warning{% endif %}">
+                                        {{ processo_receber.get_status_display }}
                                     </span>
                                 </td> -->
                                 <td class="col-1">
@@ -48,10 +48,10 @@
                                             </button>
                                             <ul class="dropdown-menu" aria-labelledby="btnGroupDrop1">
                                                 <div class="dropdown-item">
-                                                    <a type="button" href="{% url 'receber_processo' processo.id %}" class="btn btn-sm btn-warning">
+                                                    <a type="button" href="{% url 'receber_processo' processo_receber.id %}" class="btn btn-sm btn-warning">
                                                         Receber
                                                     </a>
-                                                    <a href="{% url 'detalhes_processo' processo.id %}" class="btn btn-info btn-sm">
+                                                    <a href="{% url 'detalhes_processo' processo_receber.id %}" class="btn btn-info btn-sm">
                                                         Detalhes
                                                     </a>
                                                 </div>
@@ -61,13 +61,13 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td colspan="4" style="word-wrap: break-word; white-space: normal; font-size: smaller; text-align: left;"><b>Descrição: </b>{{ processo.descricao }}</td>
+                                <td colspan="4" style="word-wrap: break-word; white-space: normal; font-size: smaller; text-align: left;"><b>Descrição: </b>{{ processo_receber.descricao }}</td>
                             </tr>
                             <tr>
                                 <td colspan="4" style="word-wrap: break-word; white-space: normal; font-size: smaller; text-align: left;">
-                                    {% if processo.ultima_movimentacao %}
+                                    {% if processo_receber.ultima_movimentacao %}
                                         <div class="d-flex flex-column">
-                                            <span> <b>Remetente:</b> {{ processo.ultima_movimentacao.remetente }} ({{ processo.ultima_movimentacao.realizado_por.get_full_name }} em {{ processo.ultima_movimentacao.realizado_em|date:"d/m/Y H:m" }}) 
+                                            <span> <b>Remetente:</b> {{ processo_receber.ultima_movimentacao.remetente }} ({{ processo_receber.ultima_movimentacao.realizado_por.get_full_name }} em {{ processo_receber.ultima_movimentacao.realizado_em|date:"d/m/Y H:m" }}) 
                                         </div>
                                     {% endif %}
                                 </td>
@@ -148,20 +148,20 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for processo in recebidos %}
+                        {% for processo_recebido in recebidos %}
                             <tr style="height: 10px; background-color: transparent;"></tr>
                             <tr style="font-size: small;">
-                                <td class="col-1" style="word-wrap: break-word; white-space: normal;">{{ processo.numero }}</td>
-                                <td class="col-3" style="word-wrap: break-word; white-space: normal;">{{ processo.titulo|truncatewords:30 }}</td>
+                                <td class="col-1" style="word-wrap: break-word; white-space: normal;">{{ processo_recebido.numero }}</td>
+                                <td class="col-3" style="word-wrap: break-word; white-space: normal;">{{ processo_recebido.titulo|truncatewords:30 }}</td>
                                 <td class="col-1"><span class="my-1 badge 
-                                        {% if processo.modalidade == 'fisico' %}bg-secondary          
+                                        {% if processo_recebido.modalidade == 'fisico' %}bg-secondary          
                                         {% else %}bg-primary
                                         {% endif %}" style="width: fit-content;">
-                                            {{ processo.modalidade }}
+                                            {{ processo_recebido.modalidade }}
                                         </span></td>
                                 <!-- <td class="col-1" style="word-wrap: break-word; white-space: normal;">
-                                    <span class="badge {% if processo.status == 'concluido' %}bg-success{% else %}bg-warning{% endif %}">
-                                        {{ processo.get_status_display }}
+                                    <span class="badge {% if processo_recebido.status == 'concluido' %}bg-success{% else %}bg-warning{% endif %}">
+                                        {{ processo_recebido.get_status_display }}
                                     </span>
                                 </td> -->
                                 <td class="col-1">
@@ -172,10 +172,10 @@
                                             </button>
                                             <ul class="dropdown-menu" aria-labelledby="btnGroupDrop1">
                                                 <div class="dropdown-item">
-                                                    <a class="btn btn-warning btn-sm" hx-get="{% url 'criar_movimentacao' processo.id %}" hx-target="#dialog" hx-trigger="click" data-bs-toggle="modal" data-bs-target="#modal">
+                                                    <a class="btn btn-warning btn-sm" hx-get="{% url 'criar_movimentacao' processo_recebido.id %}" hx-target="#dialog" hx-trigger="click" data-bs-toggle="modal" data-bs-target="#modal">
                                                         Mover
                                                     </a>
-                                                    <a href="{% url 'detalhes_processo' processo.id %}" class="btn btn-info btn-sm">
+                                                    <a href="{% url 'detalhes_processo' processo_recebido.id %}" class="btn btn-info btn-sm">
                                                         Detalhes
                                                     </a>
                                                 </div>
@@ -187,14 +187,14 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td colspan="4" style="word-wrap: break-word; white-space: normal; font-size: smaller; text-align: left;"><b>Descrição: </b>{{ processo.descricao }}</td>
+                                <td colspan="4" style="word-wrap: break-word; white-space: normal; font-size: smaller; text-align: left;"><b>Descrição: </b>{{ processo_recebido.descricao }}</td>
                             </tr>
                             <tr>
                                 <td colspan="4" style="word-wrap: break-word; white-space: normal; font-size: smaller; text-align: left;">
-                                    {% if processo.ultima_movimentacao %}
+                                    {% if processo_recebido.ultima_movimentacao %}
                                         <div class="d-flex flex-column">
-                                            <span> <b>Remetente:</b> {{ processo.ultima_movimentacao.remetente }} ({{ processo.ultima_movimentacao.realizado_por.get_full_name }} em {{ processo.ultima_movimentacao.realizado_em|date:"d/m/Y H:m" }}) 
-                                            | <b>Destinatário:</b> {{ processo.ultima_movimentacao.destinatario }} ({% if processo.ultima_movimentacao.confirmacao == 'pendente' %}Pendente de recebimento{% else %}{{ processo.ultima_movimentacao.confirmado_por.get_full_name }} em {{ processo.ultima_movimentacao.confirmado_em|date:"d/m/Y H:m" }}{% endif %})</span>
+                                            <span> <b>Remetente:</b> {{ processo_recebido.ultima_movimentacao.remetente }} ({{ processo_recebido.ultima_movimentacao.realizado_por.get_full_name }} em {{ processo_recebido.ultima_movimentacao.realizado_em|date:"d/m/Y H:m" }}) 
+                                            | <b>Destinatário:</b> {{ processo_recebido.ultima_movimentacao.destinatario }} ({% if processo_recebido.ultima_movimentacao.confirmacao == 'pendente' %}Pendente de recebimento{% else %}{{ processo_recebido.ultima_movimentacao.confirmado_por.get_full_name }} em {{ processo_recebido.ultima_movimentacao.confirmado_em|date:"d/m/Y H:m" }}{% endif %})</span>
                                         </div>
                                     {% endif %}
                                 </td>
@@ -247,9 +247,9 @@
                         {% if recebidos.has_next %}
                             <li class="page-item">
                                 {% if request.GET.buscar %}
-                                    <a class="page-link" href="?page_recebidos={{ receber.paginator.num_pages }}&buscar={{request.GET.buscar}}" aria-label="Próxima">
+                                    <a class="page-link" href="?page_recebidos={{ recebidos.paginator.num_pages }}&buscar={{request.GET.buscar}}" aria-label="Próxima">
                                 {% else %}
-                                    <a class="page-link" href="?page_recebidos={{ receber.paginator.num_pages }}" aria-label="Próxima">
+                                    <a class="page-link" href="?page_recebidos={{ recebidos.paginator.num_pages }}" aria-label="Próxima">
                                 {% endif %}
                                     <span aria-hidden="true">&raquo;</span>
                                     <span class="sr-only">Última</span>
