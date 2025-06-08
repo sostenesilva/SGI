@@ -12,6 +12,7 @@ from .models import Processo, Documento, Movimentacao, ProtocoloMovimentacao, Co
 from HOME.models import Setor
 from .forms import ProcessoCorrecaoForm, ProcessoForm, DocumentoForm, MovimentacaoForm, ComprovacaoForm
 from django.templatetags.static import static
+from django.core.paginator import Paginator
 from django.db.models.functions import Coalesce
 
 @login_required
@@ -56,7 +57,11 @@ def processos_encaminhados_pelo_setor(request):
             Q(descricao__icontains=query)
         )
 
-    return render(request, 'processos_encaminhados_pelo_setor.html', {'processos': processos, 'query': query})
+    processos_paginator = Paginator(processos,20)
+    page_num_processos = request.GET.get('page')
+    page_processos = processos_paginator.get_page(page_num_processos)
+
+    return render(request, 'processos_encaminhados_pelo_setor.html', {'processos': page_processos, 'query': query})
 
 @login_required
 def detalhes_processo(request, processo_id):

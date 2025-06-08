@@ -13,5 +13,4 @@ urlpatterns = [
     path('emitirdeclaracao/<int:fornecedor_id>/', views.emitir_declaracao, name='emitir_declaracao'),
     path('emitirdeclaracao/', views.gerar_declaracao, name='gerar_declaracao'),
     # path('atualizardeclaracoes/', views.atualizar_declaracoes_antigas, name='atualizar_declaracoes_antigas'),
-
 ]
